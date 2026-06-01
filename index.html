@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEA Dashboard — Loursac Damien</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#09090b;--surface:#111113;--surface2:#18181b;--surface3:#222226;
+  --accent:#e8c547;--accent2:#4ade80;--accent3:#f87171;--blue:#60a5fa;
+  --text:#fafafa;--text2:#a1a1aa;--border:#27272a;
+  --sel:#f59e0b;--dcam:#3b82f6;--asml:#10b981;--guard:#a78bfa;--paeem:#6b7280;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(232,197,71,.04) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 80% 80%,rgba(59,130,246,.05) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.app{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:24px 16px 64px;}
+
+/* HEADER */
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,6vw,56px);font-weight:300;line-height:1;letter-spacing:-.02em;}
+h1 em{font-style:italic;color:var(--accent);}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:var(--accent2);font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:5px 10px;border-radius:20px;margin-bottom:6px;}
+.live-dot{width:6px;height:6px;background:var(--accent2);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.header-date{font-size:11px;color:var(--text2);}
+
+/* KPI STRIP */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px;}
+@media(max-width:640px){.kpi-strip{grid-template-columns:repeat(2,1fr);}}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,var(--accent));}
+.kpi-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:8px;}
+.kpi-val{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,4vw,32px);font-weight:300;line-height:1;}
+.kpi-sub{font-size:10px;color:var(--accent2);margin-top:4px;}
+.kpi-sub.highlight{color:var(--accent);font-weight:500;}
+
+/* NAV */
+.nav{display:flex;gap:4px;margin-bottom:28px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;flex-wrap:wrap;}
+.nav-tab{flex:1;min-width:80px;padding:10px;text-align:center;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);cursor:pointer;border-radius:8px;transition:all .2s;border:none;background:transparent;font-family:'DM Mono',monospace;}
+.nav-tab.active{background:var(--surface3);color:var(--accent);border:1px solid var(--border);}
+.nav-tab:hover:not(.active){color:var(--text);}
+
+/* PAGES */
+.page{display:none;}.page.active{display:block;}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;}
+.card-title{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+
+/* GRID */
+.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+@media(max-width:700px){.main-grid{grid-template-columns:1fr;}}
+
+/* DONUT */
+.donut-wrap{display:flex;flex-direction:column;align-items:center;}
+canvas{max-width:220px;max-height:220px;}
+
+/* LINES */
+.lines{display:flex;flex-direction:column;gap:8px;}
+.line-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--surface2);transition:background .15s;}
+.line-row:hover{background:var(--surface3);}
+.line-color{width:3px;height:36px;border-radius:2px;flex-shrink:0;}
+.line-ticker{font-size:11px;font-weight:500;width:50px;}
+.line-name{font-size:10px;color:var(--text2);flex:1;}
+.line-right{text-align:right;}
+.line-val{font-family:'Cormorant Garamond',serif;font-size:18px;}
+.line-meta{font-size:10px;color:var(--text2);}
+.line-pv{font-size:11px;font-weight:500;}
+.pos{color:var(--accent2);}.neg{color:var(--accent3);}
+
+/* PV BARS */
+.pv-bars{display:flex;flex-direction:column;gap:10px;}
+.pv-row{display:flex;align-items:center;gap:10px;}
+.pv-ticker{width:55px;font-size:10px;color:var(--text2);letter-spacing:.1em;}
+.pv-track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pv-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.pv-pct{font-size:11px;min-width:60px;text-align:right;}
+
+/* TRI PAGE */
+.tri-hero{text-align:center;padding:32px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;position:relative;overflow:hidden;}
+.tri-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(232,197,71,.06) 0%,transparent 70%);pointer-events:none;}
+.tri-big{font-family:'Cormorant Garamond',serif;font-size:clamp(64px,15vw,120px);font-weight:300;line-height:1;color:var(--accent);position:relative;}
+.tri-label{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--text2);margin-bottom:8px;}
+.tri-sub{font-size:12px;color:var(--text2);margin-top:8px;}
+.tri-sub strong{color:var(--text);}
+
+.tri-method{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:600px){.tri-method{grid-template-columns:1fr;}}
+.method-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.method-title{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:12px;}
+.method-formula{font-size:11px;line-height:1.8;color:var(--text);}
+.method-formula code{color:var(--accent);background:rgba(232,197,71,.1);padding:2px 6px;border-radius:4px;}
+
+.tri-table{width:100%;border-collapse:collapse;font-size:11px;}
+.tri-table th{padding:10px 12px;text-align:left;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border);background:var(--surface2);}
+.tri-table td{padding:10px 12px;border-bottom:1px solid rgba(39,39,42,.5);}
+.tri-table tr:last-child td{border-bottom:none;font-weight:500;color:var(--accent);}
+.tri-table tr:hover td{background:var(--surface2);}
+.chart-full{width:100%;height:220px;}
+
+/* TIMELINE */
+.tl-evo{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.tl-point{flex:1;min-width:80px;padding:10px 8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;transition:all .2s;}
+.tl-point.active{border-color:var(--accent);background:var(--surface2);}
+.tl-point-date{font-size:9px;color:var(--text2);margin-bottom:4px;}
+.tl-point-val{font-family:'Cormorant Garamond',serif;font-size:15px;}
+.tl-point-delta{font-size:10px;margin-top:2px;}
+.tl-slider-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;}
+.tl-dots{display:flex;justify-content:space-between;margin-top:12px;}
+.tl-dot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.tl-dot-circle{width:10px;height:10px;border-radius:50%;background:var(--border);border:2px solid var(--text2);transition:all .2s;}
+.tl-dot.active .tl-dot-circle{background:var(--accent);border-color:var(--accent);transform:scale(1.3);}
+.tl-dot-label{font-size:9px;color:var(--text2);}
+.tl-dot.active .tl-dot-label{color:var(--accent);}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
+.tl-date-display{text-align:center;margin-bottom:16px;}
+.tl-current-date{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,4vw,36px);font-weight:300;}
+.tl-current-total{font-size:12px;color:var(--text2);margin-top:4px;}
+.tl-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+@media(max-width:600px){.tl-grid{grid-template-columns:1fr;}}
+.delta-rows{display:flex;flex-direction:column;gap:8px;}
+.delta-row{display:flex;align-items:center;gap:10px;}
+.delta-ticker{width:55px;font-size:10px;color:var(--text2);}
+.delta-track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.delta-fill{height:100%;border-radius:3px;}
+.delta-amount{font-size:11px;min-width:80px;text-align:right;}
+
+/* DIVIDENDS */
+.div-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-bottom:16px;}
+@media(max-width:600px){.div-grid{grid-template-columns:repeat(6,1fr);}}
+.div-month{text-align:center;}
+.div-month-name{font-size:8px;color:var(--text2);margin-bottom:4px;}
+.div-bar{border-radius:2px;min-height:4px;background:var(--border);}
+.div-bar.active{background:var(--accent);}
+.div-amount{font-size:8px;color:var(--accent);margin-top:3px;}
+.div-list{display:flex;flex-direction:column;gap:8px;}
+.div-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:8px;}
+.div-date{font-size:10px;color:var(--text2);width:90px;}
+.div-source{flex:1;font-size:11px;}
+.div-amt{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--accent);}
+.div-badge{font-size:9px;padding:2px 8px;border-radius:10px;background:rgba(232,197,71,.15);color:var(--accent);letter-spacing:.1em;}
+.div-badge.confirmed{background:rgba(74,222,128,.1);color:var(--accent2);}
+
+/* LIVE */
+.live-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px;}
+.live-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px;}
+.live-color-bar{width:4px;height:50px;border-radius:2px;flex-shrink:0;}
+.live-ticker{font-size:13px;font-weight:500;margin-bottom:2px;}
+.live-name{font-size:10px;color:var(--text2);margin-bottom:4px;}
+.live-isin{font-size:9px;color:var(--text2);letter-spacing:.1em;}
+.live-right{margin-left:auto;text-align:right;}
+.live-formula{font-size:10px;color:var(--accent);background:rgba(232,197,71,.1);padding:3px 8px;border-radius:4px;margin-bottom:6px;display:inline-block;}
+.live-parts{font-size:11px;color:var(--text2);}
+
+.formula-note{background:var(--surface);border:1px solid rgba(232,197,71,.3);border-radius:10px;padding:16px 20px;font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:16px;}
+.formula-note strong{color:var(--accent);}
+.code-block{padding:10px 14px;background:var(--surface2);border-radius:8px;font-size:11px;margin-bottom:8px;}
+.code-block .cb-label{color:var(--text2);margin-bottom:4px;}
+.code-block code{color:var(--accent);}
+
+/* MONTE CARLO */
+.mc-hero{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;}
+.mc-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(168,139,250,.05) 0%,transparent 70%);pointer-events:none;}
+.mc-hero-label{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--guard);margin-bottom:8px;}
+.mc-hero-desc{font-size:12px;color:var(--text2);line-height:1.7;}
+
+/* INTÉRÊTS COMPOSÉS */
+.ic-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:600px){.ic-controls{grid-template-columns:1fr;}}
+.ic-control{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.ic-control label{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:10px;}
+.ic-control input[type=range]{width:100%;accent-color:var(--accent);margin-bottom:6px;}
+.ic-val{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent);}
+.ic-val span{font-size:12px;color:var(--text2);font-family:'DM Mono',monospace;}
+
+.ic-scenarios{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.ic-scenario{flex:1;min-width:80px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;transition:all .2s;font-size:10px;color:var(--text2);font-family:'DM Mono',monospace;}
+.ic-scenario.active{border-color:var(--accent);background:var(--surface2);color:var(--accent);}
+
+.ic-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+@media(max-width:640px){.ic-kpis{grid-template-columns:repeat(2,1fr);}}
+.ic-kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden;}
+.ic-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,var(--accent));}
+.ic-kpi-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px;}
+.ic-kpi-val{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,3vw,26px);line-height:1;}
+.ic-kpi-sub{font-size:10px;color:var(--accent2);margin-top:4px;}
+
+.ic-table{width:100%;border-collapse:collapse;font-size:11px;}
+.ic-table th{padding:8px 12px;text-align:left;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border);background:var(--surface2);}
+.ic-table td{padding:9px 12px;border-bottom:1px solid rgba(39,39,42,.4);}
+.ic-table tr:last-child td{border-bottom:none;font-weight:500;}
+.ic-table tr:hover td{background:var(--surface2);}
+.ic-table .yr-milestone{background:rgba(232,197,71,.05);}
+.ic-table .yr-milestone td{color:var(--accent);}
+
+.ic-chart-wrap{width:100%;height:260px;}
+.ic-doubling{background:var(--surface2);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6;}
+.ic-doubling strong{color:var(--accent);}
+
+.note{font-size:11px;color:var(--text2);line-height:1.7;padding-left:12px;border-left:2px solid var(--border);margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="eyebrow">PEA · Loursac Damien</div>
+      <h1>Portfolio <em>Dashboard</em></h1>
+    </div>
+    <div class="header-right">
+      <div class="live-badge"><div class="live-dot"></div>Live via Google Sheets</div>
+      <div class="header-date">Dernière MàJ : 29 mai 2026</div>
+    </div>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi-card" style="--kc:#3b82f6">
+      <div class="kpi-label">Capital investi</div>
+      <div class="kpi-val">120 000 €</div>
+      <div class="kpi-sub">versements progressifs · 9 ans</div>
+    </div>
+    <div class="kpi-card" style="--kc:#4ade80">
+      <div class="kpi-label">Valeur PEA</div>
+      <div class="kpi-val">185 672 €</div>
+      <div class="kpi-sub">+65 672 € de gain</div>
+    </div>
+    <div class="kpi-card" style="--kc:#e8c547">
+      <div class="kpi-label">TRI annualisé</div>
+      <div class="kpi-val">9,50 %</div>
+      <div class="kpi-sub highlight">Base : 120 000 € investis</div>
+    </div>
+    <div class="kpi-card" style="--kc:#a78bfa">
+      <div class="kpi-label">Dividendes 2026</div>
+      <div class="kpi-val">~3 986 €</div>
+      <div class="kpi-sub">dont 3 801 € en déc.</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-tab active" onclick="showPage('portfolio',this)">📊 Portefeuille</button>
+    <button class="nav-tab" onclick="showPage('tri',this)">📐 TRI</button>
+    <button class="nav-tab" onclick="showPage('compound',this)">🔄 Intérêts</button>
+    <button class="nav-tab" onclick="showPage('timeline',this)">📈 Timeline</button>
+    <button class="nav-tab" onclick="showPage('dividends',this)">💰 Dividendes</button>
+    <button class="nav-tab" onclick="showPage('montecarlo',this)">🎲 Monte Carlo</button>
+
+  </div>
+
+  <!-- PAGE PORTFOLIO -->
+  <div class="page active" id="page-portfolio">
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-title">Répartition</div>
+        <div class="donut-wrap"><canvas id="mainDonut"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Détail des lignes</div>
+        <div class="lines" id="linesTable"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Plus-values latentes par ligne</div>
+      <div class="pv-bars" id="pvBars"></div>
+    </div>
+  </div>
+
+  <!-- PAGE TRI -->
+  <div class="page" id="page-tri">
+
+    <div class="tri-hero">
+      <div class="tri-label">Taux de Rendement Interne · Depuis avril 2017</div>
+      <div class="tri-big">9,50%</div>
+      <div class="tri-sub">par an · sur <strong>9 ans</strong> · versements de <strong>1 000 €/mois</strong></div>
+    </div>
+
+    <div class="tri-method">
+      <div class="method-card">
+        <div class="method-title">Méthode de calcul</div>
+        <div class="method-formula">
+          Le TRI est calculé via la méthode <code>Newton-Raphson</code> sur les flux de trésorerie mensuels.<br><br>
+          Flux : <code>-~1 101 €/mois</code> pendant 109 mois, puis <code>+185 672 €</code> à la fin.<br><br>
+          On cherche le taux <em>r</em> tel que la <strong>VAN = 0</strong>, soit le rendement réel qui explique exactement le résultat obtenu.
+        </div>
+      </div>
+      <div class="method-card">
+        <div class="method-title">Pourquoi le TRI plutôt que la performance brute ?</div>
+        <div class="method-formula">
+          La performance brute (+60,8%) ne tient pas compte du <strong>timing des versements</strong>.<br><br>
+          Les premiers 1 000 € versés en 2017 ont travaillé <strong>9 ans</strong>, mais les derniers versements seulement quelques mois.<br><br>
+          Le TRI est la mesure <strong>la plus juste</strong> pour un investisseur en DCA.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Évolution annuelle — Capital investi vs Valeur réelle</div>
+      <canvas id="triChart" class="chart-full"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Tableau de progression année par année</div>
+      <table class="tri-table">
+        <thead>
+          <tr>
+            <th>Année</th>
+            <th>Date</th>
+            <th>Capital investi</th>
+            <th>Valeur estimée</th>
+            <th>Gain cumulé</th>
+            <th>Performance</th>
+          </tr>
+        </thead>
+        <tbody id="triTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">Comparaison vs indices de référence (même période)</div>
+      <div class="pv-bars" style="margin-top:4px" id="compBars"></div>
+    </div>
+
+  </div>
+
+  <!-- PAGE INTÉRÊTS COMPOSÉS -->
+  <div class="page" id="page-compound">
+
+    <!-- Scénarios prédéfinis -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Scénario de rendement annuel</div>
+      <div class="ic-scenarios">
+        <div class="ic-scenario" onclick="setICScenario(4,this)">📉 Pessimiste<br><strong>4%</strong>/an</div>
+        <div class="ic-scenario" onclick="setICScenario(7,this)">📊 Réaliste<br><strong>7%</strong>/an</div>
+        <div class="ic-scenario active" onclick="setICScenario(10.22,this)">🎯 Mon TRI<br><strong>10,22%</strong>/an</div>
+        <div class="ic-scenario" onclick="setICScenario(12,this)">🚀 Optimiste<br><strong>12%</strong>/an</div>
+      </div>
+    </div>
+
+    <!-- Contrôles -->
+    <div class="ic-controls">
+      <div class="ic-control">
+        <label>Capital de départ (€)</label>
+        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="185672">
+        <div class="ic-val" id="icCapitalVal">185 672 <span>€</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Rendement annuel (%)</label>
+        <input type="range" id="icRate" min="1" max="20" step="0.1" value="10.22">
+        <div class="ic-val" id="icRateVal">10,22 <span>%</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Versement mensuel (€)</label>
+        <input type="range" id="icMonthly" min="0" max="5000" step="100" value="1000">
+        <div class="ic-val" id="icMonthlyVal">1 000 <span>€/mois</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Horizon (années)</label>
+        <input type="range" id="icYears" min="1" max="30" step="1" value="10">
+        <div class="ic-val" id="icYearsVal">10 <span>ans</span></div>
+      </div>
+    </div>
+
+    <!-- KPIs résultats -->
+    <div class="ic-kpis">
+      <div class="ic-kpi" style="--kc:#e8c547">
+        <div class="ic-kpi-label">Valeur finale</div>
+        <div class="ic-kpi-val" id="icFinal">—</div>
+        <div class="ic-kpi-sub" id="icFinalSub">—</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#4ade80">
+        <div class="ic-kpi-label">Gain total</div>
+        <div class="ic-kpi-val" id="icGain">—</div>
+        <div class="ic-kpi-sub" id="icGainSub">—</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#60a5fa">
+        <div class="ic-kpi-label">Capital investi total</div>
+        <div class="ic-kpi-val" id="icTotalInvested">—</div>
+        <div class="ic-kpi-sub">départ + versements</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#a78bfa">
+        <div class="ic-kpi-label">Dont intérêts purs</div>
+        <div class="ic-kpi-val" id="icInterest">—</div>
+        <div class="ic-kpi-sub" id="icInterestSub">—</div>
+      </div>
+    </div>
+
+    <!-- Info doublement -->
+    <div class="ic-doubling" id="icDoubling"></div>
+
+    <!-- Graphique -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Projection de la valeur</div>
+      <canvas id="icChart" class="ic-chart-wrap"></canvas>
+    </div>
+
+    <!-- Tableau -->
+    <div class="card">
+      <div class="card-title">Détail année par année</div>
+      <div style="overflow-x:auto">
+        <table class="ic-table">
+          <thead>
+            <tr>
+              <th>Année</th>
+              <th>Capital investi</th>
+              <th>Valeur portefeuille</th>
+              <th>Intérêts cumulés</th>
+              <th>Gain annuel</th>
+              <th>Performance</th>
+            </tr>
+          </thead>
+          <tbody id="icTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PAGE TIMELINE -->
+  <div class="page" id="page-timeline">
+    <div class="card">
+      <div class="card-title">Évolution de la valeur totale</div>
+      <div class="tl-evo" id="tlEvo"></div>
+    </div>
+    <div class="tl-slider-wrap">
+      <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:12px">Sélectionner une date</div>
+      <input type="range" id="tlSlider" min="0" max="6" step="1" value="6">
+      <div class="tl-dots" id="tlDots"></div>
+    </div>
+    <div class="tl-date-display">
+      <div class="tl-current-date" id="tlDate">—</div>
+      <div class="tl-current-total" id="tlTotal">—</div>
+    </div>
+    <div class="tl-grid">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">Composition</div>
+        <div class="donut-wrap"><canvas id="tlDonut"></canvas></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title" id="tlDeltaTitle">Variation vs date précédente</div>
+        <div class="delta-rows" id="tlDeltaRows"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE DIVIDENDES -->
+  <div class="page" id="page-dividends">
+    <div class="card">
+      <div class="card-title">Calendrier mensuel — Année type</div>
+      <div class="div-grid" id="divGrid"></div>
+      <div style="font-size:11px;color:var(--text2);margin-top:12px">💡 96% des dividendes arrivent en décembre. Dividende annuel total estimé : <strong style="color:var(--accent)">~3 986 €</strong></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Prochains versements</div>
+      <div class="div-list" id="divList"></div>
+    </div>
+  </div>
+
+  <!-- PAGE MONTE CARLO -->
+  <div class="page" id="page-montecarlo">
+
+    <div class="mc-hero">
+      <div class="mc-hero-label">Simulation Monte Carlo · <span id="mcSimCount">1 000</span> scénarios</div>
+      <div class="mc-hero-desc">Modélise l'incertitude des marchés en simulant des milliers de trajectoires possibles de ton PEA, basées sur les rendements et la volatilité historiques du MSCI World.</div>
+    </div>
+
+    <!-- Contrôles -->
+    <div class="ic-controls" style="margin-bottom:16px">
+      <div class="ic-control">
+        <label>Capital de départ (€)</label>
+        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="185672">
+        <div class="ic-val" id="mcCapitalVal">185 672 <span>€</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Versement mensuel (€)</label>
+        <input type="range" id="mcMonthly" min="0" max="5000" step="100" value="1000">
+        <div class="ic-val" id="mcMonthlyVal">1 000 <span>€/mois</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Rendement annuel moyen (%)</label>
+        <input type="range" id="mcMean" min="3" max="15" step="0.5" value="9">
+        <div class="ic-val" id="mcMeanVal">9,0 <span>%</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Volatilité annuelle (%)</label>
+        <input type="range" id="mcVol" min="5" max="30" step="1" value="15">
+        <div class="ic-val" id="mcVolVal">15 <span>%</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Horizon (années)</label>
+        <input type="range" id="mcYears" min="5" max="30" step="1" value="10">
+        <div class="ic-val" id="mcYearsVal">10 <span>ans</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Nombre de simulations</label>
+        <input type="range" id="mcSims" min="100" max="5000" step="100" value="1000">
+        <div class="ic-val" id="mcSimsVal">1 000 <span>sim.</span></div>
+      </div>
+    </div>
+
+    <button id="mcRunBtn" onclick="runMonteCarlo()" style="width:100%;padding:14px;background:var(--accent);color:#09090b;border:none;border-radius:10px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;margin-bottom:16px;font-weight:500;transition:opacity .2s">
+      🎲 Lancer la simulation
+    </button>
+
+    <!-- KPIs résultats -->
+    <div class="ic-kpis" id="mcKpis" style="display:none">
+      <div class="ic-kpi" style="--kc:#4ade80">
+        <div class="ic-kpi-label">Médiane (P50)</div>
+        <div class="ic-kpi-val" id="mcP50">—</div>
+        <div class="ic-kpi-sub">50% des scénarios</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#e8c547">
+        <div class="ic-kpi-label">Optimiste (P90)</div>
+        <div class="ic-kpi-val" id="mcP90">—</div>
+        <div class="ic-kpi-sub">10% des meilleurs</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#f87171">
+        <div class="ic-kpi-label">Pessimiste (P10)</div>
+        <div class="ic-kpi-val" id="mcP10">—</div>
+        <div class="ic-kpi-sub">10% des pires</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#a78bfa">
+        <div class="ic-kpi-label">Proba. > capital investi</div>
+        <div class="ic-kpi-val" id="mcProbPos">—</div>
+        <div class="ic-kpi-sub">de finir en positif</div>
+      </div>
+    </div>
+
+    <!-- Graphique fan chart -->
+    <div class="card" id="mcChartCard" style="display:none;margin-bottom:16px">
+      <div class="card-title">Distribution des trajectoires simulées</div>
+      <canvas id="mcChart" style="width:100%;height:300px"></canvas>
+    </div>
+
+    <!-- Distribution finale -->
+    <div class="card" id="mcDistCard" style="display:none;margin-bottom:16px">
+      <div class="card-title">Distribution des valeurs finales</div>
+      <canvas id="mcDistChart" style="width:100%;height:200px"></canvas>
+    </div>
+
+    <!-- Tableau percentiles -->
+    <div class="card" id="mcTableCard" style="display:none">
+      <div class="card-title">Analyse par percentile</div>
+      <table class="ic-table">
+        <thead>
+          <tr>
+            <th>Percentile</th>
+            <th>Valeur finale</th>
+            <th>Gain vs capital investi</th>
+            <th>Performance</th>
+            <th>Interprétation</th>
+          </tr>
+        </thead>
+        <tbody id="mcTableBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="note">Capital investi : 120 000 € · TRI : 9,50%/an · 28k€ investis sur DCAM ✅ · 13k€ sur DCAM à venir · Données Bourse Direct 29 mai 2026</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const COLORS={SEL:'#f59e0b',DCAM:'#3b82f6',ASML:'#10b981',GUARD:'#a78bfa',PAEEM:'#6b7280',CAC:'#c9a84c',ESE:'#ec4899',TTE:'#f97316'};
+
+const currentData=[
+  {ticker:'SEL', name:'Stoxx Europe Select Div',isin:'FR0010378604',gf:'EPA:SEL',  parts:2858,pru:20.33,value:66871},
+  {ticker:'DCAM',name:'MSCI World Amundi',      isin:'FR001400U5Q4',gf:'EPA:DCAM', parts:10308,pru:5.58, value:61869},
+  {ticker:'ASML',name:'ASML Holding N.V.',      isin:'NL0010273215',gf:'EPA:ASML', parts:27,  pru:664.78,value:37568},
+  {ticker:'GUARD',name:'BNP Europe Defense',    isin:'LU3047998896',gf:'EPA:GUARD',parts:1094,pru:11.36,value:12360},
+  {ticker:'PAEEM',name:'MSCI Émergents Amundi', isin:'FR0011440478',gf:'EPA:PAEEM',parts:193, pru:20.37,value:7005},
+];
+
+const triData=[
+  {yr:1,date:'Avr 2018',invested:13211,value:13777,gain:566},
+  {yr:2,date:'Avr 2019',invested:26422,value:28862,gain:2440},
+  {yr:3,date:'Avr 2020',invested:39633,value:45380,gain:5747},
+  {yr:4,date:'Avr 2021',invested:52844,value:63468,gain:10624},
+  {yr:5,date:'Avr 2022',invested:66055,value:83273,gain:17218},
+  {yr:6,date:'Avr 2023',invested:79266,value:104960,gain:25694},
+  {yr:7,date:'Avr 2024',invested:92477,value:128706,gain:36229},
+  {yr:8,date:'Avr 2025',invested:105688,value:154709,gain:49020},
+  {yr:9,date:'Mai 2026',invested:120000,value:185672,gain:65672},
+];
+
+const snapshots=[
+  {date:'18 mai 2026',total:158991,lines:[
+    {ticker:'ASML',value:33005,pru:664.78,parts:27},{ticker:'CAC',value:32002,pru:77.74,parts:397},
+    {ticker:'DCAM',value:28437,pru:5.18,parts:5003},{ticker:'SEL',value:26778,pru:15.53,parts:1193},
+    {ticker:'ESE',value:13439,pru:24.31,parts:435},{ticker:'GUARD',value:11671,pru:11.36,parts:1094},
+    {ticker:'TTE',value:7295,pru:33.96,parts:92},{ticker:'PAEEM',value:6360,pru:20.37,parts:193},
+  ]},
+  {date:'21 mai 2026',total:165204,lines:[
+    {ticker:'DCAM',value:43397,pru:5.41,parts:7353},{ticker:'ASML',value:35910,pru:664.78,parts:27},
+    {ticker:'SEL',value:35417,pru:17.19,parts:1508},{ticker:'CAC',value:32316,pru:77.74,parts:397},
+    {ticker:'GUARD',value:11518,pru:11.36,parts:1094},{ticker:'PAEEM',value:6646,pru:20.37,parts:193},
+  ]},
+  {date:'22 mai 2026',total:166952,lines:[
+    {ticker:'DCAM',value:43684,pru:5.41,parts:7353},{ticker:'ASML',value:37193,pru:664.78,parts:27},
+    {ticker:'SEL',value:35504,pru:17.19,parts:1508},{ticker:'CAC',value:32348,pru:77.74,parts:397},
+    {ticker:'GUARD',value:11542,pru:11.36,parts:1094},{ticker:'PAEEM',value:6682,pru:20.37,parts:193},
+  ]},
+  {date:'25 mai 2026',total:169533,lines:[
+    {ticker:'DCAM',value:44059,pru:5.41,parts:7353},{ticker:'ASML',value:38324,pru:664.78,parts:27},
+    {ticker:'SEL',value:35847,pru:17.19,parts:1508},{ticker:'CAC',value:32661,pru:77.74,parts:397},
+    {ticker:'GUARD',value:11844,pru:11.36,parts:1094},{ticker:'PAEEM',value:6799,pru:20.37,parts:193},
+  ]},
+  {date:'26 mai 2026',total:172985,lines:[
+    {ticker:'SEL',value:68023,pru:20.33,parts:2858},{ticker:'DCAM',value:48462,pru:5.46,parts:8108},
+    {ticker:'ASML',value:37838,pru:664.78,parts:27},{ticker:'GUARD',value:11782,pru:11.36,parts:1094},
+    {ticker:'PAEEM',value:6847,pru:20.37,parts:193},
+  ]},
+  {date:'28 mai 2026',total:172076,lines:[
+    {ticker:'SEL',value:66906,pru:20.33,parts:2858},{ticker:'DCAM',value:48462,pru:5.46,parts:8108},
+    {ticker:'ASML',value:37265,pru:664.78,parts:27},{ticker:'GUARD',value:12200,pru:11.36,parts:1094},
+    {ticker:'PAEEM',value:6929,pru:20.37,parts:193},
+  ]},
+  {date:'29 mai 2026',total:185672,lines:[
+    {ticker:'SEL',value:66871,pru:20.33,parts:2858},{ticker:'DCAM',value:61869,pru:5.58,parts:10308},
+    {ticker:'ASML',value:37568,pru:664.78,parts:27},{ticker:'GUARD',value:12360,pru:11.36,parts:1094},
+    {ticker:'PAEEM',value:7005,pru:20.37,parts:193},
+  ]},
+];
+
+const dividends=[
+  {date:'15 août 2026',source:'ASML — Acompte T3 2026',amount:43,confirmed:true},
+  {date:'15 nov 2026', source:'ASML — Acompte T4 2026',amount:43,confirmed:true},
+  {date:'11 déc 2026', source:'SEL — Versement annuel 2026',amount:3801,confirmed:true},
+  {date:'~fév 2027',   source:'ASML — Dividende final 2025',amount:73,confirmed:true},
+];
+
+const divMonths={Jan:0,Fév:0,Mar:0,Avr:43,Mai:0,Jun:0,Jul:0,Aoû:43,Sep:0,Oct:0,Nov:43,Déc:3801};
+
+const fmt=n=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(n)+' €';
+const fmtD=n=>(n>=0?'+':'')+new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(n)+' €';
+
+// NAV
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── PORTFOLIO ──────────────────────────────────────────────────
+const total=currentData.reduce((s,d)=>s+d.value,0);
+
+new Chart(document.getElementById('mainDonut'),{
+  type:'doughnut',
+  data:{labels:currentData.map(d=>d.ticker),datasets:[{data:currentData.map(d=>d.value),backgroundColor:currentData.map(d=>COLORS[d.ticker]),borderColor:'#111113',borderWidth:3,hoverOffset:12}]},
+  options:{responsive:true,cutout:'62%',plugins:{legend:{display:false},tooltip:{backgroundColor:'#18181b',titleFont:{family:'DM Mono',size:11},bodyFont:{family:'DM Mono',size:10},callbacks:{label:ctx=>{const d=currentData[ctx.dataIndex];const pct=(d.value/total*100).toFixed(1);const gp=((d.value-d.pru*d.parts)/(d.pru*d.parts)*100).toFixed(1);return[` ${fmt(d.value)}`,` ${pct}% du PEA`,` PV : ${gp>0?'+':''}${gp}%`];}}}}}
+});
+
+const lt=document.getElementById('linesTable');
+currentData.forEach(d=>{
+  const pct=(d.value/total*100).toFixed(1);
+  const inv=d.pru*d.parts;
+  const gp=((d.value-inv)/inv*100).toFixed(1);
+  const isPos=parseFloat(gp)>=0;
+  const el=document.createElement('div');
+  el.className='line-row';
+  el.innerHTML=`<div class="line-color" style="background:${COLORS[d.ticker]}"></div><div><div class="line-ticker">${d.ticker}</div><div class="line-name">${d.parts} parts</div></div><div style="flex:1;font-size:10px;color:var(--text2)">${d.name}</div><div class="line-right"><div class="line-val">${fmt(d.value)}</div><div class="line-meta">${pct}% · PRU ${d.pru}€</div><div class="line-pv ${isPos?'pos':'neg'}">${isPos?'+':''}${gp}%</div></div>`;
+  lt.appendChild(el);
+});
+
+const pvB=document.getElementById('pvBars');
+const maxP=Math.max(...currentData.map(d=>Math.abs(((d.value-d.pru*d.parts)/(d.pru*d.parts))*100)));
+currentData.forEach(d=>{
+  const gp=((d.value-d.pru*d.parts)/(d.pru*d.parts)*100).toFixed(1);
+  const isPos=parseFloat(gp)>=0;
+  const bw=Math.abs(parseFloat(gp))/maxP*100;
+  const el=document.createElement('div');
+  el.className='pv-row';
+  el.innerHTML=`<div class="pv-ticker">${d.ticker}</div><div class="pv-track"><div class="pv-fill" style="width:${bw}%;background:${isPos?'var(--accent2)':'var(--accent3)'}"></div></div><div class="pv-pct ${isPos?'pos':'neg'}">${isPos?'+':''}${gp}%</div>`;
+  pvB.appendChild(el);
+});
+
+// ── TRI ──────────────────────────────────────────────────────
+new Chart(document.getElementById('triChart'),{
+  type:'line',
+  data:{
+    labels:triData.map(d=>d.date),
+    datasets:[
+      {label:'Valeur réelle',data:triData.map(d=>d.value),borderColor:'#e8c547',backgroundColor:'rgba(232,197,71,.08)',fill:true,tension:.4,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#e8c547'},
+      {label:'Capital investi',data:triData.map(d=>d.invested),borderColor:'#3b82f6',backgroundColor:'transparent',fill:false,tension:.4,borderWidth:1.5,borderDash:[5,4],pointRadius:2},
+      {label:'Gain cumulé',data:triData.map(d=>d.gain),borderColor:'#4ade80',backgroundColor:'rgba(74,222,128,.06)',fill:true,tension:.4,borderWidth:1.5,pointRadius:2},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{legend:{labels:{color:'#a1a1aa',font:{family:'DM Mono',size:10},boxWidth:10}},tooltip:{backgroundColor:'#18181b',titleColor:'#fafafa',bodyColor:'#a1a1aa',titleFont:{family:'DM Mono'},bodyFont:{family:'DM Mono',size:10},callbacks:{label:ctx=>` ${ctx.dataset.label} : ${fmt(ctx.raw)}`}}},
+    scales:{
+      x:{grid:{color:'rgba(39,39,42,.5)'},ticks:{color:'#a1a1aa',font:{family:'DM Mono',size:9}}},
+      y:{grid:{color:'rgba(39,39,42,.5)'},ticks:{color:'#a1a1aa',font:{family:'DM Mono',size:9},callback:v=>new Intl.NumberFormat('fr-FR',{notation:'compact'}).format(v)+'€'}}
+    }
+  }
+});
+
+const tbody=document.getElementById('triTableBody');
+triData.forEach((d,i)=>{
+  const perf=(d.gain/d.invested*100).toFixed(1);
+  const isLast=i===triData.length-1;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>An ${d.yr}</td><td>${d.date}</td><td>${fmt(d.invested)}</td><td class="${isLast?'':'pos'}">${fmt(d.value)}</td><td class="pos">+${fmt(d.gain)}</td><td class="pos">+${perf}%</td>`;
+  tbody.appendChild(tr);
+});
+
+const compData=[
+  {label:'Ton PEA (TRI réel)',    pct:9.50,color:'#e8c547'},
+  {label:'MSCI World (2017-2026)',pct:10.5, color:'#3b82f6'},
+  {label:'CAC 40 + dividendes',  pct:7.8,  color:'#f59e0b'},
+  {label:'Livret A (moy.)',       pct:1.6,  color:'#6b7280'},
+];
+const compB=document.getElementById('compBars');
+const maxComp=Math.max(...compData.map(d=>d.pct));
+compData.forEach(d=>{
+  const bw=d.pct/maxComp*100;
+  const el=document.createElement('div');
+  el.className='pv-row';
+  el.style.alignItems='center';
+  el.innerHTML=`<div style="width:180px;font-size:10px;color:var(--text2)">${d.label}</div><div class="pv-track"><div class="pv-fill" style="width:${bw}%;background:${d.color}"></div></div><div class="pv-pct" style="color:${d.color}">${d.pct}%/an</div>`;
+  compB.appendChild(el);
+});
+
+// ── INTÉRÊTS COMPOSÉS ──────────────────────────────────────────
+let icChart = null;
+
+function setICScenario(rate, el) {
+  document.getElementById('icRate').value = rate;
+  document.getElementById('icRateVal').innerHTML = rate.toString().replace('.',',') + ' <span>%</span>';
+  document.querySelectorAll('.ic-scenario').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  updateIC();
+}
+
+function updateIC() {
+  const capital = parseFloat(document.getElementById('icCapital').value);
+  const rate = parseFloat(document.getElementById('icRate').value);
+  const monthly = parseFloat(document.getElementById('icMonthly').value);
+  const years = parseInt(document.getElementById('icYears').value);
+
+  document.getElementById('icCapitalVal').innerHTML = new Intl.NumberFormat('fr-FR').format(capital) + ' <span>€</span>';
+  document.getElementById('icRateVal').innerHTML = rate.toString().replace('.',',') + ' <span>%</span>';
+  document.getElementById('icMonthlyVal').innerHTML = new Intl.NumberFormat('fr-FR').format(monthly) + ' <span>€/mois</span>';
+  document.getElementById('icYearsVal').innerHTML = years + ' <span>ans</span>';
+
+  const mr = rate / 100 / 12;
+  let portfolio = capital;
+  let totalInvested = capital;
+  let prevPortfolio = capital;
+  const yearlyData = [];
+
+  for (let y = 1; y <= years; y++) {
+    let yearInterest = 0;
+    for (let m = 0; m < 12; m++) {
+      const interest = portfolio * mr;
+      yearInterest += interest;
+      portfolio += interest + monthly;
+      totalInvested += monthly;
+    }
+    yearlyData.push({
+      year: y,
+      invested: totalInvested,
+      portfolio: portfolio,
+      interest: portfolio - totalInvested,
+      yearGain: portfolio - prevPortfolio - monthly * 12,
+      perf: (portfolio - totalInvested) / totalInvested * 100,
+    });
+    prevPortfolio = portfolio;
+  }
+
+  const last = yearlyData[yearlyData.length - 1];
+  const gain = last.portfolio - last.invested;
+  const interestPct = (gain / last.portfolio * 100).toFixed(1);
+
+  document.getElementById('icFinal').textContent = fmt(Math.round(last.portfolio));
+  document.getElementById('icFinalSub').textContent = 'dans ' + years + ' ans';
+  document.getElementById('icGain').textContent = '+' + fmt(Math.round(gain));
+  document.getElementById('icGainSub').textContent = '+' + last.perf.toFixed(1) + '% sur capital investi';
+  document.getElementById('icTotalInvested').textContent = fmt(Math.round(last.invested));
+  document.getElementById('icInterest').textContent = fmt(Math.round(gain));
+  document.getElementById('icInterestSub').textContent = interestPct + '% de la valeur finale';
+
+  // Règle du doublement (règle des 72)
+  const doublingYears = (72 / rate).toFixed(1);
+  const currentYear = 2026;
+  document.getElementById('icDoubling').innerHTML = `
+    📐 <strong>Règle des 72</strong> : à <strong>${rate}%/an</strong>, ton capital double tous les <strong>${doublingYears} ans</strong>. 
+    Tes 172 076 € deviendront <strong>~344k€</strong> vers <strong>${Math.round(currentYear + parseFloat(doublingYears))}</strong>, 
+    puis <strong>~688k€</strong> vers <strong>${Math.round(currentYear + parseFloat(doublingYears) * 2)}</strong>.
+  `;
+
+  // Graphique
+  const labels = yearlyData.map(d => (2026 + d.year).toString());
+  const portfolioVals = yearlyData.map(d => Math.round(d.portfolio));
+  const investedVals = yearlyData.map(d => Math.round(d.invested));
+  const interestVals = yearlyData.map(d => Math.round(d.interest));
+
+  if (icChart) icChart.destroy();
+  icChart = new Chart(document.getElementById('icChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Valeur totale', data: portfolioVals, borderColor: '#e8c547', backgroundColor: 'rgba(232,197,71,.08)', fill: true, tension: .4, borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#e8c547' },
+        { label: 'Capital investi', data: investedVals, borderColor: '#3b82f6', backgroundColor: 'transparent', fill: false, tension: .4, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 2 },
+        { label: 'Intérêts composés', data: interestVals, borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,.06)', fill: true, tension: .4, borderWidth: 1.5, pointRadius: 2 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 10 }, boxWidth: 10 } },
+        tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, callbacks: { label: ctx => ' ' + ctx.dataset.label + ' : ' + fmt(ctx.raw) } }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(39,39,42,.5)' }, ticks: { color: '#a1a1aa', font: { family: 'DM Mono', size: 9 } } },
+        y: { grid: { color: 'rgba(39,39,42,.5)' }, ticks: { color: '#a1a1aa', font: { family: 'DM Mono', size: 9 }, callback: v => new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(v) + '€' } }
+      }
+    }
+  });
+
+  // Tableau
+  const tb = document.getElementById('icTableBody');
+  tb.innerHTML = '';
+  const milestones = [5, 10, 15, 20, 25, 30];
+  yearlyData.forEach((d, i) => {
+    const isMilestone = milestones.includes(d.year);
+    const isLast = i === yearlyData.length - 1;
+    const tr = document.createElement('tr');
+    if (isMilestone || isLast) tr.className = 'yr-milestone';
+    tr.innerHTML = `
+      <td>${2026 + d.year} <span style="color:var(--text2);font-size:9px">(an ${d.year})</span></td>
+      <td>${fmt(Math.round(d.invested))}</td>
+      <td class="${isLast ? '' : 'pos'}">${fmt(Math.round(d.portfolio))}</td>
+      <td class="pos">+${fmt(Math.round(d.interest))}</td>
+      <td class="pos">+${fmt(Math.round(d.yearGain))}</td>
+      <td class="pos">+${d.perf.toFixed(1)}%</td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+
+['icCapital','icRate','icMonthly','icYears'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateIC);
+});
+
+updateIC();
+
+// ── MONTE CARLO ──────────────────────────────────────────────────
+let mcFanChart = null, mcDistChartObj = null;
+
+// Box-Muller transform for normal distribution
+function randNormal(mean, std) {
+  let u = 0, v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return mean + std * Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+}
+
+function runMonteCarlo() {
+  const capital  = parseFloat(document.getElementById('mcCapital').value);
+  const monthly  = parseFloat(document.getElementById('mcMonthly').value);
+  const meanAnn  = parseFloat(document.getElementById('mcMean').value) / 100;
+  const volAnn   = parseFloat(document.getElementById('mcVol').value) / 100;
+  const years    = parseInt(document.getElementById('mcYears').value);
+  const nSims    = parseInt(document.getElementById('mcSims').value);
+
+  const months   = years * 12;
+  const meanMon  = meanAnn / 12;
+  const volMon   = volAnn / Math.sqrt(12);
+  const totalInv = capital + monthly * months;
+
+  document.getElementById('mcRunBtn').style.opacity = '0.6';
+  document.getElementById('mcRunBtn').textContent = '⏳ Simulation en cours...';
+
+  setTimeout(() => {
+    // Run simulations
+    const finalValues = [];
+    // Store percentile paths (P10, P25, P50, P75, P90)
+    const allPaths = [];
+
+    for (let s = 0; s < nSims; s++) {
+      let portfolio = capital;
+      const path = [capital];
+      for (let m = 0; m < months; m++) {
+        const r = randNormal(meanMon, volMon);
+        portfolio = portfolio * (1 + r) + monthly;
+        if ((m + 1) % 12 === 0) path.push(portfolio);
+      }
+      finalValues.push(portfolio);
+      allPaths.push(path);
+    }
+
+    finalValues.sort((a, b) => a - b);
+
+    const pct = (p) => finalValues[Math.floor(p / 100 * nSims)];
+    const p10 = pct(10), p25 = pct(25), p50 = pct(50), p75 = pct(75), p90 = pct(90);
+    const probPos = finalValues.filter(v => v > totalInv).length / nSims * 100;
+
+    // Update KPIs
+    document.getElementById('mcP50').textContent = fmt(Math.round(p50));
+    document.getElementById('mcP90').textContent = fmt(Math.round(p90));
+    document.getElementById('mcP10').textContent = fmt(Math.round(p10));
+    document.getElementById('mcProbPos').textContent = probPos.toFixed(1) + '%';
+
+    // Show cards
+    ['mcKpis','mcChartCard','mcDistCard','mcTableCard'].forEach(id => {
+      document.getElementById(id).style.display = '';
+    });
+
+    // Fan chart data — sample paths by percentile buckets
+    const labels = Array.from({length: years + 1}, (_, i) => (2026 + i).toString());
+
+    // Build percentile paths year by year
+    const yearlyPercentiles = { p10:[], p25:[], p50:[], p75:[], p90:[] };
+    for (let y = 0; y <= years; y++) {
+      const vals = allPaths.map(p => p[y]).sort((a,b) => a-b);
+      const yp = (p) => vals[Math.max(0, Math.floor(p/100*vals.length)-1)];
+      yearlyPercentiles.p10.push(Math.round(yp(10)));
+      yearlyPercentiles.p25.push(Math.round(yp(25)));
+      yearlyPercentiles.p50.push(Math.round(yp(50)));
+      yearlyPercentiles.p75.push(Math.round(yp(75)));
+      yearlyPercentiles.p90.push(Math.round(yp(90)));
+    }
+
+    const investedLine = Array.from({length: years + 1}, (_, i) => Math.round(capital + monthly * 12 * i));
+
+    if (mcFanChart) mcFanChart.destroy();
+    mcFanChart = new Chart(document.getElementById('mcChart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'P90 (optimiste)', data: yearlyPercentiles.p90, borderColor: '#e8c547', backgroundColor: 'rgba(232,197,71,.08)', fill: '+1', tension: .4, borderWidth: 1.5, pointRadius: 0 },
+          { label: 'P75', data: yearlyPercentiles.p75, borderColor: 'rgba(74,222,128,.6)', backgroundColor: 'rgba(74,222,128,.08)', fill: '+1', tension: .4, borderWidth: 1, pointRadius: 0 },
+          { label: 'P50 (médiane)', data: yearlyPercentiles.p50, borderColor: '#4ade80', backgroundColor: 'transparent', fill: false, tension: .4, borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#4ade80' },
+          { label: 'P25', data: yearlyPercentiles.p25, borderColor: 'rgba(248,113,113,.5)', backgroundColor: 'rgba(248,113,113,.06)', fill: '+1', tension: .4, borderWidth: 1, pointRadius: 0 },
+          { label: 'P10 (pessimiste)', data: yearlyPercentiles.p10, borderColor: '#f87171', backgroundColor: 'rgba(248,113,113,.08)', fill: false, tension: .4, borderWidth: 1.5, pointRadius: 0 },
+          { label: 'Capital investi', data: investedLine, borderColor: '#3b82f6', backgroundColor: 'transparent', fill: false, tension: 0, borderWidth: 1.5, borderDash: [5,4], pointRadius: 0 },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 10 }, boxWidth: 10, filter: (item) => ['P90 (optimiste)','P50 (médiane)','P10 (pessimiste)','Capital investi'].includes(item.text) } },
+          tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, callbacks: { label: ctx => ` ${ctx.dataset.label} : ${fmt(ctx.raw)}` } }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(39,39,42,.5)' }, ticks: { color: '#a1a1aa', font: { family: 'DM Mono', size: 9 } } },
+          y: { grid: { color: 'rgba(39,39,42,.5)' }, ticks: { color: '#a1a1aa', font: { family: 'DM Mono', size: 9 }, callback: v => new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(v) + '€' } }
+        }
+      }
+    });
+
+    // Distribution histogram
+    const buckets = 40;
+    const minV = finalValues[0], maxV = finalValues[finalValues.length - 1];
+    const step = (maxV - minV) / buckets;
+    const histCounts = Array(buckets).fill(0);
+    const histColors = [];
+    finalValues.forEach(v => {
+      const idx = Math.min(Math.floor((v - minV) / step), buckets - 1);
+      histCounts[idx]++;
+    });
+    const histLabels = Array.from({length: buckets}, (_, i) => fmt(Math.round(minV + i * step)));
+    for (let i = 0; i < buckets; i++) {
+      const v = minV + i * step;
+      if (v < p10) histColors.push('rgba(248,113,113,.7)');
+      else if (v < p50) histColors.push('rgba(74,222,128,.4)');
+      else if (v < p90) histColors.push('rgba(74,222,128,.7)');
+      else histColors.push('rgba(232,197,71,.8)');
+    }
+
+    if (mcDistChartObj) mcDistChartObj.destroy();
+    mcDistChartObj = new Chart(document.getElementById('mcDistChart'), {
+      type: 'bar',
+      data: { labels: histLabels, datasets: [{ label: 'Fréquence', data: histCounts, backgroundColor: histColors, borderWidth: 0, borderRadius: 2 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw} scénarios` } } },
+        scales: {
+          x: { display: false },
+          y: { grid: { color: 'rgba(39,39,42,.5)' }, ticks: { color: '#a1a1aa', font: { family: 'DM Mono', size: 9 } } }
+        }
+      }
+    });
+
+    // Percentile table
+    const tableData = [
+      { p: 5,  val: pct(5),  label: 'Scénario très défavorable', color: '#f87171' },
+      { p: 10, val: p10,     label: 'Scénario pessimiste',        color: '#f87171' },
+      { p: 25, val: p25,     label: 'Scénario conservateur',      color: '#a1a1aa' },
+      { p: 50, val: p50,     label: 'Scénario médian (le plus probable)', color: '#4ade80' },
+      { p: 75, val: p75,     label: 'Scénario favorable',         color: '#4ade80' },
+      { p: 90, val: p90,     label: 'Scénario optimiste',         color: '#e8c547' },
+      { p: 95, val: pct(95), label: 'Scénario très favorable',    color: '#e8c547' },
+    ];
+
+    const tb = document.getElementById('mcTableBody');
+    tb.innerHTML = '';
+    tableData.forEach(d => {
+      const gain = d.val - totalInv;
+      const perf = (gain / totalInv * 100).toFixed(1);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="color:${d.color}">P${d.p}</td>
+        <td style="font-family:'Cormorant Garamond',serif;font-size:17px">${fmt(Math.round(d.val))}</td>
+        <td class="${gain >= 0 ? 'pos' : 'neg'}">${gain >= 0 ? '+' : ''}${fmt(Math.round(gain))}</td>
+        <td class="${gain >= 0 ? 'pos' : 'neg'}">${gain >= 0 ? '+' : ''}${perf}%</td>
+        <td style="font-size:10px;color:var(--text2)">${d.label}</td>
+      `;
+      tb.appendChild(tr);
+    });
+
+    document.getElementById('mcRunBtn').style.opacity = '1';
+    document.getElementById('mcRunBtn').textContent = '🎲 Relancer la simulation';
+    document.getElementById('mcSimCount').textContent = new Intl.NumberFormat('fr-FR').format(nSims);
+  }, 50);
+}
+
+['mcCapital','mcMonthly','mcMean','mcVol','mcYears','mcSims'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    const val = parseFloat(document.getElementById(id).value);
+    const labels = { mcCapital: ['€','mcCapitalVal'], mcMonthly: ['€/mois','mcMonthlyVal'], mcMean: ['%','mcMeanVal'], mcVol: ['%','mcVolVal'], mcYears: ['ans','mcYearsVal'], mcSims: ['sim.','mcSimsVal'] };
+    const [unit, elId] = labels[id];
+    document.getElementById(elId).innerHTML = new Intl.NumberFormat('fr-FR').format(val).replace('.',',') + ` <span>${unit}</span>`;
+  });
+});
+
+// ── TIMELINE ──────────────────────────────────────────────────
+const tlEvo=document.getElementById('tlEvo');
+snapshots.forEach((s,i)=>{
+  const prev=i>0?snapshots[i-1].total:null;
+  const delta=prev?s.total-prev:0;
+  const el=document.createElement('div');
+  el.className='tl-point'+(i===5?' active':'');
+  el.innerHTML=`<div class="tl-point-date">${s.date.split(' ').slice(0,2).join(' ')}</div><div class="tl-point-val">${fmt(s.total)}</div>${prev?`<div class="tl-point-delta" style="color:${delta>=0?'var(--accent2)':'var(--accent3)'}">${fmtD(delta)}</div>`:'<div class="tl-point-delta" style="color:var(--text2)">base</div>'}`;
+  el.onclick=()=>{document.getElementById('tlSlider').value=i;renderTL(i);};
+  tlEvo.appendChild(el);
+});
+
+const tlDots=document.getElementById('tlDots');
+snapshots.forEach((s,i)=>{
+  const el=document.createElement('div');
+  el.className='tl-dot'+(i===5?' active':'');
+  el.innerHTML=`<div class="tl-dot-circle"></div><div class="tl-dot-label">${s.date.split(' ')[0]} ${s.date.split(' ')[1]}</div>`;
+  el.onclick=()=>{document.getElementById('tlSlider').value=i;renderTL(i);};
+  tlDots.appendChild(el);
+});
+
+let tlChart=null;
+function renderTL(idx){
+  const snap=snapshots[idx];const prev=idx>0?snapshots[idx-1]:null;
+  document.querySelectorAll('.tl-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tl-point').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  document.getElementById('tlDate').textContent=snap.date;
+  const dt=prev?snap.total-prev.total:0;
+  document.getElementById('tlTotal').innerHTML=`Valeur : <strong style="color:var(--text);font-size:16px">${fmt(snap.total)}</strong>${prev?` <span style="color:${dt>=0?'var(--accent2)':'var(--accent3)'}">${fmtD(dt)} vs ${prev.date}</span>`:''}`;
+  if(tlChart) tlChart.destroy();
+  tlChart=new Chart(document.getElementById('tlDonut'),{type:'doughnut',data:{labels:snap.lines.map(l=>l.ticker),datasets:[{data:snap.lines.map(l=>l.value),backgroundColor:snap.lines.map(l=>COLORS[l.ticker]||'#6b7280'),borderColor:'#111113',borderWidth:3,hoverOffset:10}]},options:{responsive:true,cutout:'60%',animation:{animateRotate:true,duration:500},plugins:{legend:{display:false},tooltip:{backgroundColor:'#18181b',titleFont:{family:'DM Mono',size:10},bodyFont:{family:'DM Mono',size:10},callbacks:{label:ctx=>{const l=snap.lines[ctx.dataIndex];const pct=(l.value/snap.total*100).toFixed(1);return[` ${fmt(l.value)}`,` ${pct}%`];}}}}}});
+  const dr=document.getElementById('tlDeltaRows');const dt2=document.getElementById('tlDeltaTitle');
+  dr.innerHTML='';
+  if(prev){
+    dt2.textContent=`Variation vs ${prev.date}`;
+    const allT=[...new Set([...prev.lines.map(l=>l.ticker),...snap.lines.map(l=>l.ticker)])];
+    const deltas=allT.map(t=>({ticker:t,delta:(snap.lines.find(l=>l.ticker===t)?.value||0)-(prev.lines.find(l=>l.ticker===t)?.value||0)}));
+    const maxD=Math.max(...deltas.map(d=>Math.abs(d.delta)));
+    deltas.forEach(({ticker,delta})=>{
+      const isPos=delta>=0;const bw=maxD>0?Math.abs(delta)/maxD*100:0;
+      const el=document.createElement('div');el.className='delta-row';
+      el.innerHTML=`<div class="delta-ticker">${ticker}</div><div class="delta-track"><div class="delta-fill" style="width:${bw}%;background:${isPos?'var(--accent2)':'var(--accent3)'}"></div></div><div class="delta-amount" style="color:${isPos?'var(--accent2)':'var(--accent3)'}">${fmtD(delta)}</div>`;
+      dr.appendChild(el);
+    });
+  } else {dt2.textContent='Première date';dr.innerHTML='<div style="font-size:11px;color:var(--text2)">Sélectionne une date suivante.</div>';}
+}
+document.getElementById('tlSlider').addEventListener('input',e=>renderTL(parseInt(e.target.value)));
+renderTL(5);
+
+// ── DIVIDENDS ──────────────────────────────────────────────────
+const dg=document.getElementById('divGrid');
+const maxDiv=Math.max(...Object.values(divMonths));
+Object.entries(divMonths).forEach(([m,amt])=>{
+  const el=document.createElement('div');el.className='div-month';
+  const h=Math.max(4,amt/maxDiv*60);
+  el.innerHTML=`<div class="div-month-name">${m}</div><div class="div-bar${amt>0?' active':''}" style="height:${h}px"></div>${amt>0?`<div class="div-amount">${amt>100?Math.round(amt/1000)+'k':amt}€</div>`:''}`;
+  dg.appendChild(el);
+});
+const dl=document.getElementById('divList');
+dividends.forEach(d=>{
+  const el=document.createElement('div');el.className='div-item';
+  el.innerHTML=`<div class="div-date">${d.date}</div><div class="div-source">${d.source}</div><div class="div-amt">${fmt(d.amount)}</div><div class="div-badge${d.confirmed?' confirmed':''}">${d.confirmed?'✅ Confirmé':'Estimé'}</div>`;
+  dl.appendChild(el);
+});
+
+
+</script>
+</body>
+</html>
