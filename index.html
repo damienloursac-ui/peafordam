@@ -221,7 +221,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     </div>
     <div class="header-right">
       <div class="live-badge"><div class="live-dot"></div>Live via Google Sheets</div>
-      <div class="header-date">Dernière MàJ : 29 mai 2026</div>
+      <div class="header-date">Dernière MàJ : 5 juin 2026</div>
     </div>
   </div>
 
@@ -233,8 +233,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     </div>
     <div class="kpi-card" style="--kc:#4ade80">
       <div class="kpi-label">Valeur PEA</div>
-      <div class="kpi-val">185 672 €</div>
-      <div class="kpi-sub">+65 672 € de gain</div>
+      <div class="kpi-val">186 676 €</div>
+      <div class="kpi-sub">+66 676 € de gain</div>
     </div>
     <div class="kpi-card" style="--kc:#e8c547">
       <div class="kpi-label">TRI annualisé</div>
@@ -352,8 +352,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="ic-controls">
       <div class="ic-control">
         <label>Capital de départ (€)</label>
-        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="185672">
-        <div class="ic-val" id="icCapitalVal">185 672 <span>€</span></div>
+        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="186676">
+        <div class="ic-val" id="icCapitalVal">186 676 <span>€</span></div>
       </div>
       <div class="ic-control">
         <label>Rendement annuel (%)</label>
@@ -435,7 +435,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     </div>
     <div class="tl-slider-wrap">
       <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:12px">Sélectionner une date</div>
-      <input type="range" id="tlSlider" min="0" max="6" step="1" value="6">
+      <input type="range" id="tlSlider" min="0" max="7" step="1" value="7">
       <div class="tl-dots" id="tlDots"></div>
     </div>
     <div class="tl-date-display">
@@ -479,8 +479,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="ic-controls" style="margin-bottom:16px">
       <div class="ic-control">
         <label>Capital de départ (€)</label>
-        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="185672">
-        <div class="ic-val" id="mcCapitalVal">185 672 <span>€</span></div>
+        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="186676">
+        <div class="ic-val" id="mcCapitalVal">186 676 <span>€</span></div>
       </div>
       <div class="ic-control">
         <label>Versement mensuel (€)</label>
@@ -568,7 +568,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 
   </div>
 
-  <div class="note">Capital investi : 120 000 € · TRI : 9,50%/an · 28k€ investis sur DCAM ✅ · 13k€ sur DCAM à venir · Données Bourse Direct 29 mai 2026</div>
+  <div class="note">Capital investi : 120 000 € · TRI : 9,50%/an · 13k€ sur DCAM à venir · Espèces : 4 082 € · Données Bourse Direct 5 juin 2026</div>
 
   <!-- PAGE SIMULATEUR DIVIDENDES -->
   <div class="page" id="page-divsim">
@@ -799,11 +799,11 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 const COLORS={SEL:'#f59e0b',DCAM:'#3b82f6',ASML:'#10b981',GUARD:'#a78bfa',PAEEM:'#6b7280',CAC:'#c9a84c',ESE:'#ec4899',TTE:'#f97316'};
 
 const currentData=[
-  {ticker:'SEL', name:'Stoxx Europe Select Div',isin:'FR0010378604',gf:'EPA:SEL',  parts:2858,pru:20.33,value:66871},
+  {ticker:'SEL', name:'Stoxx Europe Select Div',isin:'FR0010378604',gf:'EPA:SEL',  parts:2858,pru:20.33,value:66529},
   {ticker:'DCAM',name:'MSCI World Amundi',      isin:'FR001400U5Q4',gf:'EPA:DCAM', parts:10308,pru:5.58, value:61869},
-  {ticker:'ASML',name:'ASML Holding N.V.',      isin:'NL0010273215',gf:'EPA:ASML', parts:27,  pru:664.78,value:37568},
-  {ticker:'GUARD',name:'BNP Europe Defense',    isin:'LU3047998896',gf:'EPA:GUARD',parts:1094,pru:11.36,value:12360},
-  {ticker:'PAEEM',name:'MSCI Émergents Amundi', isin:'FR0011440478',gf:'EPA:PAEEM',parts:193, pru:20.37,value:7005},
+  {ticker:'ASML',name:'ASML Holding N.V.',      isin:'NL0010273215',gf:'EPA:ASML', parts:27,  pru:664.78,value:39744},
+  {ticker:'GUARD',name:'BNP Europe Defense',    isin:'LU3047998896',gf:'EPA:GUARD',parts:1094,pru:11.36,value:11723},
+  {ticker:'PAEEM',name:'MSCI Émergents Amundi', isin:'FR0011440478',gf:'EPA:PAEEM',parts:193, pru:20.37,value:6812},
 ];
 
 const triData=[
@@ -854,6 +854,11 @@ const snapshots=[
     {ticker:'SEL',value:66871,pru:20.33,parts:2858},{ticker:'DCAM',value:61869,pru:5.58,parts:10308},
     {ticker:'ASML',value:37568,pru:664.78,parts:27},{ticker:'GUARD',value:12360,pru:11.36,parts:1094},
     {ticker:'PAEEM',value:7005,pru:20.37,parts:193},
+  ]},
+  {date:'5 juin 2026',total:186676,lines:[
+    {ticker:'SEL',value:66529,pru:20.33,parts:2858},{ticker:'DCAM',value:61869,pru:5.58,parts:10308},
+    {ticker:'ASML',value:39744,pru:664.78,parts:27},{ticker:'GUARD',value:11723,pru:11.36,parts:1094},
+    {ticker:'PAEEM',value:6812,pru:20.37,parts:193},
   ]},
 ];
 
