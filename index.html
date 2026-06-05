@@ -42,6 +42,7 @@ h1 em{font-style:italic;color:var(--accent);}
 .nav-tab{flex:1;min-width:80px;padding:10px;text-align:center;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);cursor:pointer;border-radius:8px;transition:all .2s;border:none;background:transparent;font-family:'DM Mono',monospace;}
 .nav-tab.active{background:var(--surface3);color:var(--accent);border:1px solid var(--border);}
 .nav-tab:hover:not(.active){color:var(--text);}
+.nav.sim .nav-tab.active{color:#a78bfa;border-color:#a78bfa;}
 
 /* PAGES */
 .page{display:none;}.page.active{display:block;}
@@ -248,15 +249,22 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     </div>
   </div>
 
-  <div class="nav">
-    <button class="nav-tab active" onclick="showPage('portfolio',this)">📊 Portefeuille</button>
-    <button class="nav-tab" onclick="showPage('tri',this)">📐 TRI</button>
-    <button class="nav-tab" onclick="showPage('compound',this)">🔄 Intérêts</button>
-    <button class="nav-tab" onclick="showPage('timeline',this)">📈 Timeline</button>
-    <button class="nav-tab" onclick="showPage('dividends',this)">💰 Dividendes</button>
-    <button class="nav-tab" onclick="showPage('montecarlo',this)">🎲 Monte Carlo</button>
-    <button class="nav-tab" onclick="showPage('divsim',this)">🌱 Dividendes</button>
-
+  <div style="margin-bottom:8px">
+    <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:6px;padding-left:4px">Analyse</div>
+    <div class="nav" style="margin-bottom:0">
+      <button class="nav-tab active" onclick="showPage('portfolio',this)">📊 Portefeuille</button>
+      <button class="nav-tab" onclick="showPage('tri',this)">📐 TRI</button>
+      <button class="nav-tab" onclick="showPage('timeline',this)">📈 Timeline</button>
+      <button class="nav-tab" onclick="showPage('dividends',this)">💰 Dividendes</button>
+    </div>
+  </div>
+  <div style="margin-bottom:28px">
+    <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:6px;padding-left:4px">Simulateurs</div>
+    <div class="nav sim" style="margin-bottom:0;border-color:rgba(232,197,71,.2)">
+      <button class="nav-tab" onclick="showPage('compound',this)">🔄 Intérêts composés</button>
+      <button class="nav-tab" onclick="showPage('divsim',this)">🌱 Dividendes</button>
+      <button class="nav-tab" onclick="showPage('montecarlo',this)">🎲 Monte Carlo</button>
+    </div>
   </div>
 
   <!-- PAGE PORTFOLIO -->
