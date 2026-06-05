@@ -205,7 +205,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 .ic-table .yr-milestone{background:rgba(232,197,71,.05);}
 .ic-table .yr-milestone td{color:var(--accent);}
 
-.ic-chart-wrap{width:100%;height:260px;}
+.ic-chart-wrap{width:100%;height:420px;}
 .ic-doubling{background:var(--surface2);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6;}
 .ic-doubling strong{color:var(--accent);}
 
@@ -1051,21 +1051,51 @@ function updateIC() {
     data: {
       labels,
       datasets: [
-        { label: 'Valeur totale', data: portfolioVals, borderColor: '#e8c547', backgroundColor: 'rgba(232,197,71,.08)', fill: true, tension: .4, borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#e8c547' },
-        { label: 'Capital investi', data: investedVals, borderColor: '#3b82f6', backgroundColor: 'transparent', fill: false, tension: .4, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 2 },
-        { label: 'Intérêts composés', data: interestVals, borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,.06)', fill: true, tension: .4, borderWidth: 1.5, pointRadius: 2 },
+        { label: 'Valeur totale', data: portfolioVals, borderColor: '#e8c547', backgroundColor: 'rgba(232,197,71,.12)', fill: true, tension: .4, borderWidth: 3, pointRadius: 5, pointHoverRadius: 8, pointBackgroundColor: '#e8c547', pointBorderColor: '#09090b', pointBorderWidth: 2 },
+        { label: 'Capital investi', data: investedVals, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,.06)', fill: true, tension: .4, borderWidth: 2, borderDash: [6, 4], pointRadius: 4, pointHoverRadius: 7, pointBackgroundColor: '#3b82f6', pointBorderColor: '#09090b', pointBorderWidth: 2 },
+        { label: 'Intérêts composés', data: interestVals, borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,.1)', fill: true, tension: .4, borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 7, pointBackgroundColor: '#4ade80', pointBorderColor: '#09090b', pointBorderWidth: 2 },
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 10 }, boxWidth: 10 } },
-        tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, callbacks: { label: ctx => ' ' + ctx.dataset.label + ' : ' + fmt(ctx.raw) } }
+        legend: {
+          display: true,
+          position: 'top',
+          align: 'end',
+          labels: { color: '#e2e2e2', font: { family: 'DM Mono', size: 12 }, boxWidth: 14, boxHeight: 14, padding: 20, usePointStyle: true, pointStyle: 'circle' }
+        },
+        tooltip: {
+          backgroundColor: '#18181b',
+          borderColor: '#27272a',
+          borderWidth: 1,
+          titleColor: '#fafafa',
+          bodyColor: '#a1a1aa',
+          titleFont: { family: 'DM Mono', size: 13, weight: 'bold' },
+          bodyFont: { family: 'DM Mono', size: 12 },
+          padding: 14,
+          callbacks: {
+            label: ctx => `  ${ctx.dataset.label} : ${fmt(ctx.raw)}`
+          }
+        }
       },
       scales: {
-        x: { grid: { color: 'rgba(39,39,42,.5)' }, ticks: { color: '#a1a1aa', font: { family: 'DM Mono', size: 9 } } },
-        y: { grid: { color: 'rgba(39,39,42,.5)' }, ticks: { color: '#a1a1aa', font: { family: 'DM Mono', size: 9 }, callback: v => new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(v) + '€' } }
+        x: {
+          grid: { color: 'rgba(39,39,42,.4)', lineWidth: 1 },
+          ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 12 }, maxRotation: 0 },
+          border: { color: 'rgba(39,39,42,.6)' }
+        },
+        y: {
+          grid: { color: 'rgba(39,39,42,.4)', lineWidth: 1 },
+          ticks: {
+            color: '#d4d4d8',
+            font: { family: 'DM Mono', size: 12 },
+            padding: 10,
+            callback: v => new Intl.NumberFormat('fr-FR', { notation: 'compact', maximumFractionDigits: 0 }).format(v) + ' €'
+          },
+          border: { color: 'rgba(39,39,42,.6)' }
+        }
       }
     }
   });
