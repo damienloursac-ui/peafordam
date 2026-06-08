@@ -256,6 +256,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <button class="nav-tab" onclick="showPage('tri',this)">📐 TRI</button>
       <button class="nav-tab" onclick="showPage('timeline',this)">📈 Timeline</button>
       <button class="nav-tab" onclick="showPage('dividends',this)">💰 Dividendes</button>
+      <button class="nav-tab" onclick="showPage('reste',this)">🎯 Reste à investir</button>
     </div>
   </div>
   <div style="margin-bottom:28px">
@@ -473,6 +474,90 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <div class="card-title">Prochains versements</div>
       <div class="div-list" id="divList"></div>
     </div>
+  </div>
+
+  <!-- PAGE RESTE À INVESTIR -->
+  <div class="page" id="page-reste">
+
+    <!-- Hero -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(232,197,71,.06) 0%,transparent 70%);pointer-events:none"></div>
+      <div style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Objectif de versement · PEA</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent)" id="resteHero">26 000 €</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:8px">restent à investir pour atteindre l'objectif</div>
+    </div>
+
+    <!-- Objectif slider -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Paramétrer l'objectif</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="ic-control">
+          <label>Objectif total de versement (€)</label>
+          <input type="range" id="resteObjectif" min="100000" max="300000" step="1000" value="150000" oninput="updateReste()">
+          <div class="ic-val" id="resteObjectifVal">150 000 <span>€</span></div>
+        </div>
+        <div class="ic-control">
+          <label>Versement mensuel prévu (€)</label>
+          <input type="range" id="resteMonthly" min="0" max="5000" step="100" value="1000" oninput="updateReste()">
+          <div class="ic-val" id="resteMonthlyVal">1 000 <span>€/mois</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="ic-kpis" style="margin-bottom:16px">
+      <div class="ic-kpi" style="--kc:#e8c547">
+        <div class="ic-kpi-label">Déjà investi</div>
+        <div class="ic-kpi-val">124 000 €</div>
+        <div class="ic-kpi-sub" id="resteDejaSubPct">82,7% de l'objectif</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#4ade80">
+        <div class="ic-kpi-label">Reste à investir</div>
+        <div class="ic-kpi-val" id="resteKpiReste">26 000 €</div>
+        <div class="ic-kpi-sub" id="resteKpiRestePct">17,3% restants</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#60a5fa">
+        <div class="ic-kpi-label">Temps estimé</div>
+        <div class="ic-kpi-val" id="resteTemps">26 mois</div>
+        <div class="ic-kpi-sub" id="resteTempsDate">Atteint en août 2028</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#a78bfa">
+        <div class="ic-kpi-label">Valeur PEA estimée</div>
+        <div class="ic-kpi-val" id="resteValeurFuture">—</div>
+        <div class="ic-kpi-sub">à l'objectif (TRI 9,12%)</div>
+      </div>
+    </div>
+
+    <!-- Barre de progression -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Progression vers l'objectif</div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:10px">
+        <span>0 €</span>
+        <span id="resteProgLabel">124 000 € / 150 000 €</span>
+        <span id="resteObjectifLabel">150 000 €</span>
+      </div>
+      <div style="height:16px;background:var(--border);border-radius:8px;overflow:hidden;position:relative">
+        <div id="resteBar" style="height:100%;background:linear-gradient(90deg,#3b82f6,#e8c547);border-radius:8px;transition:width .6s ease;width:82.7%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:6px">
+        <span style="color:var(--accent2)">✅ Déjà investi : 124 000 €</span>
+        <span style="color:var(--accent)" id="resteBarPct">82,7%</span>
+        <span style="color:var(--text2)" id="resteBarRemain">Reste : 26 000 €</span>
+      </div>
+    </div>
+
+    <!-- Jalons -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Jalons de versement</div>
+      <div id="resteJalons" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <!-- Graphique projection -->
+    <div class="card">
+      <div class="card-title">Projection des versements cumulés</div>
+      <canvas id="resteChart" style="width:100%;height:260px"></canvas>
+    </div>
+
   </div>
 
   <!-- PAGE MONTE CARLO -->
@@ -1482,6 +1567,124 @@ function runDcSim() {
   document.getElementById(id).addEventListener('input', updateTargetVals);
 });
 updateTargetVals();
+
+// ── RESTE À INVESTIR ──────────────────────────────────────────
+const INVESTI = 124000;
+const TRI_MENSUEL = Math.pow(1 + 0.0912, 1/12) - 1;
+let resteChart = null;
+
+function updateReste() {
+  const objectif = parseFloat(document.getElementById('resteObjectif').value);
+  const monthly = parseFloat(document.getElementById('resteMonthly').value);
+  const reste = Math.max(0, objectif - INVESTI);
+  const pctFait = (INVESTI / objectif * 100).toFixed(1);
+  const pctReste = (reste / objectif * 100).toFixed(1);
+
+  // Update labels
+  document.getElementById('resteObjectifVal').innerHTML = new Intl.NumberFormat('fr-FR').format(objectif) + ' <span>€</span>';
+  document.getElementById('resteMonthlyVal').innerHTML = new Intl.NumberFormat('fr-FR').format(monthly) + ' <span>€/mois</span>';
+  document.getElementById('resteHero').textContent = new Intl.NumberFormat('fr-FR').format(reste) + ' €';
+  document.getElementById('resteKpiReste').textContent = fmt(reste);
+  document.getElementById('resteKpiRestePct').textContent = pctReste + '% restants';
+  document.getElementById('resteDejaSubPct').textContent = pctFait + '% de l\'objectif';
+  document.getElementById('resteProgLabel').textContent = `${new Intl.NumberFormat('fr-FR').format(INVESTI)} € / ${new Intl.NumberFormat('fr-FR').format(objectif)} €`;
+  document.getElementById('resteObjectifLabel').textContent = new Intl.NumberFormat('fr-FR').format(objectif) + ' €';
+  document.getElementById('resteBar').style.width = Math.min(100, parseFloat(pctFait)) + '%';
+  document.getElementById('resteBarPct').textContent = pctFait + '%';
+  document.getElementById('resteBarRemain').textContent = 'Reste : ' + fmt(reste);
+
+  // Temps estimé
+  let mois = 0, valeurFuture = 188501;
+  if (monthly > 0) {
+    mois = Math.ceil(reste / monthly);
+    // Simulate PEA value at target date with TRI
+    for (let m = 0; m < mois; m++) {
+      valeurFuture = valeurFuture * (1 + TRI_MENSUEL) + monthly;
+    }
+  } else {
+    mois = null;
+  }
+
+  if (mois !== null) {
+    const now = new Date(2026, 5, 8); // June 8 2026
+    const targetDate = new Date(now.setMonth(now.getMonth() + mois));
+    const moisNom = targetDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    document.getElementById('resteTemps').textContent = mois + ' mois';
+    document.getElementById('resteTempsDate').textContent = 'Atteint en ' + moisNom;
+  } else {
+    document.getElementById('resteTemps').textContent = '—';
+    document.getElementById('resteTempsDate').textContent = 'Définir un versement';
+  }
+
+  document.getElementById('resteValeurFuture').textContent = fmt(Math.round(valeurFuture));
+
+  // Jalons
+  const jalonsData = [
+    { label: '25%', target: objectif * 0.25 },
+    { label: '50%', target: objectif * 0.5 },
+    { label: '75%', target: objectif * 0.75 },
+    { label: '100%', target: objectif },
+  ];
+  const jalonsContainer = document.getElementById('resteJalons');
+  jalonsContainer.innerHTML = '';
+  jalonsData.forEach(j => {
+    const done = INVESTI >= j.target;
+    const pct = Math.min(100, INVESTI / j.target * 100).toFixed(0);
+    const moisRestant = monthly > 0 ? Math.max(0, Math.ceil((j.target - INVESTI) / monthly)) : null;
+    const el = document.createElement('div');
+    el.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface2);border-radius:8px';
+    el.innerHTML = `
+      <div style="font-size:18px">${done ? '✅' : '⏳'}</div>
+      <div style="flex:1">
+        <div style="font-size:11px;color:${done ? 'var(--accent2)' : 'var(--text)'}">Objectif ${j.label} — ${fmt(j.target)}</div>
+        <div style="height:4px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${done ? 'var(--accent2)' : 'var(--accent)'};border-radius:2px"></div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:11px;color:var(--text2)">
+        ${done ? '<span style="color:var(--accent2)">Atteint ✓</span>' : moisRestant !== null ? `Dans ${moisRestant} mois` : '—'}
+      </div>
+    `;
+    jalonsContainer.appendChild(el);
+  });
+
+  // Graphique
+  const maxMois = mois !== null ? Math.max(mois + 6, 12) : 36;
+  const chartLabels = [], investiLine = [], objectifLine = [];
+  for (let m = 0; m <= maxMois; m++) {
+    const now = new Date(2026, 5, 8);
+    now.setMonth(now.getMonth() + m);
+    if (m % 3 === 0 || m === maxMois) chartLabels.push(now.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' }));
+    else chartLabels.push('');
+    investiLine.push(Math.min(INVESTI + monthly * m, objectif));
+    objectifLine.push(objectif);
+  }
+
+  if (resteChart) resteChart.destroy();
+  resteChart = new Chart(document.getElementById('resteChart'), {
+    type: 'line',
+    data: {
+      labels: chartLabels,
+      datasets: [
+        { label: 'Capital versé cumulé', data: investiLine, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,.1)', fill: true, tension: .3, borderWidth: 2.5, pointRadius: 0 },
+        { label: 'Objectif', data: objectifLine, borderColor: '#e8c547', backgroundColor: 'transparent', fill: false, borderDash: [6,4], borderWidth: 2, pointRadius: 0 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 11 }, boxWidth: 10 } },
+        tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, callbacks: { label: ctx => ` ${ctx.dataset.label} : ${fmt(ctx.raw)}` } }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#a1a1aa', font: { family: 'DM Mono', size: 9 } } },
+        y: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#a1a1aa', font: { family: 'DM Mono', size: 9 }, callback: v => new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(v) + '€' } }
+      }
+    }
+  });
+}
+
+updateReste();
 
 // ── MONTE CARLO ──────────────────────────────────────────────────
 let mcFanChart = null, mcDistChartObj = null;
