@@ -490,12 +490,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <!-- Objectif slider -->
     <div class="card" style="margin-bottom:16px">
       <div class="card-title">Paramétrer l'objectif</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-        <div class="ic-control">
-          <label>Objectif total de versement (€)</label>
-          <input type="range" id="resteObjectif" min="100000" max="300000" step="1000" value="150000" oninput="updateReste()">
-          <div class="ic-val" id="resteObjectifVal">150 000 <span>€</span></div>
-        </div>
+      <div style="display:grid;grid-template-columns:1fr;gap:16px">
         <div class="ic-control">
           <label>Versement mensuel prévu (€)</label>
           <input type="range" id="resteMonthly" min="0" max="5000" step="100" value="1000" oninput="updateReste()">
@@ -1574,14 +1569,13 @@ const TRI_MENSUEL = Math.pow(1 + 0.0912, 1/12) - 1;
 let resteChart = null;
 
 function updateReste() {
-  const objectif = parseFloat(document.getElementById('resteObjectif').value);
+  const objectif = 150000;
   const monthly = parseFloat(document.getElementById('resteMonthly').value);
   const reste = Math.max(0, objectif - INVESTI);
   const pctFait = (INVESTI / objectif * 100).toFixed(1);
   const pctReste = (reste / objectif * 100).toFixed(1);
 
   // Update labels
-  document.getElementById('resteObjectifVal').innerHTML = new Intl.NumberFormat('fr-FR').format(objectif) + ' <span>€</span>';
   document.getElementById('resteMonthlyVal').innerHTML = new Intl.NumberFormat('fr-FR').format(monthly) + ' <span>€/mois</span>';
   document.getElementById('resteHero').textContent = new Intl.NumberFormat('fr-FR').format(reste) + ' €';
   document.getElementById('resteKpiReste').textContent = fmt(reste);
