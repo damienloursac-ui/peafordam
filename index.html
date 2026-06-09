@@ -565,6 +565,24 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <div style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Valeur nette · PEA après prélèvements sociaux</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent2)" id="fiscHero">—</div>
       <div style="font-size:13px;color:var(--text2);margin-top:8px">si tu retirais tout aujourd'hui</div>
+
+      <!-- Décomposition -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:24px;flex-wrap:wrap">
+        <div style="padding:14px 20px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Capital investi</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--blue)">124 000 €</div>
+        </div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--text2)">+</div>
+        <div style="padding:14px 20px;background:var(--surface2);border:1px solid rgba(74,222,128,.3);border-radius:10px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Plus-value nette après impôts</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)" id="fiscPvNette">—</div>
+        </div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--text2)">=</div>
+        <div style="padding:14px 20px;background:var(--surface2);border:1px solid rgba(74,222,128,.5);border-radius:10px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Tu touches réellement</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)" id="fiscHero2">—</div>
+        </div>
+      </div>
     </div>
 
     <!-- Explication règle fiscale -->
@@ -1778,6 +1796,9 @@ function updateFisc() {
 
   // Hero
   document.getElementById('fiscHero').textContent = fmt(Math.round(netPEA));
+  document.getElementById('fiscHero2').textContent = fmt(Math.round(netPEA));
+  const pvNette = netPEA - CAPITAL_INVESTI;
+  document.getElementById('fiscPvNette').textContent = '+' + fmt(Math.round(pvNette));
 
   // KPIs
   document.getElementById('fiscBrut').textContent = fmt(Math.round(retrait));
