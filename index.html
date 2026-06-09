@@ -596,17 +596,17 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
         </div>
         <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
           <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Prélèvements sociaux</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent3)">17,2%</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent3)">18,6%</div>
           <div style="font-size:10px;color:var(--text2);margin-top:4px">Sur plus-values uniquement</div>
         </div>
         <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
           <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Taxation effective</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent)">17,2%</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent)">18,6%</div>
           <div style="font-size:10px;color:var(--text2);margin-top:4px">vs 30% hors PEA (flat tax)</div>
         </div>
       </div>
       <div style="font-size:11px;color:var(--text2);line-height:1.7;padding:10px 14px;background:var(--surface2);border-radius:8px">
-        💡 <strong style="color:var(--text)">Avantage PEA vs Compte-titres ordinaire :</strong> hors PEA, la flat tax est de <strong style="color:var(--accent3)">30%</strong> (12,8% IR + 17,2% PS). Dans ton PEA ouvert depuis avril 2017, tu économises <strong style="color:var(--accent2)" id="fiscEconomie">—</strong> d'impôt grâce à l'exonération IR.
+        💡 <strong style="color:var(--text)">Avantage PEA vs Compte-titres ordinaire :</strong> hors PEA, la flat tax est de <strong style="color:var(--accent3)">30%</strong> (12,8% IR + 18,6% PS). Dans ton PEA ouvert depuis avril 2017, tu économises <strong style="color:var(--accent2)" id="fiscEconomie">—</strong> d'impôt grâce à l'exonération IR.
       </div>
     </div>
 
@@ -616,8 +616,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
         <div class="ic-control">
           <label>Taux prélèvements sociaux (%)</label>
-          <input type="range" id="fiscTaux" min="15" max="20" step="0.1" value="17.2" oninput="updateFisc()">
-          <div class="ic-val" id="fiscTauxVal">17,2 <span>%</span></div>
+          <input type="range" id="fiscTaux" min="15" max="20" step="0.1" value="18.6" oninput="updateFisc()">
+          <div class="ic-val" id="fiscTauxVal">18,6 <span>%</span></div>
         </div>
         <div class="ic-control">
           <label>Retrait partiel simulé (€)</label>
@@ -666,7 +666,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
             <tr>
               <th>Retrait</th>
               <th>Part de la PV retirée</th>
-              <th>PS dus (17,2%)</th>
+              <th>PS dus (18,6%)</th>
               <th>Économie vs flat tax</th>
               <th>Montant net</th>
             </tr>
@@ -1811,12 +1811,12 @@ function updateFisc() {
   document.getElementById('fiscNetDetail').textContent = (netPEA / retrait * 100).toFixed(1) + '% du retrait brut';
 
   // Graphique comparatif
-  const labels = ['Capital récupéré', 'Impôts PEA (17,2%)', 'Impôts flat tax (30%)', 'Économie réalisée'];
+  const labels = ['Capital récupéré', 'Impôts PEA (18,6%)', 'Impôts flat tax (30%)', 'Économie réalisée'];
   if (fiscChart) fiscChart.destroy();
   fiscChart = new Chart(document.getElementById('fiscChart'), {
     type: 'bar',
     data: {
-      labels: ['PEA (17,2% PS)', 'Compte-titres (flat tax 30%)'],
+      labels: ['PEA (18,6% PS)', 'Compte-titres (flat tax 30%)'],
       datasets: [
         {
           label: 'Capital récupéré net',
