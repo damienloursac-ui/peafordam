@@ -257,6 +257,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <button class="nav-tab" onclick="showPage('timeline',this)">📈 Timeline</button>
       <button class="nav-tab" onclick="showPage('dividends',this)">💰 Dividendes</button>
       <button class="nav-tab" onclick="showPage('reste',this)">🎯 Reste à investir</button>
+      <button class="nav-tab" onclick="showPage('fiscalite',this)">🏦 Après impôts</button>
     </div>
   </div>
   <div style="margin-bottom:28px">
@@ -551,6 +552,110 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="card">
       <div class="card-title">Projection des versements cumulés</div>
       <canvas id="resteChart" style="width:100%;height:260px"></canvas>
+    </div>
+
+  </div>
+
+  <!-- PAGE APRÈS IMPÔTS -->
+  <div class="page" id="page-fiscalite">
+
+    <!-- Hero -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(74,222,128,.05) 0%,transparent 70%);pointer-events:none"></div>
+      <div style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Valeur nette · PEA après prélèvements sociaux</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent2)" id="fiscHero">—</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:8px">si tu retirais tout aujourd'hui</div>
+    </div>
+
+    <!-- Explication règle fiscale -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Règle fiscale PEA (ouvert depuis > 5 ans)</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px">
+        <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Impôt revenu</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent2)">0%</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px">Exonération totale</div>
+        </div>
+        <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Prélèvements sociaux</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent3)">17,2%</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px">Sur plus-values uniquement</div>
+        </div>
+        <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Taxation effective</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent)">17,2%</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px">vs 30% hors PEA (flat tax)</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.7;padding:10px 14px;background:var(--surface2);border-radius:8px">
+        💡 <strong style="color:var(--text)">Avantage PEA vs Compte-titres ordinaire :</strong> hors PEA, la flat tax est de <strong style="color:var(--accent3)">30%</strong> (12,8% IR + 17,2% PS). Dans ton PEA ouvert depuis avril 2017, tu économises <strong style="color:var(--accent2)" id="fiscEconomie">—</strong> d'impôt grâce à l'exonération IR.
+      </div>
+    </div>
+
+    <!-- Slider taux PS personnalisable -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Paramètres de simulation</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="ic-control">
+          <label>Taux prélèvements sociaux (%)</label>
+          <input type="range" id="fiscTaux" min="15" max="20" step="0.1" value="17.2" oninput="updateFisc()">
+          <div class="ic-val" id="fiscTauxVal">17,2 <span>%</span></div>
+        </div>
+        <div class="ic-control">
+          <label>Retrait partiel simulé (€)</label>
+          <input type="range" id="fiscRetrait" min="1000" max="188501" step="1000" value="188501" oninput="updateFisc()">
+          <div class="ic-val" id="fiscRetraitVal">188 501 <span>€</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="ic-kpis" style="margin-bottom:16px">
+      <div class="ic-kpi" style="--kc:#4ade80">
+        <div class="ic-kpi-label">Valeur brute</div>
+        <div class="ic-kpi-val" id="fiscBrut">188 501 €</div>
+        <div class="ic-kpi-sub">valeur actuelle du PEA</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#f87171">
+        <div class="ic-kpi-label">Impôts dus</div>
+        <div class="ic-kpi-val" id="fiscImpots">—</div>
+        <div class="ic-kpi-sub" id="fiscImpotsDetail">—</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#e8c547">
+        <div class="ic-kpi-label">Économie vs flat tax</div>
+        <div class="ic-kpi-val" id="fiscEconomieKpi">—</div>
+        <div class="ic-kpi-sub">vs compte-titres ordinaire</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#4ade80">
+        <div class="ic-kpi-label">Valeur nette après impôts</div>
+        <div class="ic-kpi-val" id="fiscNet">—</div>
+        <div class="ic-kpi-sub" id="fiscNetDetail">—</div>
+      </div>
+    </div>
+
+    <!-- Graphique comparatif -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Comparaison PEA vs Compte-titres (flat tax 30%)</div>
+      <canvas id="fiscChart" style="width:100%;height:280px"></canvas>
+    </div>
+
+    <!-- Simulation retrait progressif -->
+    <div class="card">
+      <div class="card-title">Simulation de retrait progressif</div>
+      <div style="overflow-x:auto">
+        <table class="ic-table">
+          <thead>
+            <tr>
+              <th>Retrait</th>
+              <th>Part de la PV retirée</th>
+              <th>PS dus (17,2%)</th>
+              <th>Économie vs flat tax</th>
+              <th>Montant net</th>
+            </tr>
+          </thead>
+          <tbody id="fiscTable"></tbody>
+        </table>
+      </div>
     </div>
 
   </div>
@@ -1643,6 +1748,118 @@ function updateReste() {
 }
 
 updateReste();
+
+// ── FISCALITÉ ──────────────────────────────────────────────────
+const CAPITAL_INVESTI = 124000;
+const VALEUR_PEA = 188501;
+let fiscChart = null;
+
+function updateFisc() {
+  const taux = parseFloat(document.getElementById('fiscTaux').value);
+  const retrait = parseFloat(document.getElementById('fiscRetrait').value);
+
+  document.getElementById('fiscTauxVal').innerHTML = taux.toFixed(1).replace('.',',') + ' <span>%</span>';
+  document.getElementById('fiscRetraitVal').innerHTML = new Intl.NumberFormat('fr-FR').format(retrait) + ' <span>€</span>';
+
+  // Calcul PV proportionnelle au retrait
+  const pvTotale = VALEUR_PEA - CAPITAL_INVESTI;
+  const ratioRetrait = retrait / VALEUR_PEA;
+  const pvRetirée = pvTotale * ratioRetrait;
+  const capitalRetiré = retrait - pvRetirée;
+
+  // Impôts PEA
+  const impotsPEA = pvRetirée * (taux / 100);
+  const netPEA = retrait - impotsPEA;
+
+  // Impôts flat tax (compte-titres)
+  const impotsFlat = pvRetirée * 0.30;
+  const netFlat = retrait - impotsFlat;
+  const economie = impotsFlat - impotsPEA;
+
+  // Hero
+  document.getElementById('fiscHero').textContent = fmt(Math.round(netPEA));
+
+  // KPIs
+  document.getElementById('fiscBrut').textContent = fmt(Math.round(retrait));
+  document.getElementById('fiscImpots').textContent = '-' + fmt(Math.round(impotsPEA));
+  document.getElementById('fiscImpotsDetail').textContent = taux + '% × ' + fmt(Math.round(pvRetirée)) + ' de PV';
+  document.getElementById('fiscEconomieKpi').textContent = '+' + fmt(Math.round(economie));
+  document.getElementById('fiscEconomieKpi').style.color = 'var(--accent2)';
+  document.getElementById('fiscEconomie').textContent = fmt(Math.round(economie));
+  document.getElementById('fiscNet').textContent = fmt(Math.round(netPEA));
+  document.getElementById('fiscNetDetail').textContent = (netPEA / retrait * 100).toFixed(1) + '% du retrait brut';
+
+  // Graphique comparatif
+  const labels = ['Capital récupéré', 'Impôts PEA (17,2%)', 'Impôts flat tax (30%)', 'Économie réalisée'];
+  if (fiscChart) fiscChart.destroy();
+  fiscChart = new Chart(document.getElementById('fiscChart'), {
+    type: 'bar',
+    data: {
+      labels: ['PEA (17,2% PS)', 'Compte-titres (flat tax 30%)'],
+      datasets: [
+        {
+          label: 'Capital récupéré net',
+          data: [Math.round(netPEA), Math.round(netFlat)],
+          backgroundColor: ['rgba(74,222,128,.7)', 'rgba(248,113,113,.5)'],
+          borderColor: ['#4ade80', '#f87171'],
+          borderWidth: 2,
+          borderRadius: 6,
+        },
+        {
+          label: 'Impôts payés',
+          data: [Math.round(impotsPEA), Math.round(impotsFlat)],
+          backgroundColor: ['rgba(248,113,113,.4)', 'rgba(248,113,113,.7)'],
+          borderColor: ['#f87171', '#f87171'],
+          borderWidth: 2,
+          borderRadius: 6,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 11 }, boxWidth: 12 } },
+        tooltip: {
+          backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa',
+          titleFont: { family: 'DM Mono', size: 12 }, bodyFont: { family: 'DM Mono', size: 11 }, padding: 12,
+          callbacks: { label: ctx => ` ${ctx.dataset.label} : ${fmt(ctx.raw)}` }
+        }
+      },
+      scales: {
+        x: { stacked: true, grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 12 } } },
+        y: { stacked: true, grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 }, callback: v => new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(v) + '€' } }
+      }
+    }
+  });
+
+  // Tableau retraits progressifs
+  const tb = document.getElementById('fiscTable');
+  tb.innerHTML = '';
+  const paliers = [10000, 25000, 50000, 75000, 100000, 125000, 150000, 188501];
+  paliers.forEach(r => {
+    const ratio = r / VALEUR_PEA;
+    const pv = pvTotale * ratio;
+    const ps = pv * (taux / 100);
+    const flat = pv * 0.30;
+    const eco = flat - ps;
+    const net = r - ps;
+    const isCurrent = r === 188501;
+    const tr = document.createElement('tr');
+    if (isCurrent) tr.className = 'yr-milestone';
+    tr.innerHTML = `
+      <td>${isCurrent ? '🔴 Tout retirer' : fmt(r)}</td>
+      <td style="color:var(--text2)">${fmt(Math.round(pv))}</td>
+      <td class="neg">-${fmt(Math.round(ps))}</td>
+      <td class="pos">+${fmt(Math.round(eco))}</td>
+      <td class="pos">${fmt(Math.round(net))}</td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+
+document.getElementById('fiscTaux').addEventListener('input', updateFisc);
+document.getElementById('fiscRetrait').addEventListener('input', updateFisc);
+updateFisc();
 
 // ── MONTE CARLO ──────────────────────────────────────────────────
 let mcFanChart = null, mcDistChartObj = null;
