@@ -222,25 +222,25 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     </div>
     <div class="header-right">
       <div class="live-badge"><div class="live-dot"></div>Live via Google Sheets</div>
-      <div class="header-date">Dernière MàJ : 9 juin 2026</div>
+      <div class="header-date">Dernière MàJ : 10 juin 2026</div>
     </div>
   </div>
 
   <div class="kpi-strip">
     <div class="kpi-card" style="--kc:#3b82f6">
       <div class="kpi-label">Capital investi</div>
-      <div class="kpi-val">124 000 €</div>
+      <div class="kpi-val">128 000 €</div>
       <div class="kpi-sub">versements progressifs · 9 ans</div>
     </div>
     <div class="kpi-card" style="--kc:#4ade80">
       <div class="kpi-label">Valeur PEA</div>
       <div class="kpi-val">188 501 €</div>
-      <div class="kpi-sub">+64 501 € de gain · <strong>+52,0%</strong></div>
+      <div class="kpi-sub">+64 669 € de gain · <strong>+50,5%</strong></div>
     </div>
     <div class="kpi-card" style="--kc:#e8c547">
       <div class="kpi-label">TRI annualisé</div>
-      <div class="kpi-val">9,54 %</div>
-      <div class="kpi-sub highlight">Base : 124 000 € investis</div>
+      <div class="kpi-val">8,91 %</div>
+      <div class="kpi-sub highlight">Base : 128 000 € investis</div>
     </div>
     <div class="kpi-card" style="--kc:#a78bfa">
       <div class="kpi-label">Dividendes 2026</div>
@@ -292,7 +292,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 
     <div class="tri-hero">
       <div class="tri-label">Taux de Rendement Interne · Depuis avril 2017</div>
-      <div class="tri-big">9,54%</div>
+      <div class="tri-big">8,91%</div>
       <div class="tri-sub">par an · sur <strong>9 ans</strong> · versements de <strong>1 000 €/mois</strong></div>
     </div>
 
@@ -301,7 +301,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
         <div class="method-title">Méthode de calcul</div>
         <div class="method-formula">
           Le TRI est calculé via la méthode <code>Newton-Raphson</code> sur les flux de trésorerie mensuels.<br><br>
-          Flux : <code>-~1 138 €/mois</code> pendant 109 mois, puis <code>+185 672 €</code> à la fin.<br><br>
+          Flux : <code>-~1 174 €/mois</code> pendant 109 mois, puis <code>+185 672 €</code> à la fin.<br><br>
           On cherche le taux <em>r</em> tel que la <strong>VAN = 0</strong>, soit le rendement réel qui explique exactement le résultat obtenu.
         </div>
       </div>
@@ -362,8 +362,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="ic-controls">
       <div class="ic-control">
         <label>Capital de départ (€)</label>
-        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="192234">
-        <div class="ic-val" id="icCapitalVal">192 234 <span>€</span></div>
+        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="192669">
+        <div class="ic-val" id="icCapitalVal">192 669 <span>€</span></div>
       </div>
       <div class="ic-control">
         <label>Rendement annuel (%)</label>
@@ -621,7 +621,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
         </div>
         <div class="ic-control">
           <label>Retrait partiel simulé (€)</label>
-          <input type="range" id="fiscRetrait" min="1000" max="192234" step="1000" value="192234" oninput="updateFisc()">
+          <input type="range" id="fiscRetrait" min="1000" max="192669" step="1000" value="192669" oninput="updateFisc()">
           <div class="ic-val" id="fiscRetraitVal">188 501 <span>€</span></div>
         </div>
       </div>
@@ -690,8 +690,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="ic-controls" style="margin-bottom:16px">
       <div class="ic-control">
         <label>Capital de départ (€)</label>
-        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="192234">
-        <div class="ic-val" id="mcCapitalVal">192 234 <span>€</span></div>
+        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="192669">
+        <div class="ic-val" id="mcCapitalVal">192 669 <span>€</span></div>
       </div>
       <div class="ic-control">
         <label>Versement mensuel (€)</label>
@@ -779,7 +779,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 
   </div>
 
-  <div class="note">Capital investi : 124 000 € · TRI : 9,12%/an · Espèces : 120 € · PV latentes : 39 031 € · GUARD arbitré → DCAM · Données Bourse Direct 9 juin 2026</div>
+  <div class="note">Capital investi : 128 000 € · TRI : 8,91%/an · Espèces : 120 € · PV latentes : 39 031 € · DCAM : 13 640 parts · Données Bourse Direct 10 juin 2026</div>
 
   <!-- PAGE SIMULATEUR DIVIDENDES -->
   <div class="page" id="page-divsim">
@@ -1010,23 +1010,23 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 const COLORS={SEL:'#f59e0b',DCAM:'#3b82f6',ASML:'#10b981',GUARD:'#a78bfa',PAEEM:'#6b7280',CAC:'#c9a84c',ESE:'#ec4899',TTE:'#f97316'};
 
 const currentData=[
-  {ticker:'SEL', name:'Stoxx Europe Select Div',isin:'FR0010378604',gf:'EPA:SEL',  parts:2858,pru:20.33,value:66731},
-  {ticker:'DCAM',name:'MSCI World Amundi',      isin:'FR001400U5Q4',gf:'EPA:DCAM', parts:12950,pru:5.66, value:77091},
-  {ticker:'ASML',name:'ASML Holding N.V.',      isin:'NL0010273215',gf:'EPA:ASML', parts:27,  pru:664.78,value:41510},
+  {ticker:'SEL', name:'Stoxx Europe Select Div',isin:'FR0010378604',gf:'EPA:SEL',  parts:2858,pru:20.33,value:65734},
+  {ticker:'DCAM',name:'MSCI World Amundi',      isin:'FR001400U5Q4',gf:'EPA:DCAM', parts:13640,pru:5.67, value:79876},
+  {ticker:'ASML',name:'ASML Holding N.V.',      isin:'NL0010273215',gf:'EPA:ASML', parts:27,  pru:664.78,value:40419},
   
-  {ticker:'PAEEM',name:'MSCI Émergents Amundi', isin:'FR0011440478',gf:'EPA:PAEEM',parts:193, pru:20.37,value:6901},
+  {ticker:'PAEEM',name:'MSCI Émergents Amundi', isin:'FR0011440478',gf:'EPA:PAEEM',parts:193, pru:20.37,value:6640},
 ];
 
 const triData=[
-  {yr:1,date:'Avr 2018',invested:13651,value:14213,gain:562},
-  {yr:2,date:'Avr 2019',invested:27303,value:29722,gain:2420},
-  {yr:3,date:'Avr 2020',invested:40954,value:46646,gain:5692},
-  {yr:4,date:'Avr 2021',invested:54606,value:65114,gain:10508},
-  {yr:5,date:'Avr 2022',invested:68257,value:85265,gain:17008},
-  {yr:6,date:'Avr 2023',invested:81908,value:107255,gain:25347},
-  {yr:7,date:'Avr 2024',invested:95560,value:131250,gain:35691},
-  {yr:8,date:'Avr 2025',invested:109211,value:157434,gain:48223},
-  {yr:9,date:'Juin 2026',invested:124000,value:192234,gain:68234},
+  {yr:1,date:'Avr 2018',invested:14092,value:14658,gain:567},
+  {yr:2,date:'Avr 2019',invested:28183,value:30622,gain:2439},
+  {yr:3,date:'Avr 2020',invested:42275,value:48009,gain:5734},
+  {yr:4,date:'Avr 2021',invested:56367,value:66944,gain:10577},
+  {yr:5,date:'Avr 2022',invested:70459,value:87566,gain:17107},
+  {yr:6,date:'Avr 2023',invested:84550,value:110026,gain:25475},
+  {yr:7,date:'Avr 2024',invested:98642,value:134486,gain:35844},
+  {yr:8,date:'Avr 2025',invested:112734,value:161125,gain:48391},
+  {yr:9,date:'Juin 2026',invested:128000,value:192669,gain:64669},
 ];
 
 const snapshots=[
@@ -1035,9 +1035,9 @@ const snapshots=[
     {ticker:'ASML',value:37568,pru:664.78,parts:27},{ticker:'GUARD',value:12360,pru:11.36,parts:1094},
     {ticker:'PAEEM',value:7005,pru:20.37,parts:193},
   ]},
-  {date:'Juin 2026',total:192234,lines:[
-    {ticker:'DCAM',value:77091,pru:5.66,parts:12950},{ticker:'SEL',value:66731,pru:20.33,parts:2858},
-    {ticker:'ASML',value:41510,pru:664.78,parts:27},{ticker:'PAEEM',value:6901,pru:20.37,parts:193},
+  {date:'Juin 2026',total:192669,lines:[
+    {ticker:'DCAM',value:79876,pru:5.67,parts:13640},{ticker:'SEL',value:65734,pru:20.33,parts:2858},
+    {ticker:'ASML',value:40419,pru:664.78,parts:27},{ticker:'PAEEM',value:6640,pru:20.37,parts:193},
   ]},
 ];
 
@@ -1126,7 +1126,7 @@ triData.forEach((d,i)=>{
 });
 
 const compData=[
-  {label:'Ton PEA (TRI réel)',    pct:9.54,color:'#e8c547'},
+  {label:'Ton PEA (TRI réel)',    pct:8.91,color:'#e8c547'},
   {label:'MSCI World (2017-2026)',pct:10.5, color:'#3b82f6'},
   {label:'CAC 40 + dividendes',  pct:7.8,  color:'#f59e0b'},
   {label:'Livret A (moy.)',       pct:1.6,  color:'#6b7280'},
@@ -1368,11 +1368,11 @@ function removeDsLine(i) { dsLines.splice(i, 1); renderDsLines(); }
 
 function prefillFromPEA() {
   dsLines = [
-    { name: 'SEL',   capital: 66731, yield: 5.75, growth: 3 },
-    { name: 'DCAM',  capital: 77091, yield: 0,    growth: 0 },
-    { name: 'ASML',  capital: 41510, yield: 0.7,  growth: 5 },
+    { name: 'SEL',   capital: 65734, yield: 5.75, growth: 3 },
+    { name: 'DCAM',  capital: 79876, yield: 0,    growth: 0 },
+    { name: 'ASML',  capital: 40419, yield: 0.7,  growth: 5 },
     
-    { name: 'PAEEM', capital: 6901,  yield: 0,    growth: 0 },
+    { name: 'PAEEM', capital: 6640,  yield: 0,    growth: 0 },
   ];
   renderDsLines();
 }
@@ -1498,7 +1498,7 @@ function updateTargetVals() {
 
   const annualTarget = monthly * 12;
   const capitalNeeded = annualTarget / (yld / 100);
-  const currentPEA = 192234;
+  const currentPEA = 192669;
   const currentDiv = currentPEA * 0.0215; // ~2.15% rendement actuel
   const gap = Math.max(0, capitalNeeded - currentPEA);
 
@@ -1650,7 +1650,7 @@ function runDcSim() {
 updateTargetVals();
 
 // ── RESTE À INVESTIR ──────────────────────────────────────────
-const INVESTI = 124000;
+const INVESTI = 128000;
 const TRI_MENSUEL = Math.pow(1 + 0.0912, 1/12) - 1;
 let resteChart = null;
 
@@ -1767,8 +1767,8 @@ function updateReste() {
 updateReste();
 
 // ── FISCALITÉ ──────────────────────────────────────────────────
-const CAPITAL_INVESTI = 124000;
-const VALEUR_PEA = 192234;
+const CAPITAL_INVESTI = 128000;
+const VALEUR_PEA = 192669;
 let fiscChart = null;
 
 function updateFisc() {
