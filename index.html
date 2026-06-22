@@ -362,8 +362,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="ic-controls">
       <div class="ic-control">
         <label>Capital de départ (€)</label>
-        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="202625">
-        <div class="ic-val" id="icCapitalVal">202 625 <span>€</span></div>
+        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="202617">
+        <div class="ic-val" id="icCapitalVal">202 617 <span>€</span></div>
       </div>
       <div class="ic-control">
         <label>Rendement annuel (%)</label>
@@ -621,7 +621,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
         </div>
         <div class="ic-control">
           <label>Retrait partiel simulé (€)</label>
-          <input type="range" id="fiscRetrait" min="1000" max="202625" step="1000" value="202625" oninput="updateFisc()">
+          <input type="range" id="fiscRetrait" min="1000" max="202617" step="1000" value="202617" oninput="updateFisc()">
           <div class="ic-val" id="fiscRetraitVal">188 501 <span>€</span></div>
         </div>
       </div>
@@ -690,8 +690,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="ic-controls" style="margin-bottom:16px">
       <div class="ic-control">
         <label>Capital de départ (€)</label>
-        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="202625">
-        <div class="ic-val" id="mcCapitalVal">202 625 <span>€</span></div>
+        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="202617">
+        <div class="ic-val" id="mcCapitalVal">202 617 <span>€</span></div>
       </div>
       <div class="ic-control">
         <label>Versement mensuel (€)</label>
@@ -1026,7 +1026,7 @@ const triData=[
   {yr:6,date:'Avr 2023',invested:84550,value:110026,gain:25475},
   {yr:7,date:'Avr 2024',invested:98642,value:134486,gain:35844},
   {yr:8,date:'Avr 2025',invested:112734,value:161125,gain:48391},
-  {yr:9,date:'Juin 2026',invested:128000,value:202625,gain:74625},
+  {yr:9,date:'Juin 2026',invested:128000,value:202617,gain:74617},
 ];
 
 const snapshots=[
@@ -1498,7 +1498,7 @@ function updateTargetVals() {
 
   const annualTarget = monthly * 12;
   const capitalNeeded = annualTarget / (yld / 100);
-  const currentPEA = 202625;
+  const currentPEA = 202617;
   const currentDiv = currentPEA * 0.0215; // ~2.15% rendement actuel
   const gap = Math.max(0, capitalNeeded - currentPEA);
 
@@ -1768,7 +1768,7 @@ updateReste();
 
 // ── FISCALITÉ ──────────────────────────────────────────────────
 const CAPITAL_INVESTI = 128000;
-const VALEUR_PEA = 202625;
+const VALEUR_PEA = 202617;
 let fiscChart = null;
 
 function updateFisc() {
