@@ -222,7 +222,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     </div>
     <div class="header-right">
       <div class="live-badge"><div class="live-dot"></div>Live via Google Sheets</div>
-      <div class="header-date">Dernière MàJ : 11 juin 2026</div>
+      <div class="header-date">Dernière MàJ : 22 juin 2026</div>
     </div>
   </div>
 
@@ -239,7 +239,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     </div>
     <div class="kpi-card" style="--kc:#e8c547">
       <div class="kpi-label">TRI annualisé</div>
-      <div class="kpi-val">9,68 %</div>
+      <div class="kpi-val">9,99 %</div>
       <div class="kpi-sub highlight">Base : 128 000 € investis</div>
     </div>
     <div class="kpi-card" style="--kc:#a78bfa">
@@ -292,7 +292,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 
     <div class="tri-hero">
       <div class="tri-label">Taux de Rendement Interne · Depuis avril 2017</div>
-      <div class="tri-big">9,68%</div>
+      <div class="tri-big">9,99%</div>
       <div class="tri-sub">par an · sur <strong>9 ans</strong> · versements de <strong>1 000 €/mois</strong></div>
     </div>
 
@@ -362,8 +362,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="ic-controls">
       <div class="ic-control">
         <label>Capital de départ (€)</label>
-        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="199743">
-        <div class="ic-val" id="icCapitalVal">199 743 <span>€</span></div>
+        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="202625">
+        <div class="ic-val" id="icCapitalVal">202 625 <span>€</span></div>
       </div>
       <div class="ic-control">
         <label>Rendement annuel (%)</label>
@@ -621,7 +621,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
         </div>
         <div class="ic-control">
           <label>Retrait partiel simulé (€)</label>
-          <input type="range" id="fiscRetrait" min="1000" max="199743" step="1000" value="199743" oninput="updateFisc()">
+          <input type="range" id="fiscRetrait" min="1000" max="202625" step="1000" value="202625" oninput="updateFisc()">
           <div class="ic-val" id="fiscRetraitVal">188 501 <span>€</span></div>
         </div>
       </div>
@@ -690,8 +690,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="ic-controls" style="margin-bottom:16px">
       <div class="ic-control">
         <label>Capital de départ (€)</label>
-        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="199743">
-        <div class="ic-val" id="mcCapitalVal">199 743 <span>€</span></div>
+        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="202625">
+        <div class="ic-val" id="mcCapitalVal">202 625 <span>€</span></div>
       </div>
       <div class="ic-control">
         <label>Versement mensuel (€)</label>
@@ -779,7 +779,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 
   </div>
 
-  <div class="note">Capital investi : 128 000 € · TRI : 8,91%/an · Espèces : 75 € · PV latentes : 42 420 € · ASML +145% · Données Bourse Direct 11 juin 2026</div>
+  <div class="note">Capital investi : 128 000 € · TRI : 8,91%/an · Espèces : 75 € · PV latentes : 44 761 € · ASML +152% · TRI proche de 10% · Données Bourse Direct 22 juin 2026</div>
 
   <!-- PAGE SIMULATEUR DIVIDENDES -->
   <div class="page" id="page-divsim">
@@ -1010,11 +1010,11 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 const COLORS={SEL:'#f59e0b',DCAM:'#3b82f6',ASML:'#10b981',GUARD:'#a78bfa',PAEEM:'#6b7280',CAC:'#c9a84c',ESE:'#ec4899',TTE:'#f97316'};
 
 const currentData=[
-  {ticker:'SEL', name:'Stoxx Europe Select Div',isin:'FR0010378604',gf:'EPA:SEL',  parts:2858,pru:20.33,value:67360},
-  {ticker:'DCAM',name:'MSCI World Amundi',      isin:'FR001400U5Q4',gf:'EPA:DCAM', parts:13640,pru:5.67, value:81349},
-  {ticker:'ASML',name:'ASML Holding N.V.',      isin:'NL0010273215',gf:'EPA:ASML', parts:27,  pru:664.78,value:43999},
+  {ticker:'SEL', name:'Stoxx Europe Select Div',isin:'FR0010378604',gf:'EPA:SEL',  parts:2858,pru:20.33,value:67106},
+  {ticker:'DCAM',name:'MSCI World Amundi',      isin:'FR001400U5Q4',gf:'EPA:DCAM', parts:13640,pru:5.67, value:82713},
+  {ticker:'ASML',name:'ASML Holding N.V.',      isin:'NL0010273215',gf:'EPA:ASML', parts:27,  pru:664.78,value:45371},
   
-  {ticker:'PAEEM',name:'MSCI Émergents Amundi', isin:'FR0011440478',gf:'EPA:PAEEM',parts:193, pru:20.37,value:6960},
+  {ticker:'PAEEM',name:'MSCI Émergents Amundi', isin:'FR0011440478',gf:'EPA:PAEEM',parts:193, pru:20.37,value:7360},
 ];
 
 const triData=[
@@ -1026,7 +1026,7 @@ const triData=[
   {yr:6,date:'Avr 2023',invested:84550,value:110026,gain:25475},
   {yr:7,date:'Avr 2024',invested:98642,value:134486,gain:35844},
   {yr:8,date:'Avr 2025',invested:112734,value:161125,gain:48391},
-  {yr:9,date:'Juin 2026',invested:128000,value:199743,gain:71743},
+  {yr:9,date:'Juin 2026',invested:128000,value:202625,gain:74625},
 ];
 
 const snapshots=[
@@ -1035,9 +1035,9 @@ const snapshots=[
     {ticker:'ASML',value:37568,pru:664.78,parts:27},{ticker:'GUARD',value:12360,pru:11.36,parts:1094},
     {ticker:'PAEEM',value:7005,pru:20.37,parts:193},
   ]},
-  {date:'Juin 2026',total:199668,lines:[
-    {ticker:'ASML',value:43999,pru:664.78,parts:27},{ticker:'DCAM',value:81349,pru:5.67,parts:13640},
-    {ticker:'SEL',value:67360,pru:20.33,parts:2858},{ticker:'PAEEM',value:6960,pru:20.37,parts:193},
+  {date:'Juin 2026',total:202550,lines:[
+    {ticker:'DCAM',value:82713,pru:5.67,parts:13640},{ticker:'SEL',value:67106,pru:20.33,parts:2858},
+    {ticker:'ASML',value:45371,pru:664.78,parts:27},{ticker:'PAEEM',value:7360,pru:20.37,parts:193},
   ]},
 ];
 
@@ -1126,7 +1126,7 @@ triData.forEach((d,i)=>{
 });
 
 const compData=[
-  {label:'Ton PEA (TRI réel)',    pct:9.68,color:'#e8c547'},
+  {label:'Ton PEA (TRI réel)',    pct:9.99,color:'#e8c547'},
   {label:'MSCI World (2017-2026)',pct:10.5, color:'#3b82f6'},
   {label:'CAC 40 + dividendes',  pct:7.8,  color:'#f59e0b'},
   {label:'Livret A (moy.)',       pct:1.6,  color:'#6b7280'},
@@ -1368,11 +1368,11 @@ function removeDsLine(i) { dsLines.splice(i, 1); renderDsLines(); }
 
 function prefillFromPEA() {
   dsLines = [
-    { name: 'SEL',   capital: 67360, yield: 5.75, growth: 3 },
-    { name: 'DCAM',  capital: 81349, yield: 0,    growth: 0 },
-    { name: 'ASML',  capital: 43999, yield: 0.7,  growth: 5 },
+    { name: 'SEL',   capital: 67106, yield: 5.75, growth: 3 },
+    { name: 'DCAM',  capital: 82713, yield: 0,    growth: 0 },
+    { name: 'ASML',  capital: 45371, yield: 0.7,  growth: 5 },
     
-    { name: 'PAEEM', capital: 6960,  yield: 0,    growth: 0 },
+    { name: 'PAEEM', capital: 7360,  yield: 0,    growth: 0 },
   ];
   renderDsLines();
 }
@@ -1498,7 +1498,7 @@ function updateTargetVals() {
 
   const annualTarget = monthly * 12;
   const capitalNeeded = annualTarget / (yld / 100);
-  const currentPEA = 199743;
+  const currentPEA = 202625;
   const currentDiv = currentPEA * 0.0215; // ~2.15% rendement actuel
   const gap = Math.max(0, capitalNeeded - currentPEA);
 
@@ -1768,7 +1768,7 @@ updateReste();
 
 // ── FISCALITÉ ──────────────────────────────────────────────────
 const CAPITAL_INVESTI = 128000;
-const VALEUR_PEA = 199743;
+const VALEUR_PEA = 202625;
 let fiscChart = null;
 
 function updateFisc() {
