@@ -265,6 +265,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <button class="nav-tab" onclick="showPage('compound',this)">🔄 Intérêts composés</button>
       <button class="nav-tab" onclick="showPage('divsim',this)">🌱 Dividendes</button>
       <button class="nav-tab" onclick="showPage('montecarlo',this)">🎲 Monte Carlo</button>
+      <button class="nav-tab" onclick="showPage('indep',this)">🏝️ Indépendance</button>
     </div>
   </div>
 
@@ -774,6 +775,127 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
         </thead>
         <tbody id="mcTableBody"></tbody>
       </table>
+    </div>
+
+  </div>
+
+  <!-- PAGE INDÉPENDANCE FINANCIÈRE -->
+  <div class="page" id="page-indep">
+
+    <!-- Hero -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(74,222,128,.05) 0%,transparent 70%);pointer-events:none"></div>
+      <div style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Ton objectif d'indépendance financière</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,30px);font-weight:300;color:var(--text2);margin-bottom:6px">Il te manque encore</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent)" id="indepHero">—</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:8px" id="indepHeroSub">pour atteindre l'indépendance financière</div>
+    </div>
+
+    <!-- Méthodes -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="ic-scenario active" onclick="setIndepMethod('4pct',this)">📐 Règle des 4%</button>
+      <button class="ic-scenario" onclick="setIndepMethod('dividendes',this)">💰 Dividendes purs</button>
+      <button class="ic-scenario" onclick="setIndepMethod('mix',this)">⚖️ Approche mixte</button>
+    </div>
+
+    <!-- Paramètres -->
+    <div class="ic-controls" style="margin-bottom:16px">
+      <div class="ic-control">
+        <label>Revenu mensuel cible (€)</label>
+        <input type="range" id="indepRevenu" min="500" max="10000" step="100" value="2000" oninput="updateIndep()">
+        <div class="ic-val" id="indepRevenuVal">2 000 <span>€/mois</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Rendement annuel attendu (%)</label>
+        <input type="range" id="indepRate" min="3" max="15" step="0.5" value="9.99" oninput="updateIndep()">
+        <div class="ic-val" id="indepRateVal">9,99 <span>%</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Versement mensuel (€)</label>
+        <input type="range" id="indepMonthly" min="0" max="3000" step="100" value="1000" oninput="updateIndep()">
+        <div class="ic-val" id="indepMonthlyVal">1 000 <span>€/mois</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Taux de retrait annuel (%)</label>
+        <input type="range" id="indepWithdraw" min="2" max="6" step="0.5" value="4" oninput="updateIndep()">
+        <div class="ic-val" id="indepWithdrawVal">4,0 <span>%</span></div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="ic-kpis" style="margin-bottom:16px">
+      <div class="ic-kpi" style="--kc:#e8c547">
+        <div class="ic-kpi-label">Capital cible (IF)</div>
+        <div class="ic-kpi-val" id="indepCapCible">—</div>
+        <div class="ic-kpi-sub" id="indepCapCibleSub">—</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#4ade80">
+        <div class="ic-kpi-label">PEA actuel</div>
+        <div class="ic-kpi-val">202 617 €</div>
+        <div class="ic-kpi-sub" id="indepPEAPct">—% de l'objectif</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#60a5fa">
+        <div class="ic-kpi-label">Années restantes</div>
+        <div class="ic-kpi-val" id="indepYears">—</div>
+        <div class="ic-kpi-sub" id="indepYearsSub">—</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#a78bfa">
+        <div class="ic-kpi-label">Revenus actuels (PEA)</div>
+        <div class="ic-kpi-val" id="indepRevActuel">—</div>
+        <div class="ic-kpi-sub">si tu retirais dès maintenant</div>
+      </div>
+    </div>
+
+    <!-- Explication méthode -->
+    <div class="ic-doubling" id="indepMethodExpl" style="margin-bottom:16px"></div>
+
+    <!-- Barre de progression -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Progression vers l'indépendance financière</div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:10px">
+        <span>0 €</span>
+        <span id="indepProgLabel">202 617 € / — €</span>
+        <span id="indepCibleLabel">— €</span>
+      </div>
+      <div style="height:16px;background:var(--border);border-radius:8px;overflow:hidden">
+        <div id="indepBar" style="height:100%;background:linear-gradient(90deg,#3b82f6,#e8c547);border-radius:8px;transition:width .6s ease;width:0%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:6px">
+        <span style="color:var(--accent2)" id="indepBarLeft">PEA actuel</span>
+        <span style="color:var(--accent)" id="indepBarPct">—%</span>
+        <span id="indepBarRight">Objectif IF</span>
+      </div>
+    </div>
+
+    <!-- Graphique trajectoire -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Trajectoire vers l'indépendance financière</div>
+      <canvas id="indepChart" style="width:100%;height:300px"></canvas>
+    </div>
+
+    <!-- Comparaison 3 méthodes -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Comparaison des 3 méthodes</div>
+      <div style="overflow-x:auto">
+        <table class="ic-table">
+          <thead>
+            <tr>
+              <th>Méthode</th>
+              <th>Capital cible</th>
+              <th>Revenu mensuel</th>
+              <th>Années estimées</th>
+              <th>Avantage</th>
+            </tr>
+          </thead>
+          <tbody id="indepCompTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Scénarios après IF -->
+    <div class="card">
+      <div class="card-title">Simulation de vie après indépendance financière</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" id="indepScenarios"></div>
     </div>
 
   </div>
@@ -1832,6 +1954,166 @@ function updateFisc() {
 document.getElementById('fiscTaux').addEventListener('input', updateFisc);
 document.getElementById('fiscRetrait').addEventListener('input', updateFisc);
 updateFisc();
+
+// ── INDÉPENDANCE FINANCIÈRE ──────────────────────────────────────────
+const INDEP_PEA = 202617;
+const INDEP_TRI = 9.99;
+let indepMethod = '4pct';
+let indepChart = null;
+
+function setIndepMethod(method, el) {
+  indepMethod = method;
+  document.querySelectorAll('#page-indep .ic-scenario').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  // Update withdraw rate based on method
+  if (method === 'dividendes') {
+    document.getElementById('indepWithdraw').value = 2.5;
+    document.getElementById('indepWithdrawVal').innerHTML = '2,5 <span>%</span>';
+  } else if (method === 'mix') {
+    document.getElementById('indepWithdraw').value = 3;
+    document.getElementById('indepWithdrawVal').innerHTML = '3,0 <span>%</span>';
+  } else {
+    document.getElementById('indepWithdraw').value = 4;
+    document.getElementById('indepWithdrawVal').innerHTML = '4,0 <span>%</span>';
+  }
+  updateIndep();
+}
+
+function updateIndep() {
+  const revenu = parseFloat(document.getElementById('indepRevenu').value);
+  const rate = parseFloat(document.getElementById('indepRate').value);
+  const monthly = parseFloat(document.getElementById('indepMonthly').value);
+  const withdraw = parseFloat(document.getElementById('indepWithdraw').value);
+
+  document.getElementById('indepRevenuVal').innerHTML = new Intl.NumberFormat('fr-FR').format(revenu) + ' <span>€/mois</span>';
+  document.getElementById('indepRateVal').innerHTML = rate.toFixed(2).replace('.',',') + ' <span>%</span>';
+  document.getElementById('indepMonthlyVal').innerHTML = new Intl.NumberFormat('fr-FR').format(monthly) + ' <span>€/mois</span>';
+  document.getElementById('indepWithdrawVal').innerHTML = withdraw.toFixed(1).replace('.',',') + ' <span>%</span>';
+
+  const annualRevenu = revenu * 12;
+  const capitalCible = annualRevenu / (withdraw / 100);
+  const gap = Math.max(0, capitalCible - INDEP_PEA);
+  const pct = Math.min(100, (INDEP_PEA / capitalCible * 100));
+  const mr = rate / 100 / 12;
+  const revActuel = INDEP_PEA * (withdraw / 100) / 12;
+
+  // Years to reach target
+  let portfolio = INDEP_PEA;
+  let yearsNeeded = 0;
+  let targetYear = 0;
+  for (let m = 1; m <= 600; m++) {
+    portfolio = portfolio * (1 + mr) + monthly;
+    if (portfolio >= capitalCible && yearsNeeded === 0) {
+      yearsNeeded = Math.ceil(m / 12);
+      targetYear = 2026 + Math.ceil(m / 12);
+    }
+  }
+
+  // Update KPIs
+  document.getElementById('indepHero').textContent = fmt(Math.round(gap));
+  document.getElementById('indepHeroSub').textContent = gap <= 0 ? '🎉 Objectif déjà atteint !' : `pour atteindre l'indépendance financière`;
+  document.getElementById('indepCapCible').textContent = fmt(Math.round(capitalCible));
+  document.getElementById('indepCapCibleSub').textContent = `${annualRevenu.toLocaleString('fr-FR')} €/an à ${withdraw}%`;
+  document.getElementById('indepPEAPct').textContent = pct.toFixed(1) + '% de l\'objectif';
+  document.getElementById('indepYears').textContent = yearsNeeded > 0 ? `${yearsNeeded} ans` : '✅ Maintenant';
+  document.getElementById('indepYearsSub').textContent = yearsNeeded > 0 ? `Atteint en ${targetYear}` : 'Capital suffisant !';
+  document.getElementById('indepRevActuel').textContent = fmt(Math.round(revActuel)) + '/mois';
+
+  // Method explanation
+  const methodes = {
+    '4pct': `📐 <strong>Règle des 4%</strong> : tu retires 4% de ton capital chaque année. Étude Trinity (1998) — taux de succès >95% sur 30 ans. Tu peux vendre des parts DCAM/SEL/ASML chaque année sans épuiser ton capital.`,
+    'dividendes': `💰 <strong>Dividendes purs (2,5%)</strong> : tu ne touches que les dividendes distribués, sans jamais vendre de parts. Le capital reste intact et grossit. Nécessite un capital plus élevé mais offre une vraie rente perpétuelle.`,
+    'mix': `⚖️ <strong>Approche mixte (3%)</strong> : mi-chemin entre la règle des 4% et les dividendes purs. Tu retires les dividendes + ventes partielles limitées. Bon compromis entre capital préservé et liberté de retrait.`
+  };
+  document.getElementById('indepMethodExpl').innerHTML = methodes[indepMethod];
+
+  // Progress bar
+  document.getElementById('indepBar').style.width = pct + '%';
+  document.getElementById('indepBarPct').textContent = pct.toFixed(1) + '%';
+  document.getElementById('indepProgLabel').textContent = `${fmt(INDEP_PEA)} / ${fmt(Math.round(capitalCible))}`;
+  document.getElementById('indepCibleLabel').textContent = fmt(Math.round(capitalCible));
+
+  // Chart
+  const labels = [], portLine = [], cibleLine = [], revLine = [];
+  portfolio = INDEP_PEA;
+  const maxYears = Math.min(Math.max(yearsNeeded + 5, 15), 40);
+  for (let y = 0; y <= maxYears; y++) {
+    labels.push((2026 + y).toString());
+    portLine.push(Math.round(portfolio));
+    cibleLine.push(Math.round(capitalCible));
+    revLine.push(Math.round(portfolio * withdraw / 100 / 12));
+    for (let m = 0; m < 12; m++) portfolio = portfolio * (1 + mr) + monthly;
+  }
+
+  if (indepChart) indepChart.destroy();
+  indepChart = new Chart(document.getElementById('indepChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Valeur PEA projetée', data: portLine, borderColor: '#e8c547', backgroundColor: 'rgba(232,197,71,.08)', fill: true, tension: .4, borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#e8c547' },
+        { label: 'Capital cible (IF)', data: cibleLine, borderColor: '#4ade80', backgroundColor: 'transparent', fill: false, borderDash: [6,4], borderWidth: 2, pointRadius: 0 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 11 }, boxWidth: 10 } },
+        tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, padding: 12,
+          callbacks: { label: ctx => ` ${ctx.dataset.label} : ${fmt(ctx.raw)}` }
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 } } },
+        y: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 }, callback: v => new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(v) + '€' } }
+      }
+    }
+  });
+
+  // Comparison table
+  const methods3 = [
+    { name: '📐 Règle des 4%', withdraw: 4, avantage: 'Capital potentiellement préservé sur 30 ans' },
+    { name: '⚖️ Approche mixte', withdraw: 3, avantage: 'Compromis durabilité / accessibilité' },
+    { name: '💰 Dividendes purs', withdraw: 2.5, avantage: 'Capital 100% intact, rente perpétuelle' },
+  ];
+  const tb = document.getElementById('indepCompTable');
+  tb.innerHTML = '';
+  methods3.forEach(m => {
+    const cap = annualRevenu / (m.withdraw / 100);
+    const g = Math.max(0, cap - INDEP_PEA);
+    let port2 = INDEP_PEA, yrs = 0;
+    for (let mo = 1; mo <= 600; mo++) {
+      port2 = port2 * (1 + mr) + monthly;
+      if (port2 >= cap && yrs === 0) yrs = Math.ceil(mo / 12);
+    }
+    const isActive = (indepMethod === '4pct' && m.withdraw === 4) || (indepMethod === 'dividendes' && m.withdraw === 2.5) || (indepMethod === 'mix' && m.withdraw === 3);
+    const tr = document.createElement('tr');
+    if (isActive) tr.className = 'yr-milestone';
+    tr.innerHTML = `<td>${m.name}</td><td>${fmt(Math.round(cap))}</td><td class="pos">${fmt(Math.round(revenu))}/mois</td><td>${yrs > 0 ? yrs + ' ans' : '✅ Maintenant'}</td><td style="font-size:10px;color:var(--text2)">${m.avantage}</td>`;
+    tb.appendChild(tr);
+  });
+
+  // Scenarios après IF
+  const scenarios = [
+    { emoji: '🏖️', title: 'Retraite anticipée', desc: `À ${2026 + yearsNeeded} ans, arrêter de travailler. Vivre de ${fmt(Math.round(revenu))}/mois sans toucher au capital principal.`, color: '#e8c547' },
+    { emoji: '🚀', title: 'Semi-retraite', desc: `Réduire à 50% de temps de travail, compléter avec ${fmt(Math.round(revenu/2))}/mois de retraits. Le capital continue de croître.`, color: '#4ade80' },
+    { emoji: '🌍', title: 'Liberté géographique', desc: `Travailler depuis n'importe où, le PEA couvre les dépenses de base. Zéro contrainte de lieu.`, color: '#60a5fa' },
+  ];
+  const sc = document.getElementById('indepScenarios');
+  sc.innerHTML = '';
+  scenarios.forEach(s => {
+    const el = document.createElement('div');
+    el.style.cssText = `padding:20px;background:var(--surface2);border-radius:10px;border:1px solid ${s.color}22;`;
+    el.innerHTML = `<div style="font-size:28px;margin-bottom:10px">${s.emoji}</div><div style="font-size:13px;font-weight:600;color:${s.color};margin-bottom:8px">${s.title}</div><div style="font-size:12px;color:var(--text2);line-height:1.6">${s.desc}</div>`;
+    sc.appendChild(el);
+  });
+}
+
+['indepRevenu','indepRate','indepMonthly','indepWithdraw'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateIndep);
+});
+updateIndep();
 
 // ── MONTE CARLO ──────────────────────────────────────────────────
 let mcFanChart = null, mcDistChartObj = null;
