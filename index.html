@@ -1170,6 +1170,7 @@ function showPage(id,el){
   el.classList.add('active');
   if(id === 'historique') buildHistorique();
   if(id === 'etfcompo') renderETF(currentETF || 'dcam');
+  if(id === 'dividends') buildDividends();
 }
 
 // ── PORTFOLIO ──────────────────────────────────────────────────
@@ -2753,8 +2754,10 @@ const divData2026 = {
   Juil:0, Août:50.76, Sep:0, Oct:0, Nov:43, Déc:3801
 };
 
-const calGrid = document.getElementById('divCalGrid');
-if(calGrid) {
+function buildDividends() {
+  const calGrid = document.getElementById('divCalGrid');
+  if(!calGrid || calGrid.children.length > 0) return; // already built
+  {
   const maxDiv2 = Math.max(...Object.values(divData2026));
   Object.entries(divData2026).forEach(([mois, amt]) => {
     const hasDiv = amt > 0;
@@ -2814,6 +2817,7 @@ if(divBarEl) {
       }
     }
   });
+  }
 }
 
 // Ancienne section divGrid pour compatibilité
