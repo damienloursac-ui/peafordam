@@ -2948,8 +2948,8 @@ const etfData = {
   }
 };
 
+let etfBuilt = false;
 let currentETF = 'dcam';
-let geoChart = null, secChart = null;
 
 function showETF(key, el) {
   currentETF = key;
@@ -3059,8 +3059,7 @@ function renderETF(key) {
   });
 }
 
-// Init
-renderETF('dcam');
+// ETF: rendu déclenché par showPage uniquement
 
 // ── SERVICE WORKER (PWA) ──
 if ('serviceWorker' in navigator) {
