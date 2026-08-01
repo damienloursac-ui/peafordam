@@ -290,8 +290,6 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:6px;padding-left:4px">Simulateurs</div>
     <div class="nav sim" style="margin-bottom:0;border-color:rgba(232,197,71,.2)">
       <button class="nav-tab" onclick="showPage('compound',this)">🔄 Intérêts composés</button>
-      <button class="nav-tab" onclick="showPage('divsim',this)">🌱 Dividendes</button>
-      <button class="nav-tab" onclick="showPage('montecarlo',this)">🎲 Monte Carlo</button>
       <button class="nav-tab" onclick="showPage('indep',this)">🏝️ Indépendance</button>
     </div>
   </div>
@@ -378,6 +376,17 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       </div>
     </div>
 
+
+    <!-- Section Timeline (fusionnée) -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">📸 Snapshots mensuels — Détail des lignes</div>
+      <div style="margin-bottom:12px">
+        <input type="range" id="tlSlider" min="0" max="3" step="1" value="3" style="width:100%;accent-color:var(--accent)" oninput="updateTimeline()">
+        <div id="tlDate" style="text-align:center;font-size:11px;color:var(--text2);margin-top:4px"></div>
+      </div>
+      <div id="tlLines" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
   </div>
 
   <!-- PAGE TRI -->
@@ -441,27 +450,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <canvas id="triVsIndicesChart" style="height:220px"></canvas>
     </div>
 
-    <!-- Score de diversification -->
-    <div class="card" style="margin-top:16px">
-      <div class="card-title">🎯 Score de diversification</div>
-      <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
-        <div style="text-align:center;flex-shrink:0">
-          <div style="position:relative;width:100px;height:100px;margin:0 auto">
-            <canvas id="diversScore"></canvas>
-            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-              <div id="diversScoreVal" style="font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1;color:var(--accent2)">—</div>
-              <div style="font-size:9px;color:var(--text2)">/10</div>
-            </div>
-          </div>
-          <div id="diversLabel" style="font-size:11px;color:var(--text2);margin-top:8px">—</div>
-        </div>
-        <div style="flex:1;min-width:200px">
-          <div id="diversDetails" style="display:flex;flex-direction:column;gap:8px"></div>
-        </div>
-      </div>
     </div>
-
-  </div>
 
   <!-- PAGE INTÉRÊTS COMPOSÉS -->
   <div class="page" id="page-compound">
@@ -556,350 +545,177 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 
   </div>
 
-  <!-- PAGE TIMELINE -->
-  <div class="page" id="page-timeline">
-    <div class="card">
-      <div class="card-title">Évolution de la valeur totale</div>
-      <div class="tl-evo" id="tlEvo"></div>
-    </div>
-    <div class="tl-slider-wrap">
-      <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:12px">Sélectionner une date</div>
-      <input type="range" id="tlSlider" min="0" max="3" step="1" value="3">
-      <div class="tl-dots" id="tlDots"></div>
-    </div>
-    <div class="tl-date-display">
-      <div class="tl-current-date" id="tlDate">—</div>
-      <div class="tl-current-total" id="tlTotal">—</div>
-    </div>
-    <div class="tl-grid">
-      <div class="card" style="margin-bottom:0">
-        <div class="card-title">Composition</div>
-        <div class="donut-wrap"><canvas id="tlDonut"></canvas></div>
-      </div>
-      <div class="card" style="margin-bottom:0">
-        <div class="card-title" id="tlDeltaTitle">Variation vs date précédente</div>
-        <div class="delta-rows" id="tlDeltaRows"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- PAGE DIVIDENDES -->
   <div class="page" id="page-dividends">
-    <div class="card">
-      <div class="card-title">Calendrier mensuel — Année type</div>
-      <div class="div-grid" id="divGrid"></div>
-      <div style="font-size:11px;color:var(--text2);margin-top:12px">💡 96% des dividendes arrivent en décembre. Dividende annuel total estimé : <strong style="color:var(--accent)">~3 986 €</strong></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Prochains versements</div>
-      <div class="div-list" id="divList"></div>
-    </div>
-  </div>
 
-  <!-- PAGE RESTE À INVESTIR -->
-  <div class="page" id="page-reste">
-
-    <!-- Hero -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(232,197,71,.06) 0%,transparent 70%);pointer-events:none"></div>
-      <div style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Objectif de versement · PEA</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent)" id="resteHero">26 000 €</div>
-      <div style="font-size:13px;color:var(--text2);margin-top:8px">restent à investir pour atteindre l'objectif</div>
-    </div>
-
-    <!-- Objectif slider -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Paramétrer l'objectif</div>
-      <div style="display:grid;grid-template-columns:1fr;gap:16px">
-        <div class="ic-control">
-          <label>Versement mensuel prévu (€)</label>
-          <input type="range" id="resteMonthly" min="0" max="5000" step="100" value="1000" oninput="updateReste()">
-          <div class="ic-val" id="resteMonthlyVal">1 000 <span>€/mois</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- KPIs -->
+    <!-- KPIs dividendes -->
     <div class="ic-kpis" style="margin-bottom:16px">
       <div class="ic-kpi" style="--kc:#e8c547">
-        <div class="ic-kpi-label">Déjà investi</div>
-        <div class="ic-kpi-val">128 000 €</div>
-        <div class="ic-kpi-sub" id="resteDejaSubPct">85,3% de l'objectif</div>
+        <div class="ic-kpi-label">Total annuel estimé</div>
+        <div class="ic-kpi-val">~3 986 €</div>
+        <div class="ic-kpi-sub">dividendes bruts 2026</div>
       </div>
       <div class="ic-kpi" style="--kc:#4ade80">
-        <div class="ic-kpi-label">Reste à investir</div>
-        <div class="ic-kpi-val" id="resteKpiReste">26 000 €</div>
-        <div class="ic-kpi-sub" id="resteKpiRestePct">17,3% restants</div>
+        <div class="ic-kpi-label">Par mois (lissé)</div>
+        <div class="ic-kpi-val">~332 €</div>
+        <div class="ic-kpi-sub">moyenne mensuelle</div>
       </div>
       <div class="ic-kpi" style="--kc:#60a5fa">
-        <div class="ic-kpi-label">Temps estimé</div>
-        <div class="ic-kpi-val" id="resteTemps">26 mois</div>
-        <div class="ic-kpi-sub" id="resteTempsDate">Atteint en août 2028</div>
+        <div class="ic-kpi-label">Prochain versement</div>
+        <div class="ic-kpi-val">+51 €</div>
+        <div class="ic-kpi-sub">ASML — 5 août 2026</div>
       </div>
       <div class="ic-kpi" style="--kc:#a78bfa">
-        <div class="ic-kpi-label">Valeur PEA estimée</div>
-        <div class="ic-kpi-val" id="resteValeurFuture">—</div>
-        <div class="ic-kpi-sub">à l'objectif (TRI 9,12%)</div>
+        <div class="ic-kpi-label">Gros versement</div>
+        <div class="ic-kpi-val">3 801 €</div>
+        <div class="ic-kpi-sub">SEL — décembre 2026</div>
       </div>
     </div>
 
-    <!-- Barre de progression -->
+    <!-- Calendrier mensuel -->
     <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Progression vers l'objectif</div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:10px">
-        <span>0 €</span>
-        <span id="resteProgLabel">128 000 € / 150 000 €</span>
-        <span id="resteObjectifLabel">150 000 €</span>
-      </div>
-      <div style="height:16px;background:var(--border);border-radius:8px;overflow:hidden;position:relative">
-        <div id="resteBar" style="height:100%;background:linear-gradient(90deg,#3b82f6,#e8c547);border-radius:8px;transition:width .6s ease;width:82.7%"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:6px">
-        <span style="color:var(--accent2)">✅ Déjà investi : 128 000 €</span>
-        <span style="color:var(--accent)" id="resteBarPct">82,7%</span>
-        <span style="color:var(--text2)" id="resteBarRemain">Reste : 26 000 €</span>
-      </div>
+      <div class="card-title">Calendrier des dividendes — mois par mois</div>
+      <div id="divCalGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"></div>
     </div>
 
-    <!-- Jalons -->
+    <!-- Liste des versements à venir -->
     <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Jalons de versement</div>
-      <div id="resteJalons" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="card-title">Prochains versements confirmés</div>
+      <div id="divNextList" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
 
-    <!-- Graphique projection -->
+    <!-- Graphique annuel -->
     <div class="card">
-      <div class="card-title">Projection des versements cumulés</div>
-      <canvas id="resteChart" style="width:100%;height:260px"></canvas>
-    </div>
-
-  </div>
-
-  <!-- PAGE APRÈS IMPÔTS -->
-  <div class="page" id="page-fiscalite">
-
-    <!-- Hero -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(74,222,128,.05) 0%,transparent 70%);pointer-events:none"></div>
-      <div style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Valeur nette · PEA après prélèvements sociaux</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent2)" id="fiscHero">185 470 €</div>
-      <div style="font-size:13px;color:var(--text2);margin-top:8px">si tu retirais tout aujourd'hui</div>
-
-      <!-- Décomposition -->
-      <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:24px;flex-wrap:wrap">
-        <div style="padding:14px 20px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;text-align:center">
-          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Capital investi</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--blue)">128 000 €</div>
-        </div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--text2)">+</div>
-        <div style="padding:14px 20px;background:var(--surface2);border:1px solid rgba(74,222,128,.3);border-radius:10px;text-align:center">
-          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Plus-value nette après impôts</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)" id="fiscPvNette">+57 470 €</div>
-        </div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--text2)">=</div>
-        <div style="padding:14px 20px;background:var(--surface2);border:1px solid rgba(74,222,128,.5);border-radius:10px;text-align:center">
-          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Tu touches réellement</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)" id="fiscHero2">185 470 €</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Explication règle fiscale -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Règle fiscale PEA (ouvert depuis > 5 ans)</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px">
-        <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
-          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Impôt revenu</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent2)">0%</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:4px">Exonération totale</div>
-        </div>
-        <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
-          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Prélèvements sociaux</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent3)">18,6%</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:4px">Sur plus-values uniquement</div>
-        </div>
-        <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
-          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Taxation effective</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent)">18,6%</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:4px">vs 30% hors PEA (flat tax)</div>
-        </div>
-      </div>
-      <div style="font-size:11px;color:var(--text2);line-height:1.7;padding:10px 14px;background:var(--surface2);border-radius:8px">
-        💡 <strong style="color:var(--text)">Avantage PEA vs Compte-titres ordinaire :</strong> hors PEA, la flat tax est de <strong style="color:var(--accent3)">30%</strong> (12,8% IR + 18,6% PS). Dans ton PEA ouvert depuis avril 2017, tu économises <strong style="color:var(--accent2)" id="fiscEconomie">—</strong> d'impôt grâce à l'exonération IR.
-      </div>
-    </div>
-
-    <!-- Slider taux PS personnalisable -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Paramètres de simulation</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-        <div class="ic-control">
-          <label>Taux prélèvements sociaux (%)</label>
-          <input type="range" id="fiscTaux" min="15" max="20" step="0.1" value="18.6" oninput="updateFisc()">
-          <div class="ic-val" id="fiscTauxVal">18,6 <span>%</span></div>
-        </div>
-        <div class="ic-control">
-          <label>Retrait partiel simulé (€)</label>
-          <input type="range" id="fiscRetrait" min="1000" max="198602" step="1000" value="198602" oninput="updateFisc()">
-          <div class="ic-val" id="fiscRetraitVal">202 617 <span>€</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- KPIs -->
-    <div class="ic-kpis" style="margin-bottom:16px">
-      <div class="ic-kpi" style="--kc:#4ade80">
-        <div class="ic-kpi-label">Valeur brute</div>
-        <div class="ic-kpi-val" id="fiscBrut">202 617 €</div>
-        <div class="ic-kpi-sub">valeur actuelle du PEA</div>
-      </div>
-      <div class="ic-kpi" style="--kc:#f87171">
-        <div class="ic-kpi-label">Impôts dus</div>
-        <div class="ic-kpi-val" id="fiscImpots">—</div>
-        <div class="ic-kpi-sub" id="fiscImpotsDetail">—</div>
-      </div>
-      <div class="ic-kpi" style="--kc:#e8c547">
-        <div class="ic-kpi-label">Économie vs flat tax</div>
-        <div class="ic-kpi-val" id="fiscEconomieKpi">—</div>
-        <div class="ic-kpi-sub">vs compte-titres ordinaire</div>
-      </div>
-      <div class="ic-kpi" style="--kc:#4ade80">
-        <div class="ic-kpi-label">Valeur nette après impôts</div>
-        <div class="ic-kpi-val" id="fiscNet">—</div>
-        <div class="ic-kpi-sub" id="fiscNetDetail">—</div>
-      </div>
-    </div>
-
-    <!-- Graphique comparatif -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Comparaison PEA vs Compte-titres (flat tax 30%)</div>
-      <canvas id="fiscChart" style="width:100%;height:280px"></canvas>
-    </div>
-
-    <!-- Simulation retrait progressif -->
-    <div class="card">
-      <div class="card-title">Simulation de retrait progressif</div>
-      <div style="overflow-x:auto">
-        <table class="ic-table">
-          <thead>
-            <tr>
-              <th>Retrait</th>
-              <th>Part de la PV retirée</th>
-              <th>PS dus (18,6%)</th>
-              <th>Économie vs flat tax</th>
-              <th>Montant net</th>
-            </tr>
-          </thead>
-          <tbody id="fiscTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- PAGE MONTE CARLO -->
-  <div class="page" id="page-montecarlo">
-
-    <div class="mc-hero">
-      <div class="mc-hero-label">Simulation Monte Carlo · <span id="mcSimCount">1 000</span> scénarios</div>
-      <div class="mc-hero-desc">Modélise l'incertitude des marchés en simulant des milliers de trajectoires possibles de ton PEA, basées sur les rendements et la volatilité historiques du MSCI World.</div>
-    </div>
-
-    <!-- Contrôles -->
-    <div class="ic-controls" style="margin-bottom:16px">
-      <div class="ic-control">
-        <label>Capital de départ (€)</label>
-        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="198602">
-        <div class="ic-val" id="mcCapitalVal">198 602 <span>€</span></div>
-      </div>
-      <div class="ic-control">
-        <label>Versement mensuel (€)</label>
-        <input type="range" id="mcMonthly" min="0" max="5000" step="100" value="1000">
-        <div class="ic-val" id="mcMonthlyVal">1 000 <span>€/mois</span></div>
-      </div>
-      <div class="ic-control">
-        <label>Rendement annuel moyen (%)</label>
-        <input type="range" id="mcMean" min="3" max="15" step="0.5" value="9">
-        <div class="ic-val" id="mcMeanVal">9,0 <span>%</span></div>
-      </div>
-      <div class="ic-control">
-        <label>Volatilité annuelle (%)</label>
-        <input type="range" id="mcVol" min="5" max="30" step="1" value="15">
-        <div class="ic-val" id="mcVolVal">15 <span>%</span></div>
-      </div>
-      <div class="ic-control">
-        <label>Horizon (années)</label>
-        <input type="range" id="mcYears" min="5" max="30" step="1" value="10">
-        <div class="ic-val" id="mcYearsVal">10 <span>ans</span></div>
-      </div>
-      <div class="ic-control">
-        <label>Nombre de simulations</label>
-        <input type="range" id="mcSims" min="100" max="5000" step="100" value="1000">
-        <div class="ic-val" id="mcSimsVal">1 000 <span>sim.</span></div>
-      </div>
-    </div>
-
-    <button id="mcRunBtn" onclick="runMonteCarlo()" style="width:100%;padding:14px;background:var(--accent);color:#09090b;border:none;border-radius:10px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;margin-bottom:16px;font-weight:500;transition:opacity .2s">
-      🎲 Lancer la simulation
-    </button>
-
-    <!-- KPIs résultats -->
-    <div class="ic-kpis" id="mcKpis" style="display:none">
-      <div class="ic-kpi" style="--kc:#4ade80">
-        <div class="ic-kpi-label">Médiane (P50)</div>
-        <div class="ic-kpi-val" id="mcP50">—</div>
-        <div class="ic-kpi-sub">50% des scénarios</div>
-      </div>
-      <div class="ic-kpi" style="--kc:#e8c547">
-        <div class="ic-kpi-label">Optimiste (P90)</div>
-        <div class="ic-kpi-val" id="mcP90">—</div>
-        <div class="ic-kpi-sub">10% des meilleurs</div>
-      </div>
-      <div class="ic-kpi" style="--kc:#f87171">
-        <div class="ic-kpi-label">Pessimiste (P10)</div>
-        <div class="ic-kpi-val" id="mcP10">—</div>
-        <div class="ic-kpi-sub">10% des pires</div>
-      </div>
-      <div class="ic-kpi" style="--kc:#a78bfa">
-        <div class="ic-kpi-label">Proba. > capital investi</div>
-        <div class="ic-kpi-val" id="mcProbPos">—</div>
-        <div class="ic-kpi-sub">de finir en positif</div>
-      </div>
-    </div>
-
-    <!-- Graphique fan chart -->
-    <div class="card" id="mcChartCard" style="display:none;margin-bottom:16px">
-      <div class="card-title">Distribution des trajectoires simulées</div>
-      <canvas id="mcChart" style="width:100%;height:300px"></canvas>
-    </div>
-
-    <!-- Distribution finale -->
-    <div class="card" id="mcDistCard" style="display:none;margin-bottom:16px">
-      <div class="card-title">Distribution des valeurs finales</div>
-      <canvas id="mcDistChart" style="width:100%;height:200px"></canvas>
-    </div>
-
-    <!-- Tableau percentiles -->
-    <div class="card" id="mcTableCard" style="display:none">
-      <div class="card-title">Analyse par percentile</div>
-      <table class="ic-table">
-        <thead>
-          <tr>
-            <th>Percentile</th>
-            <th>Valeur finale</th>
-            <th>Gain vs capital investi</th>
-            <th>Performance</th>
-            <th>Interprétation</th>
-          </tr>
-        </thead>
-        <tbody id="mcTableBody"></tbody>
-      </table>
+      <div class="card-title">Répartition annuelle des dividendes</div>
+      <canvas id="divBarChart" style="height:200px"></canvas>
     </div>
 
   </div>
 
   <!-- PAGE INDÉPENDANCE FINANCIÈRE -->
   <div class="page" id="page-indep">
+
+    <!-- Hero -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(74,222,128,.05) 0%,transparent 70%);pointer-events:none"></div>
+      <div style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Ton objectif d'indépendance financière</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,30px);font-weight:300;color:var(--text2);margin-bottom:6px">Il te manque encore</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent)" id="indepHero">—</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:8px" id="indepHeroSub">pour atteindre l'indépendance financière</div>
+    </div>
+
+    <!-- Méthodes -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="ic-scenario active" onclick="setIndepMethod('4pct',this)">📐 Règle des 4%</button>
+      <button class="ic-scenario" onclick="setIndepMethod('dividendes',this)">💰 Dividendes purs</button>
+      <button class="ic-scenario" onclick="setIndepMethod('mix',this)">⚖️ Approche mixte</button>
+    </div>
+
+    <!-- Paramètres -->
+    <div class="ic-controls" style="margin-bottom:16px">
+      <div class="ic-control">
+        <label>Revenu mensuel cible (€)</label>
+        <input type="range" id="indepRevenu" min="500" max="10000" step="100" value="2000" oninput="updateIndep()">
+        <div class="ic-val" id="indepRevenuVal">2 000 <span>€/mois</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Rendement annuel attendu (%)</label>
+        <input type="range" id="indepRate" min="3" max="15" step="0.5" value="9.94" oninput="updateIndep()">
+        <div class="ic-val" id="indepRateVal">9,99 <span>%</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Versement mensuel (€)</label>
+        <input type="range" id="indepMonthly" min="0" max="3000" step="100" value="2000" oninput="updateIndep()">
+        <div class="ic-val" id="indepMonthlyVal">2 000 <span>€/mois</span></div>
+      </div>
+      <div class="ic-control">
+        <label>Taux de retrait annuel (%)</label>
+        <input type="range" id="indepWithdraw" min="2" max="6" step="0.5" value="4" oninput="updateIndep()">
+        <div class="ic-val" id="indepWithdrawVal">4,0 <span>%</span></div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="ic-kpis" style="margin-bottom:16px">
+      <div class="ic-kpi" style="--kc:#e8c547">
+        <div class="ic-kpi-label">Capital cible (IF)</div>
+        <div class="ic-kpi-val" id="indepCapCible">—</div>
+        <div class="ic-kpi-sub" id="indepCapCibleSub">—</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#4ade80">
+        <div class="ic-kpi-label">PEA actuel</div>
+        <div class="ic-kpi-val">202 617 €</div>
+        <div class="ic-kpi-sub" id="indepPEAPct">—% de l'objectif</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#60a5fa">
+        <div class="ic-kpi-label">Années restantes</div>
+        <div class="ic-kpi-val" id="indepYears">—</div>
+        <div class="ic-kpi-sub" id="indepYearsSub">—</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#a78bfa">
+        <div class="ic-kpi-label">Revenus actuels (PEA)</div>
+        <div class="ic-kpi-val" id="indepRevActuel">—</div>
+        <div class="ic-kpi-sub">si tu retirais dès maintenant</div>
+      </div>
+    </div>
+
+    <!-- Explication méthode -->
+    <div class="ic-doubling" id="indepMethodExpl" style="margin-bottom:16px"></div>
+
+    <!-- Barre de progression -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Progression vers l'indépendance financière</div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:10px">
+        <span>0 €</span>
+        <span id="indepProgLabel">202 617 € / — €</span>
+        <span id="indepCibleLabel">— €</span>
+      </div>
+      <div style="height:16px;background:var(--border);border-radius:8px;overflow:hidden">
+        <div id="indepBar" style="height:100%;background:linear-gradient(90deg,#3b82f6,#e8c547);border-radius:8px;transition:width .6s ease;width:0%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:6px">
+        <span style="color:var(--accent2)" id="indepBarLeft">PEA actuel</span>
+        <span style="color:var(--accent)" id="indepBarPct">—%</span>
+        <span id="indepBarRight">Objectif IF</span>
+      </div>
+    </div>
+
+    <!-- Graphique trajectoire -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Trajectoire vers l'indépendance financière</div>
+      <canvas id="indepChart" style="width:100%;height:300px"></canvas>
+    </div>
+
+    <!-- Comparaison 3 méthodes -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Comparaison des 3 méthodes</div>
+      <div style="overflow-x:auto">
+        <table class="ic-table">
+          <thead>
+            <tr>
+              <th>Méthode</th>
+              <th>Capital cible</th>
+              <th>Revenu mensuel</th>
+              <th>Années estimées</th>
+              <th>Avantage</th>
+            </tr>
+          </thead>
+          <tbody id="indepCompTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Scénarios après IF -->
+    <div class="card">
+      <div class="card-title">Simulation de vie après indépendance financière</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" id="indepScenarios"></div>
+    </div>
+
+  </div>
+
+  <div class="note">Capital investi : 128 000 € · TRI : 8,91%/an · Espèces : 75 € · PV latentes : 44 761 € · ASML +156% · 1er rappel calendar juillet · SEL +22% PV · ASML +115% PV · Données Bourse Direct 1 août 2026</div>
+
+    <div class="page" id="page-indep">
 
     <!-- Hero -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center">
@@ -2907,23 +2723,76 @@ function renderTL(idx){
 document.getElementById('tlSlider').addEventListener('input',e=>renderTL(parseInt(e.target.value)));
 renderTL(5);
 
-// ── DIVIDENDS ──────────────────────────────────────────────────
-const dg=document.getElementById('divGrid');
-const maxDiv=Math.max(...Object.values(divMonths));
-Object.entries(divMonths).forEach(([m,amt])=>{
-  const el=document.createElement('div');el.className='div-month';
-  const h=Math.max(4,amt/maxDiv*60);
-  el.innerHTML=`<div class="div-month-name">${m}</div><div class="div-bar${amt>0?' active':''}" style="height:${h}px"></div>${amt>0?`<div class="div-amount">${amt>100?Math.round(amt/1000)+'k':amt}€</div>`:''}`;
-  dg.appendChild(el);
-});
-const dl=document.getElementById('divList');
-dividends.forEach(d=>{
-  const el=document.createElement('div');el.className='div-item';
-  el.innerHTML=`<div class="div-date">${d.date}</div><div class="div-source">${d.source}</div><div class="div-amt">${fmt(d.amount)}</div><div class="div-badge${d.confirmed?' confirmed':''}">${d.confirmed?'✅ Confirmé':'Estimé'}</div>`;
-  dl.appendChild(el);
-});
+// ── DIVIDENDES — CALENDRIER MENSUEL ──────────────────────────
+const divData2026 = {
+  Jan:0, Fév:0, Mar:0, Avr:0, Mai:0, Juin:0,
+  Juil:0, Août:50.76, Sep:0, Oct:0, Nov:43, Déc:3801
+};
 
+const calGrid = document.getElementById('divCalGrid');
+if(calGrid) {
+  const maxDiv2 = Math.max(...Object.values(divData2026));
+  Object.entries(divData2026).forEach(([mois, amt]) => {
+    const hasDiv = amt > 0;
+    const intensity = hasDiv ? Math.max(0.15, amt / maxDiv2) : 0;
+    const el = document.createElement('div');
+    el.style.cssText = `padding:14px 12px;background:${hasDiv ? `rgba(232,197,71,${(intensity*0.25+0.05).toFixed(2)})` : 'var(--surface2)'};border:1px solid ${hasDiv ? `rgba(232,197,71,${(intensity*0.6).toFixed(2)})` : 'var(--border)'};border-radius:10px;text-align:center;position:relative;`;
+    el.innerHTML = `
+      <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:${hasDiv?'var(--accent)':'var(--text2)'};margin-bottom:6px">${mois}</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:${amt>1000?'22px':'18px'};color:${hasDiv?'var(--accent)':'var(--text2)'};opacity:${hasDiv?1:0.3};line-height:1">${hasDiv ? new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(amt)+' €' : '—'}</div>
+      ${hasDiv ? `<div style="font-size:9px;color:var(--text2);margin-top:4px">${amt === 3801 ? 'SEL' : 'ASML'}</div>` : ''}
+      ${amt >= 3000 ? '<div style="position:absolute;top:6px;right:6px;font-size:8px;background:rgba(232,197,71,.2);color:var(--accent);padding:2px 5px;border-radius:10px">⭐ GROS</div>' : ''}
+    `;
+    calGrid.appendChild(el);
+  });
+}
 
+const nextList = document.getElementById('divNextList');
+if(nextList) {
+  dividends.forEach(d => {
+    const el = document.createElement('div');
+    el.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--accent)';
+    el.innerHTML = `
+      <div style="font-size:20px">${d.confirmed ? '✅' : '📅'}</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:500;color:var(--text)">${d.source}</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:2px">${d.date}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--accent)">+${new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(d.amount)} €</div>
+        <div style="font-size:9px;color:var(--text2)">${d.confirmed ? 'Confirmé' : 'Estimé'}</div>
+      </div>
+    `;
+    nextList.appendChild(el);
+  });
+}
+
+const divBarEl = document.getElementById('divBarChart');
+if(divBarEl) {
+  new Chart(divBarEl, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(divData2026),
+      datasets: [{
+        label: 'Dividendes (€)',
+        data: Object.values(divData2026),
+        backgroundColor: Object.values(divData2026).map(v => v > 0 ? 'rgba(232,197,71,.7)' : 'rgba(39,39,42,.5)'),
+        borderColor: Object.values(divData2026).map(v => v > 0 ? '#e8c547' : 'transparent'),
+        borderWidth: 2, borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, callbacks: { label: ctx => ctx.raw > 0 ? ` ${new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(ctx.raw)} €` : ' Aucun dividende' } } },
+      scales: {
+        x: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 10 } } },
+        y: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 10 }, callback: v => v > 0 ? new Intl.NumberFormat('fr-FR').format(v)+'€' : '' } }
+      }
+    }
+  });
+}
+
+// Ancienne section divGrid pour compatibilité
 
 // ── SERVICE WORKER (PWA) ──
 if ('serviceWorker' in navigator) {
