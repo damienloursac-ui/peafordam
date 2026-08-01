@@ -253,6 +253,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="nav" style="margin-bottom:0">
       <button class="nav-tab active" onclick="showPage('portfolio',this)">📊 Portefeuille</button>
       <button class="nav-tab" onclick="showPage('tri',this)">📐 TRI</button>
+      <button class="nav-tab" onclick="showPage('historique',this)">📉 Historique</button>
       <button class="nav-tab" onclick="showPage('timeline',this)">📈 Timeline</button>
       <button class="nav-tab" onclick="showPage('dividends',this)">💰 Dividendes</button>
       <button class="nav-tab" onclick="showPage('reste',this)">🎯 Reste à investir</button>
@@ -285,6 +286,72 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <div class="card-title">Plus-values latentes par ligne</div>
       <div class="pv-bars" id="pvBars"></div>
     </div>
+  </div>
+
+  <!-- PAGE HISTORIQUE -->
+  <div class="page" id="page-historique">
+
+    <!-- Hero KPIs évolution -->
+    <div class="ic-kpis" style="margin-bottom:16px">
+      <div class="ic-kpi" style="--kc:#e8c547">
+        <div class="ic-kpi-label">TRI actuel</div>
+        <div class="ic-kpi-val" id="histTRIActuel">9,56%</div>
+        <div class="ic-kpi-sub" id="histTRISub">annualisé sur 9 ans</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#4ade80">
+        <div class="ic-kpi-label">Meilleur mois</div>
+        <div class="ic-kpi-val" id="histBest">—</div>
+        <div class="ic-kpi-sub" id="histBestSub">—</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#f87171">
+        <div class="ic-kpi-label">Pire mois</div>
+        <div class="ic-kpi-val" id="histWorst">—</div>
+        <div class="ic-kpi-sub" id="histWorstSub">—</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#60a5fa">
+        <div class="ic-kpi-label">Gain depuis mai 2026</div>
+        <div class="ic-kpi-val" id="histGainTotal">—</div>
+        <div class="ic-kpi-sub" id="histGainSub">—</div>
+      </div>
+    </div>
+
+    <!-- Graphique évolution valeur -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Évolution de la valeur du PEA — mois par mois</div>
+      <canvas id="histValueChart" style="height:260px"></canvas>
+    </div>
+
+    <!-- Graphique TRI mensuel -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Évolution du TRI annualisé — mois par mois</div>
+      <canvas id="histTRIChart" style="height:220px"></canvas>
+    </div>
+
+    <!-- Graphique composition -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Composition du portefeuille dans le temps</div>
+      <canvas id="histCompoChart" style="height:220px"></canvas>
+    </div>
+
+    <!-- Tableau récapitulatif -->
+    <div class="card">
+      <div class="card-title">Tableau mensuel</div>
+      <div style="overflow-x:auto">
+        <table class="ic-table">
+          <thead>
+            <tr>
+              <th>Mois</th>
+              <th>Valeur PEA</th>
+              <th>Variation</th>
+              <th>Gain cumulé</th>
+              <th>TRI</th>
+            </tr>
+          </thead>
+          <tbody id="histTable"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
   <!-- PAGE TRI -->
@@ -1153,14 +1220,39 @@ new Chart(document.getElementById('mainDonut'),{
 });
 
 const lt=document.getElementById('linesTable');
+// Previous snapshot for delta alerts
+const prevSnap = snapshots[snapshots.length - 2]; // mois précédent
 currentData.forEach(d=>{
   const pct=(d.value/total*100).toFixed(1);
   const inv=d.pru*d.parts;
   const gp=((d.value-inv)/inv*100).toFixed(1);
   const isPos=parseFloat(gp)>=0;
+
+  // Calcul delta vs mois précédent
+  let alertBadge = '';
+  let alertBorder = '';
+  if(prevSnap) {
+    const prevLine = prevSnap.lines.find(l => l.ticker === d.ticker);
+    if(prevLine) {
+      const delta = ((d.value - prevLine.value) / prevLine.value * 100);
+      const deltaFmt = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%';
+      if(delta <= -10) {
+        alertBadge = `<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.4);color:#f87171;font-size:9px;padding:2px 7px;border-radius:20px;margin-left:6px">🔴 ${deltaFmt} vs mois préc.</div>`;
+        alertBorder = 'border-left:3px solid #f87171;';
+      } else if(delta >= 10) {
+        alertBadge = `<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.35);color:#4ade80;font-size:9px;padding:2px 7px;border-radius:20px;margin-left:6px">🟢 ${deltaFmt} vs mois préc.</div>`;
+        alertBorder = 'border-left:3px solid #4ade80;';
+      } else if(delta <= -5) {
+        alertBadge = `<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(251,146,60,.12);border:1px solid rgba(251,146,60,.35);color:#fb923c;font-size:9px;padding:2px 7px;border-radius:20px;margin-left:6px">🟡 ${deltaFmt} vs mois préc.</div>`;
+        alertBorder = 'border-left:3px solid #fb923c;';
+      }
+    }
+  }
+
   const el=document.createElement('div');
   el.className='line-row';
-  el.innerHTML=`<div class="line-color" style="background:${COLORS[d.ticker]}"></div><div><div class="line-ticker">${d.ticker}</div><div class="line-name">${d.parts} parts</div></div><div style="flex:1;font-size:10px;color:var(--text2)">${d.name}</div><div class="line-right"><div class="line-val">${fmt(d.value)}</div><div class="line-meta">${pct}% · PRU ${d.pru}€</div><div class="line-pv ${isPos?'pos':'neg'}">${isPos?'+':''}${gp}%</div></div>`;
+  el.style.cssText = alertBorder;
+  el.innerHTML=`<div class="line-color" style="background:${COLORS[d.ticker]}"></div><div><div class="line-ticker">${d.ticker}</div><div class="line-name">${d.parts} parts</div></div><div style="flex:1;font-size:10px;color:var(--text2)">${d.name}${alertBadge}</div><div class="line-right"><div class="line-val">${fmt(d.value)}</div><div class="line-meta">${pct}% · PRU ${d.pru}€</div><div class="line-pv ${isPos?'pos':'neg'}">${isPos?'+':''}${gp}%</div></div>`;
   lt.appendChild(el);
 });
 
@@ -1730,6 +1822,156 @@ function runDcSim() {
   document.getElementById(id).addEventListener('input', updateTargetVals);
 });
 updateTargetVals();
+
+// ── HISTORIQUE DES PERFORMANCES ────────────────────────────────
+
+// Données historiques TRI par mois
+const histData = [
+  { date:'Mai 2026',  total:185672, capital:120000, tri:8.50 },
+  { date:'Juin 2026', total:202617, capital:124000, tri:9.99 },
+  { date:'Juil 2026', total:202178, capital:128000, tri:9.94 },
+  { date:'Août 2026', total:198502, capital:128000, tri:9.56 },
+];
+
+(function buildHistorique() {
+  const labels    = histData.map(d => d.date);
+  const values    = histData.map(d => d.total);
+  const tris      = histData.map(d => d.tri);
+  const capitals  = histData.map(d => d.capital);
+  const gains     = histData.map(d => d.total - d.capital);
+
+  // KPIs
+  const deltas = histData.map((d,i) => i===0 ? 0 : d.total - histData[i-1].total);
+  const bestIdx  = deltas.indexOf(Math.max(...deltas.slice(1))) ;
+  const worstIdx = deltas.indexOf(Math.min(...deltas.slice(1)));
+  const gainTotal = histData[histData.length-1].total - histData[0].total;
+  const gainPct   = (gainTotal / histData[0].total * 100).toFixed(1);
+
+  document.getElementById('histTRIActuel').textContent = tris[tris.length-1].toFixed(2).replace('.',',') + '%';
+  document.getElementById('histTRISub').textContent    = 'annualisé · ' + histData[histData.length-1].date;
+  document.getElementById('histBest').textContent      = (deltas[bestIdx] >= 0 ? '+' : '') + new Intl.NumberFormat('fr-FR').format(Math.round(deltas[bestIdx])) + ' €';
+  document.getElementById('histBestSub').textContent   = histData[bestIdx]?.date || '—';
+  document.getElementById('histWorst').textContent     = (deltas[worstIdx] >= 0 ? '+' : '') + new Intl.NumberFormat('fr-FR').format(Math.round(deltas[worstIdx])) + ' €';
+  document.getElementById('histWorstSub').textContent  = histData[worstIdx]?.date || '—';
+  document.getElementById('histGainTotal').textContent = (gainTotal >= 0 ? '+' : '') + new Intl.NumberFormat('fr-FR').format(Math.round(gainTotal)) + ' €';
+  document.getElementById('histGainSub').textContent   = (gainTotal >= 0 ? '+' : '') + gainPct + '% sur la période';
+
+  // Graphique valeur
+  new Chart(document.getElementById('histValueChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Valeur PEA', data: values, borderColor: '#e8c547', backgroundColor: 'rgba(232,197,71,.1)', fill: true, tension: .3, borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#e8c547', pointBorderColor: '#09090b', pointBorderWidth: 2 },
+        { label: 'Capital investi', data: capitals, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,.05)', fill: true, tension: .3, borderWidth: 2, borderDash: [6,4], pointRadius: 4, pointBackgroundColor: '#3b82f6' },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 11 }, boxWidth: 10 } },
+        tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, callbacks: { label: ctx => ` ${ctx.dataset.label} : ${fmt(ctx.raw)}` } }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 } } },
+        y: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 }, callback: v => new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(v) + '€' } }
+      }
+    }
+  });
+
+  // Graphique TRI
+  new Chart(document.getElementById('histTRIChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'TRI annualisé (%)',
+        data: tris,
+        backgroundColor: tris.map(t => t >= 9 ? 'rgba(74,222,128,.7)' : t >= 7 ? 'rgba(232,197,71,.7)' : 'rgba(248,113,113,.7)'),
+        borderColor:     tris.map(t => t >= 9 ? '#4ade80' : t >= 7 ? '#e8c547' : '#f87171'),
+        borderWidth: 2, borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, callbacks: { label: ctx => ` TRI : ${ctx.raw.toFixed(2).replace('.',',')}%` } }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 } } },
+        y: { grid: { color: 'rgba(39,39,42,.4)' }, min: 7, max: 12, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 }, callback: v => v + '%' } }
+      }
+    }
+  });
+
+  // Graphique composition (barres empilées)
+  const tickerColors = { DCAM: '#3b82f6', SEL: '#10b981', ASML: '#f59e0b', PAEEM: '#a78bfa', GUARD: '#f87171' };
+  const tickers = ['DCAM', 'SEL', 'ASML', 'PAEEM'];
+  const compoDatasets = tickers.map(ticker => ({
+    label: ticker,
+    data: histData.map(d => {
+      const line = d.lines ? d.lines.find(l => l.ticker === ticker) : null;
+      return line ? Math.round(line.value / d.total * 100) : null;
+    }),
+    backgroundColor: tickerColors[ticker] + 'cc',
+    borderColor: tickerColors[ticker],
+    borderWidth: 1, borderRadius: 3,
+  }));
+
+  // Ajouter les données de lignes aux snapshots
+  histData[0].lines = [{ticker:'DCAM',value:61869},{ticker:'SEL',value:66871},{ticker:'ASML',value:37568},{ticker:'PAEEM',value:7005}];
+  histData[1].lines = [{ticker:'DCAM',value:82713},{ticker:'SEL',value:67106},{ticker:'ASML',value:45371},{ticker:'PAEEM',value:7360}];
+  histData[2].lines = [{ticker:'DCAM',value:82890},{ticker:'SEL',value:66020},{ticker:'ASML',value:46078},{ticker:'PAEEM',value:7115}];
+  histData[3].lines = [{ticker:'DCAM',value:82236},{ticker:'SEL',value:70907},{ticker:'ASML',value:38723},{ticker:'PAEEM',value:6636}];
+
+  const compoDatasets2 = tickers.map(ticker => ({
+    label: ticker,
+    data: histData.map(d => {
+      const line = d.lines.find(l => l.ticker === ticker);
+      return line ? Math.round(line.value / d.total * 100) : 0;
+    }),
+    backgroundColor: tickerColors[ticker] + 'cc',
+    borderColor: tickerColors[ticker],
+    borderWidth: 1,
+  }));
+
+  new Chart(document.getElementById('histCompoChart'), {
+    type: 'bar',
+    data: { labels, datasets: compoDatasets2 },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 11 }, boxWidth: 10 } },
+        tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, callbacks: { label: ctx => ` ${ctx.dataset.label} : ${ctx.raw}%` } }
+      },
+      scales: {
+        x: { stacked: true, grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 } } },
+        y: { stacked: true, grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 }, callback: v => v + '%' }, max: 100 }
+      }
+    }
+  });
+
+  // Tableau
+  const tb = document.getElementById('histTable');
+  histData.forEach((d, i) => {
+    const delta = i === 0 ? 0 : d.total - histData[i-1].total;
+    const deltaStr = (delta >= 0 ? '+' : '') + new Intl.NumberFormat('fr-FR').format(Math.round(delta)) + ' €';
+    const deltaColor = delta >= 0 ? 'var(--accent2)' : 'var(--accent3)';
+    const gain = d.total - d.capital;
+    const tr = document.createElement('tr');
+    if(i === histData.length - 1) tr.className = 'yr-milestone';
+    tr.innerHTML = `
+      <td>${d.date}</td>
+      <td>${fmt(d.total)}</td>
+      <td style="color:${deltaColor}">${i === 0 ? '—' : deltaStr}</td>
+      <td class="${gain >= 0 ? 'pos' : 'neg'}">${gain >= 0 ? '+' : ''}${fmt(gain)}</td>
+      <td style="color:${d.tri >= 9 ? 'var(--accent2)' : d.tri >= 7 ? 'var(--accent)' : 'var(--accent3)'}">${d.tri.toFixed(2).replace('.',',')}%</td>
+    `;
+    tb.appendChild(tr);
+  });
+})();
 
 // ── RESTE À INVESTIR ──────────────────────────────────────────
 const INVESTI = 128000;
