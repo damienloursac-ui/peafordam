@@ -380,7 +380,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="card" style="margin-top:16px">
       <div class="card-title">📸 Snapshots mensuels — Détail des lignes</div>
       <div style="margin-bottom:12px">
-        <input type="range" id="tlSlider" min="0" max="3" step="1" value="3" style="width:100%;accent-color:var(--accent)" oninput="updateTimeline()">
+        <input type="range" id="tlSlider" min="0" max="3" step="1" value="3" style="width:100%;accent-color:var(--accent)" oninput="renderTL(parseInt(this.value))">
         <div id="tlDate" style="text-align:center;font-size:11px;color:var(--text2);margin-top:4px"></div>
       </div>
       <div id="tlLines" style="display:flex;flex-direction:column;gap:8px"></div>
@@ -607,6 +607,110 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
   </div>
 
   <!-- PAGE INDÉPENDANCE FINANCIÈRE -->
+
+  <!-- PAGE APRÈS IMPÔTS -->
+  <div class="page" id="page-fiscalite">
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(74,222,128,.05) 0%,transparent 70%);pointer-events:none"></div>
+      <div style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Valeur nette · PEA après prélèvements sociaux</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent2)" id="fiscHero">188 381 €</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:8px">si tu retirais tout aujourd'hui</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:24px;flex-wrap:wrap">
+        <div style="padding:14px 20px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Capital investi</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--blue)">128 000 €</div>
+        </div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--text2)">+</div>
+        <div style="padding:14px 20px;background:var(--surface2);border:1px solid rgba(74,222,128,.3);border-radius:10px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Plus-value nette après impôts</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)" id="fiscPvNette">+60 381 €</div>
+        </div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--text2)">=</div>
+        <div style="padding:14px 20px;background:var(--surface2);border:1px solid rgba(74,222,128,.5);border-radius:10px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Tu touches réellement</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)" id="fiscHero2">188 381 €</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Règle fiscale PEA (ouvert depuis > 5 ans)</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px">
+        <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Impôt revenu</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent2)">0%</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px">Exonération totale</div>
+        </div>
+        <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Prélèvements sociaux</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent3)">18,6%</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px">Sur plus-values uniquement</div>
+        </div>
+        <div style="padding:14px;background:var(--surface2);border-radius:8px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Taxation effective</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent)">18,6%</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px">vs 30% hors PEA (flat tax)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Paramètres de simulation</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="ic-control">
+          <label>Taux prélèvements sociaux (%)</label>
+          <input type="range" id="fiscTaux" min="15" max="20" step="0.1" value="18.6" oninput="updateFisc()">
+          <div class="ic-val" id="fiscTauxVal">18,6 <span>%</span></div>
+        </div>
+        <div class="ic-control">
+          <label>Retrait simulé (€)</label>
+          <input type="range" id="fiscRetrait" min="1000" max="202617" step="1000" value="202617" oninput="updateFisc()">
+          <div class="ic-val" id="fiscRetraitVal">202 617 <span>€</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ic-kpis" style="margin-bottom:16px">
+      <div class="ic-kpi" style="--kc:#4ade80">
+        <div class="ic-kpi-label">Valeur brute</div>
+        <div class="ic-kpi-val" id="fiscBrut">202 617 €</div>
+        <div class="ic-kpi-sub">valeur actuelle du PEA</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#f87171">
+        <div class="ic-kpi-label">Impôts dus</div>
+        <div class="ic-kpi-val" id="fiscImpots">—</div>
+        <div class="ic-kpi-sub" id="fiscImpotsDetail">—</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#e8c547">
+        <div class="ic-kpi-label">Économie vs flat tax</div>
+        <div class="ic-kpi-val" id="fiscEconomieKpi">—</div>
+        <div class="ic-kpi-sub">vs compte-titres ordinaire</div>
+      </div>
+      <div class="ic-kpi" style="--kc:#4ade80">
+        <div class="ic-kpi-label">Valeur nette</div>
+        <div class="ic-kpi-val" id="fiscNet">—</div>
+        <div class="ic-kpi-sub" id="fiscNetDetail">—</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Comparaison PEA vs Compte-titres (flat tax 30%)</div>
+      <canvas id="fiscChart" style="width:100%;height:260px"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Simulation de retrait progressif</div>
+      <div style="overflow-x:auto">
+        <table class="ic-table">
+          <thead><tr><th>Retrait</th><th>PS dus (18,6%)</th><th>Économie vs flat tax</th><th>Montant net</th></tr></thead>
+          <tbody id="fiscTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
   <div class="page" id="page-indep">
 
     <!-- Hero -->
@@ -729,126 +833,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 
   <div class="note">Capital investi : 128 000 € · TRI : 8,91%/an · Espèces : 75 € · PV latentes : 44 761 € · ASML +156% · 1er rappel calendar juillet · SEL +22% PV · ASML +115% PV · Données Bourse Direct 1 août 2026</div>
 
-    <div class="page" id="page-indep">
-
-    <!-- Hero -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(74,222,128,.05) 0%,transparent 70%);pointer-events:none"></div>
-      <div style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Ton objectif d'indépendance financière</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,30px);font-weight:300;color:var(--text2);margin-bottom:6px">Il te manque encore</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent)" id="indepHero">—</div>
-      <div style="font-size:13px;color:var(--text2);margin-top:8px" id="indepHeroSub">pour atteindre l'indépendance financière</div>
-    </div>
-
-    <!-- Méthodes -->
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-      <button class="ic-scenario active" onclick="setIndepMethod('4pct',this)">📐 Règle des 4%</button>
-      <button class="ic-scenario" onclick="setIndepMethod('dividendes',this)">💰 Dividendes purs</button>
-      <button class="ic-scenario" onclick="setIndepMethod('mix',this)">⚖️ Approche mixte</button>
-    </div>
-
-    <!-- Paramètres -->
-    <div class="ic-controls" style="margin-bottom:16px">
-      <div class="ic-control">
-        <label>Revenu mensuel cible (€)</label>
-        <input type="range" id="indepRevenu" min="500" max="10000" step="100" value="2000" oninput="updateIndep()">
-        <div class="ic-val" id="indepRevenuVal">2 000 <span>€/mois</span></div>
-      </div>
-      <div class="ic-control">
-        <label>Rendement annuel attendu (%)</label>
-        <input type="range" id="indepRate" min="3" max="15" step="0.5" value="9.94" oninput="updateIndep()">
-        <div class="ic-val" id="indepRateVal">9,99 <span>%</span></div>
-      </div>
-      <div class="ic-control">
-        <label>Versement mensuel (€)</label>
-        <input type="range" id="indepMonthly" min="0" max="3000" step="100" value="2000" oninput="updateIndep()">
-        <div class="ic-val" id="indepMonthlyVal">2 000 <span>€/mois</span></div>
-      </div>
-      <div class="ic-control">
-        <label>Taux de retrait annuel (%)</label>
-        <input type="range" id="indepWithdraw" min="2" max="6" step="0.5" value="4" oninput="updateIndep()">
-        <div class="ic-val" id="indepWithdrawVal">4,0 <span>%</span></div>
-      </div>
-    </div>
-
-    <!-- KPIs -->
-    <div class="ic-kpis" style="margin-bottom:16px">
-      <div class="ic-kpi" style="--kc:#e8c547">
-        <div class="ic-kpi-label">Capital cible (IF)</div>
-        <div class="ic-kpi-val" id="indepCapCible">—</div>
-        <div class="ic-kpi-sub" id="indepCapCibleSub">—</div>
-      </div>
-      <div class="ic-kpi" style="--kc:#4ade80">
-        <div class="ic-kpi-label">PEA actuel</div>
-        <div class="ic-kpi-val">202 617 €</div>
-        <div class="ic-kpi-sub" id="indepPEAPct">—% de l'objectif</div>
-      </div>
-      <div class="ic-kpi" style="--kc:#60a5fa">
-        <div class="ic-kpi-label">Années restantes</div>
-        <div class="ic-kpi-val" id="indepYears">—</div>
-        <div class="ic-kpi-sub" id="indepYearsSub">—</div>
-      </div>
-      <div class="ic-kpi" style="--kc:#a78bfa">
-        <div class="ic-kpi-label">Revenus actuels (PEA)</div>
-        <div class="ic-kpi-val" id="indepRevActuel">—</div>
-        <div class="ic-kpi-sub">si tu retirais dès maintenant</div>
-      </div>
-    </div>
-
-    <!-- Explication méthode -->
-    <div class="ic-doubling" id="indepMethodExpl" style="margin-bottom:16px"></div>
-
-    <!-- Barre de progression -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Progression vers l'indépendance financière</div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:10px">
-        <span>0 €</span>
-        <span id="indepProgLabel">202 617 € / — €</span>
-        <span id="indepCibleLabel">— €</span>
-      </div>
-      <div style="height:16px;background:var(--border);border-radius:8px;overflow:hidden">
-        <div id="indepBar" style="height:100%;background:linear-gradient(90deg,#3b82f6,#e8c547);border-radius:8px;transition:width .6s ease;width:0%"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:6px">
-        <span style="color:var(--accent2)" id="indepBarLeft">PEA actuel</span>
-        <span style="color:var(--accent)" id="indepBarPct">—%</span>
-        <span id="indepBarRight">Objectif IF</span>
-      </div>
-    </div>
-
-    <!-- Graphique trajectoire -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Trajectoire vers l'indépendance financière</div>
-      <canvas id="indepChart" style="width:100%;height:300px"></canvas>
-    </div>
-
-    <!-- Comparaison 3 méthodes -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Comparaison des 3 méthodes</div>
-      <div style="overflow-x:auto">
-        <table class="ic-table">
-          <thead>
-            <tr>
-              <th>Méthode</th>
-              <th>Capital cible</th>
-              <th>Revenu mensuel</th>
-              <th>Années estimées</th>
-              <th>Avantage</th>
-            </tr>
-          </thead>
-          <tbody id="indepCompTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Scénarios après IF -->
-    <div class="card">
-      <div class="card-title">Simulation de vie après indépendance financière</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" id="indepScenarios"></div>
-    </div>
-
-  </div>
-
+    
   <div class="note">Capital investi : 128 000 € · TRI : 8,91%/an · Espèces : 75 € · PV latentes : 44 761 € · ASML +156% · 1er rappel calendar juillet · SEL +22% PV · ASML +115% PV · Données Bourse Direct 1 août 2026</div>
 
   <!-- PAGE SIMULATEUR DIVIDENDES -->
@@ -1163,14 +1148,17 @@ const fmt=n=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(n)+
 const fmtD=n=>(n>=0?'+':'')+new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(n)+' €';
 
 // NAV
+let histBuilt = false;
+let currentETF = 'dcam';
+
 function showPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   el.classList.add('active');
-  if(id === 'historique') buildHistorique();
-  if(id === 'etfcompo') renderETF(currentETF || 'dcam');
-  if(id === 'dividends') buildDividends();
+  if(id === 'historique') setTimeout(buildHistorique, 50);
+  if(id === 'etfcompo') setTimeout(() => renderETF(currentETF || 'dcam'), 50);
+  if(id === 'dividends') setTimeout(buildDividends, 50);
 }
 
 // ── PORTFOLIO ──────────────────────────────────────────────────
@@ -1898,13 +1886,15 @@ const histData = [
   { date:'Août 2026', total:198502, capital:128000, tri:9.56 },
 ];
 
-let histBuilt = false;
 
 function buildHistorique() {
   if(histBuilt) return;
   histBuilt = true;
+  // Petit délai pour laisser la page devenir visible avant de dessiner les charts
+  setTimeout(_doHistorique, 50);
+}
 
-  const labels    = histData.map(d => d.date);
+function _doHistorique() {
   const values    = histData.map(d => d.total);
   const tris      = histData.map(d => d.tri);
   const capitals  = histData.map(d => d.capital);
@@ -2043,8 +2033,9 @@ function buildHistorique() {
   });
 }
 
-// Appel immédiat pour le premier rendu
-buildHistorique();
+
+
+// buildHistorique() appelé via showPage uniquement
 
 // ── RESTE À INVESTIR ──────────────────────────────────────────
 const INVESTI = 128000;
@@ -2756,7 +2747,12 @@ const divData2026 = {
 
 function buildDividends() {
   const calGrid = document.getElementById('divCalGrid');
-  if(!calGrid || calGrid.children.length > 0) return; // already built
+  if(!calGrid || calGrid.children.length > 0) return;
+  setTimeout(_doDividends, 50);
+}
+
+function _doDividends() {
+  const calGrid = document.getElementById('divCalGrid');
   {
   const maxDiv2 = Math.max(...Object.values(divData2026));
   Object.entries(divData2026).forEach(([mois, amt]) => {
@@ -2820,7 +2816,7 @@ if(divBarEl) {
   }
 }
 
-// Ancienne section divGrid pour compatibilité
+}
 
 // ── COMPOSITION ETF ──────────────────────────────────────────
 const etfData = {
@@ -2953,13 +2949,11 @@ const etfData = {
 };
 
 let etfBuilt = false;
-let currentETF = 'dcam';
-
 function showETF(key, el) {
   currentETF = key;
   document.querySelectorAll('#page-etfcompo .ic-scenario').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-  renderETF(key);
+  setTimeout(() => renderETF(key), 50);
 }
 
 function renderETF(key) {
