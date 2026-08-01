@@ -221,7 +221,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <h1>Portfolio <em>Dashboard</em></h1>
     </div>
     <div class="header-right">
-      <div class="header-date">Dernière MàJ : 1 juillet 2026</div>
+      <div class="header-date">Dernière MàJ : 1 août 2026</div>
     </div>
   </div>
 
@@ -238,7 +238,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     </div>
     <div class="kpi-card" style="--kc:#e8c547">
       <div class="kpi-label">TRI annualisé</div>
-      <div class="kpi-val">9,94 %</div>
+      <div class="kpi-val">9,56 %</div>
       <div class="kpi-sub highlight">Base : 128 000 € investis</div>
     </div>
     <div class="kpi-card" style="--kc:#a78bfa">
@@ -292,7 +292,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 
     <div class="tri-hero">
       <div class="tri-label">Taux de Rendement Interne · Depuis avril 2017</div>
-      <div class="tri-big">9,94%</div>
+      <div class="tri-big">9,56%</div>
       <div class="tri-sub">par an · sur <strong>9 ans</strong> · versements de <strong>1 000 €/mois</strong></div>
     </div>
 
@@ -353,7 +353,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <div class="ic-scenarios">
         <div class="ic-scenario" onclick="setICScenario(4,this)">📉 Pessimiste<br><strong>4%</strong>/an</div>
         <div class="ic-scenario" onclick="setICScenario(7,this)">📊 Réaliste<br><strong>7%</strong>/an</div>
-        <div class="ic-scenario active" onclick="setICScenario(9.94,this)">🎯 Mon TRI<br><strong>9,94%</strong>/an</div>
+        <div class="ic-scenario active" onclick="setICScenario(9.56,this)">🎯 Mon TRI<br><strong>9,56%</strong>/an</div>
         <div class="ic-scenario" onclick="setICScenario(12,this)">🚀 Optimiste<br><strong>12%</strong>/an</div>
       </div>
     </div>
@@ -362,12 +362,12 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="ic-controls">
       <div class="ic-control">
         <label>Capital de départ (€)</label>
-        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="202178">
-        <div class="ic-val" id="icCapitalVal">202 178 <span>€</span></div>
+        <input type="range" id="icCapital" min="0" max="400000" step="1000" value="198602">
+        <div class="ic-val" id="icCapitalVal">198 602 <span>€</span></div>
       </div>
       <div class="ic-control">
         <label>Rendement annuel (%)</label>
-        <input type="range" id="icRate" min="1" max="20" step="0.1" value="9.94">
+        <input type="range" id="icRate" min="1" max="20" step="0.1" value="9.56">
         <div class="ic-val" id="icRateVal">9,94 <span>%</span></div>
       </div>
       <div class="ic-control">
@@ -563,7 +563,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center">
       <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(74,222,128,.05) 0%,transparent 70%);pointer-events:none"></div>
       <div style="font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Valeur nette · PEA après prélèvements sociaux</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent2)" id="fiscHero">188 381 €</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,96px);font-weight:300;line-height:1;color:var(--accent2)" id="fiscHero">185 470 €</div>
       <div style="font-size:13px;color:var(--text2);margin-top:8px">si tu retirais tout aujourd'hui</div>
 
       <!-- Décomposition -->
@@ -575,12 +575,12 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
         <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--text2)">+</div>
         <div style="padding:14px 20px;background:var(--surface2);border:1px solid rgba(74,222,128,.3);border-radius:10px;text-align:center">
           <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Plus-value nette après impôts</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)" id="fiscPvNette">+60 381 €</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)" id="fiscPvNette">+57 470 €</div>
         </div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--text2)">=</div>
         <div style="padding:14px 20px;background:var(--surface2);border:1px solid rgba(74,222,128,.5);border-radius:10px;text-align:center">
           <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Tu touches réellement</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)" id="fiscHero2">188 381 €</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)" id="fiscHero2">185 470 €</div>
         </div>
       </div>
     </div>
@@ -621,7 +621,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
         </div>
         <div class="ic-control">
           <label>Retrait partiel simulé (€)</label>
-          <input type="range" id="fiscRetrait" min="1000" max="202178" step="1000" value="202178" oninput="updateFisc()">
+          <input type="range" id="fiscRetrait" min="1000" max="198602" step="1000" value="198602" oninput="updateFisc()">
           <div class="ic-val" id="fiscRetraitVal">202 617 <span>€</span></div>
         </div>
       </div>
@@ -690,8 +690,8 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="ic-controls" style="margin-bottom:16px">
       <div class="ic-control">
         <label>Capital de départ (€)</label>
-        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="202178">
-        <div class="ic-val" id="mcCapitalVal">202 178 <span>€</span></div>
+        <input type="range" id="mcCapital" min="50000" max="400000" step="1000" value="198602">
+        <div class="ic-val" id="mcCapitalVal">198 602 <span>€</span></div>
       </div>
       <div class="ic-control">
         <label>Versement mensuel (€)</label>
@@ -900,7 +900,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 
   </div>
 
-  <div class="note">Capital investi : 128 000 € · TRI : 8,91%/an · Espèces : 75 € · PV latentes : 44 761 € · ASML +156% · 1er rappel calendar juillet · Données Bourse Direct 1 juillet 2026</div>
+  <div class="note">Capital investi : 128 000 € · TRI : 8,91%/an · Espèces : 75 € · PV latentes : 44 761 € · ASML +156% · 1er rappel calendar juillet · SEL +22% PV · ASML +115% PV · Données Bourse Direct 1 août 2026</div>
 
   <!-- PAGE SIMULATEUR DIVIDENDES -->
   <div class="page" id="page-divsim">
@@ -1084,11 +1084,11 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
 const COLORS={SEL:'#f59e0b',DCAM:'#3b82f6',ASML:'#10b981',GUARD:'#a78bfa',PAEEM:'#6b7280',CAC:'#c9a84c',ESE:'#ec4899',TTE:'#f97316'};
 
 const currentData=[
-  {ticker:'SEL', name:'Stoxx Europe Select Div',isin:'FR0010378604',gf:'EPA:SEL',  parts:2858,pru:20.33,value:66020},
-  {ticker:'DCAM',name:'MSCI World Amundi',      isin:'FR001400U5Q4',gf:'EPA:DCAM', parts:13640,pru:5.67, value:82890},
-  {ticker:'ASML',name:'ASML Holding N.V.',      isin:'NL0010273215',gf:'EPA:ASML', parts:27,  pru:664.78,value:46078},
+  {ticker:'SEL', name:'Stoxx Europe Select Div',isin:'FR0010378604',gf:'EPA:SEL',  parts:2858,pru:20.33,value:70907},
+  {ticker:'DCAM',name:'MSCI World Amundi',      isin:'FR001400U5Q4',gf:'EPA:DCAM', parts:13640,pru:5.67, value:82236},
+  {ticker:'ASML',name:'ASML Holding N.V.',      isin:'NL0010273215',gf:'EPA:ASML', parts:27,  pru:664.78,value:38723},
   
-  {ticker:'PAEEM',name:'MSCI Émergents Amundi', isin:'FR0011440478',gf:'EPA:PAEEM',parts:193, pru:20.37,value:7115},
+  {ticker:'PAEEM',name:'MSCI Émergents Amundi', isin:'FR0011440478',gf:'EPA:PAEEM',parts:193, pru:20.37,value:6636},
 ];
 
 const triData=[
@@ -1100,7 +1100,7 @@ const triData=[
   {yr:6,date:'Avr 2023',invested:84550,value:110026,gain:25475},
   {yr:7,date:'Avr 2024',invested:98642,value:134486,gain:35844},
   {yr:8,date:'Avr 2025',invested:112734,value:161125,gain:48391},
-  {yr:9,date:'Juil 2026',invested:128000,value:202178,gain:74178},
+  {yr:9,date:'Août 2026',invested:128000,value:198602,gain:70602},
 ];
 
 const snapshots=[
@@ -1204,7 +1204,7 @@ triData.forEach((d,i)=>{
 });
 
 const compData=[
-  {label:'Ton PEA (TRI réel)',    pct:9.94,color:'#e8c547'},
+  {label:'Ton PEA (TRI réel)',    pct:9.56,color:'#e8c547'},
   {label:'MSCI World (2017-2026)',pct:10.5, color:'#3b82f6'},
   {label:'CAC 40 + dividendes',  pct:7.8,  color:'#f59e0b'},
   {label:'Livret A (moy.)',       pct:1.6,  color:'#6b7280'},
@@ -1446,11 +1446,11 @@ function removeDsLine(i) { dsLines.splice(i, 1); renderDsLines(); }
 
 function prefillFromPEA() {
   dsLines = [
-    { name: 'SEL',   capital: 66020, yield: 5.75, growth: 3 },
-    { name: 'DCAM',  capital: 82890, yield: 0,    growth: 0 },
-    { name: 'ASML',  capital: 46078, yield: 0.7,  growth: 5 },
+    { name: 'SEL',   capital: 70907, yield: 5.75, growth: 3 },
+    { name: 'DCAM',  capital: 82236, yield: 0,    growth: 0 },
+    { name: 'ASML',  capital: 38723, yield: 0.7,  growth: 5 },
     
-    { name: 'PAEEM', capital: 7115,   yield: 0,    growth: 0 },
+    { name: 'PAEEM', capital: 6636,  yield: 0,    growth: 0 },
   ];
   renderDsLines();
 }
@@ -1576,7 +1576,7 @@ function updateTargetVals() {
 
   const annualTarget = monthly * 12;
   const capitalNeeded = annualTarget / (yld / 100);
-  const currentPEA = 202178;
+  const currentPEA = 198602;
   const currentDiv = currentPEA * 0.0215; // ~2.15% rendement actuel
   const gap = Math.max(0, capitalNeeded - currentPEA);
 
@@ -1846,7 +1846,7 @@ updateReste();
 
 // ── FISCALITÉ ──────────────────────────────────────────────────
 const CAPITAL_INVESTI = 128000;
-const VALEUR_PEA = 202178;
+const VALEUR_PEA = 198602;
 let fiscChart = null;
 
 function updateFisc() {
@@ -1960,8 +1960,8 @@ document.getElementById('fiscRetrait').addEventListener('input', updateFisc);
 updateFisc();
 
 // ── INDÉPENDANCE FINANCIÈRE ──────────────────────────────────────────
-const INDEP_PEA = 202178;
-const INDEP_TRI = 9.94;
+const INDEP_PEA = 198602;
+const INDEP_TRI = 9.56;
 let indepMethod = '4pct';
 let indepChart = null;
 
