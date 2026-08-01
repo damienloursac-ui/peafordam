@@ -1168,6 +1168,8 @@ function showPage(id,el){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   el.classList.add('active');
+  if(id === 'historique') buildHistorique();
+  if(id === 'etfcompo') renderETF(currentETF || 'dcam');
 }
 
 // ── PORTFOLIO ──────────────────────────────────────────────────
@@ -1895,7 +1897,12 @@ const histData = [
   { date:'Août 2026', total:198502, capital:128000, tri:9.56 },
 ];
 
-(function buildHistorique() {
+let histBuilt = false;
+
+function buildHistorique() {
+  if(histBuilt) return;
+  histBuilt = true;
+
   const labels    = histData.map(d => d.date);
   const values    = histData.map(d => d.total);
   const tris      = histData.map(d => d.tri);
@@ -2033,7 +2040,10 @@ const histData = [
     `;
     tb.appendChild(tr);
   });
-})();
+}
+
+// Appel immédiat pour le premier rendu
+buildHistorique();
 
 // ── RESTE À INVESTIR ──────────────────────────────────────────
 const INVESTI = 128000;
