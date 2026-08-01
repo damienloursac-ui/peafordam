@@ -225,6 +225,24 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     </div>
   </div>
 
+  <!-- ── ALERTE PLAFOND PEA ── -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);flex-shrink:0">🏦 Plafond PEA</div>
+    <div style="flex:1;min-width:120px">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:5px">
+        <span style="color:var(--accent)">128 000 € versés</span>
+        <span>Plafond : 150 000 €</span>
+      </div>
+      <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:85.3%;background:linear-gradient(90deg,#3b82f6,#e8c547);border-radius:4px"></div>
+      </div>
+    </div>
+    <div style="text-align:right;flex-shrink:0">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--accent)">22 000 €</div>
+      <div style="font-size:10px;color:var(--text2)">restants · ~22 mois</div>
+    </div>
+  </div>
+
   <div class="kpi-strip">
     <div class="kpi-card" style="--kc:#3b82f6">
       <div class="kpi-label">Capital investi</div>
@@ -407,6 +425,32 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="card" style="margin-top:16px">
       <div class="card-title">Comparaison vs indices de référence (même période)</div>
       <div class="pv-bars" style="margin-top:4px" id="compBars"></div>
+    </div>
+
+    <!-- TRI vs Indices Chart -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">Ton TRI vs MSCI World & CAC 40 — évolution mensuelle</div>
+      <canvas id="triVsIndicesChart" style="height:220px"></canvas>
+    </div>
+
+    <!-- Score de diversification -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">🎯 Score de diversification</div>
+      <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+        <div style="text-align:center;flex-shrink:0">
+          <div style="position:relative;width:100px;height:100px;margin:0 auto">
+            <canvas id="diversScore"></canvas>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <div id="diversScoreVal" style="font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1;color:var(--accent2)">—</div>
+              <div style="font-size:9px;color:var(--text2)">/10</div>
+            </div>
+          </div>
+          <div id="diversLabel" style="font-size:11px;color:var(--text2);margin-top:8px">—</div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <div id="diversDetails" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -976,6 +1020,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap">
       <button class="ds-tab active" onclick="showDsTab('revenus',this)">📈 Revenus sur X ans</button>
       <button class="ds-tab" onclick="showDsTab('cible',this)">🎯 Atteindre un revenu cible</button>
+      <button class="ds-tab" onclick="showDsTab('selproj',this)">🌱 Projection SEL</button>
     </div>
 
     <!-- ── TAB 1 : REVENUS SUR X ANS ── -->
@@ -1140,6 +1185,83 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
         <div class="card-title">Progression vers la cible</div>
         <canvas id="dsTargetChart" style="width:100%;height:240px"></canvas>
       </div>
+    </div>
+
+    <!-- ── TAB 3 : PROJECTION SEL ── -->
+    <div class="ds-page" id="ds-selproj" style="display:none">
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">Paramètres de projection SEL</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="ic-control">
+            <label>Parts SEL actuelles</label>
+            <input type="range" id="selParts" min="1000" max="15000" step="100" value="2858" oninput="updateSelProj()">
+            <div class="ic-val" id="selPartsVal">2 858 <span>parts</span></div>
+          </div>
+          <div class="ic-control">
+            <label>Dividende par part (€/an)</label>
+            <input type="range" id="selDiv" min="0.5" max="3" step="0.05" value="1.33" oninput="updateSelProj()">
+            <div class="ic-val" id="selDivVal">1,33 <span>€/part</span></div>
+          </div>
+          <div class="ic-control">
+            <label>Croissance dividende (%/an)</label>
+            <input type="range" id="selGrowth" min="0" max="8" step="0.5" value="3" oninput="updateSelProj()">
+            <div class="ic-val" id="selGrowthVal">3,0 <span>%/an</span></div>
+          </div>
+          <div class="ic-control">
+            <label>Cours SEL actuel (€)</label>
+            <input type="range" id="selCours" min="15" max="35" step="0.5" value="24.81" oninput="updateSelProj()">
+            <div class="ic-val" id="selCoursVal">24,81 <span>€</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ic-kpis" style="margin-bottom:16px">
+        <div class="ic-kpi" style="--kc:#f59e0b">
+          <div class="ic-kpi-label">Dividendes actuels</div>
+          <div class="ic-kpi-val" id="selRevActuel">—</div>
+          <div class="ic-kpi-sub">2 858 parts × 1,33 €</div>
+        </div>
+        <div class="ic-kpi" style="--kc:#4ade80">
+          <div class="ic-kpi-label">Dans 5 ans</div>
+          <div class="ic-kpi-val" id="selRev5">—</div>
+          <div class="ic-kpi-sub" id="selRev5parts">—</div>
+        </div>
+        <div class="ic-kpi" style="--kc:#60a5fa">
+          <div class="ic-kpi-label">Dans 10 ans</div>
+          <div class="ic-kpi-val" id="selRev10">—</div>
+          <div class="ic-kpi-sub" id="selRev10parts">—</div>
+        </div>
+        <div class="ic-kpi" style="--kc:#a78bfa">
+          <div class="ic-kpi-label">Dans 15 ans</div>
+          <div class="ic-kpi-val" id="selRev15">—</div>
+          <div class="ic-kpi-sub" id="selRev15parts">—</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">Projection dividendes SEL — réinvestissement total</div>
+        <canvas id="selProjChart" style="height:260px"></canvas>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Tableau — Dividendes & parts projetés</div>
+        <div style="overflow-x:auto">
+          <table class="ic-table">
+            <thead>
+              <tr>
+                <th>Année</th>
+                <th>Parts SEL</th>
+                <th>Div/part</th>
+                <th>Dividendes/an</th>
+                <th>Dividendes/mois</th>
+              </tr>
+            </thead>
+            <tbody id="selProjTable"></tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -1316,6 +1438,105 @@ compData.forEach(d=>{
   compB.appendChild(el);
 });
 
+// ── GRAPHIQUE TRI VS INDICES ──
+(function buildTriVsIndices() {
+  const labels = ['Mai 26','Juin 26','Juil 26','Août 26'];
+  const triPEA  = [8.50, 9.99, 9.94, 9.56];
+  const msciW   = [9.2,  9.5,  9.1,  9.3];  // ~MSCI World TRI reconstitué same period
+  const cac40   = [7.1,  7.8,  7.4,  7.6];  // ~CAC 40 dividendes même période
+
+  const canvasEl = document.getElementById('triVsIndicesChart');
+  if (!canvasEl) return;
+
+  new Chart(canvasEl, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Ton PEA', data: triPEA, borderColor: '#e8c547', backgroundColor: 'rgba(232,197,71,.1)', fill: true, tension: .3, borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#e8c547', pointBorderColor: '#09090b', pointBorderWidth: 2 },
+        { label: 'MSCI World', data: msciW, borderColor: '#3b82f6', backgroundColor: 'transparent', fill: false, tension: .3, borderWidth: 2, borderDash: [5,4], pointRadius: 4, pointBackgroundColor: '#3b82f6' },
+        { label: 'CAC 40 (div.)', data: cac40, borderColor: '#f59e0b', backgroundColor: 'transparent', fill: false, tension: .3, borderWidth: 2, borderDash: [3,4], pointRadius: 4, pointBackgroundColor: '#f59e0b' },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 11 }, boxWidth: 10, padding: 14 } },
+        tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, callbacks: { label: ctx => ` ${ctx.dataset.label} : ${ctx.raw.toFixed(2).replace('.',',')}%/an` } }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 } } },
+        y: { grid: { color: 'rgba(39,39,42,.4)' }, min: 5, max: 12, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 11 }, callback: v => v + '%' } }
+      }
+    }
+  });
+})();
+
+// ── SCORE DE DIVERSIFICATION ──
+(function buildDiversScore() {
+  const total_val = currentData.reduce((s,d) => s+d.value, 0);
+  const weights = currentData.map(d => ({ ticker: d.ticker, pct: d.value/total_val*100 }));
+  
+  // Calcul score (HHI inversé + pénalités)
+  const hhi = weights.reduce((s,w) => s + (w.pct/100)**2, 0);
+  const nbLines = currentData.length;
+  let score = Math.round(Math.min(10, Math.max(1, (1 - hhi) * 15 + nbLines * 0.5)));
+  
+  // Pénalité si une ligne > 40%
+  const overWeight = weights.filter(w => w.pct > 40);
+  if(overWeight.length > 0) score = Math.max(1, score - 2);
+  
+  // Pénalité si < 3 lignes
+  if(nbLines < 3) score = Math.max(1, score - 2);
+
+  const color = score >= 7 ? '#4ade80' : score >= 5 ? '#e8c547' : '#f87171';
+  const label = score >= 8 ? 'Très bien diversifié' : score >= 6 ? 'Bonne diversification' : score >= 4 ? 'Concentration modérée' : 'Portefeuille concentré';
+
+  document.getElementById('diversScoreVal').textContent = score;
+  document.getElementById('diversScoreVal').style.color = color;
+  document.getElementById('diversLabel').textContent = label;
+
+  // Gauge chart
+  new Chart(document.getElementById('diversScore'), {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [score, 10-score],
+        backgroundColor: [color, 'rgba(39,39,42,.5)'],
+        borderWidth: 0,
+        circumference: 270,
+        rotation: 225,
+      }]
+    },
+    options: { responsive: false, cutout: '72%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+  });
+
+  // Détails par ligne
+  const container = document.getElementById('diversDetails');
+  weights.forEach(w => {
+    const isOver = w.pct > 40;
+    const el = document.createElement('div');
+    el.style.cssText = 'display:flex;align-items:center;gap:10px;font-size:11px';
+    el.innerHTML = `
+      <div style="width:55px;color:var(--text2)">${w.ticker}</div>
+      <div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${Math.min(100,w.pct)}%;background:${isOver?'#f87171':COLORS[w.ticker]||'#6b7280'};border-radius:4px"></div>
+      </div>
+      <div style="width:50px;text-align:right;color:${isOver?'#f87171':'var(--text)'}">${w.pct.toFixed(1)}%${isOver?' ⚠️':''}</div>
+    `;
+    container.appendChild(el);
+  });
+
+  // Alerte si ligne > 40%
+  if(overWeight.length > 0) {
+    const alert = document.createElement('div');
+    alert.style.cssText = 'margin-top:8px;padding:8px 12px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:8px;font-size:11px;color:#f87171';
+    alert.textContent = `⚠️ ${overWeight.map(w=>w.ticker).join(', ')} dépasse 40% du PEA — risque de concentration`;
+    container.appendChild(alert);
+  }
+})();
+
 // ── INTÉRÊTS COMPOSÉS ──────────────────────────────────────────
 let icChart = null;
 
@@ -1479,10 +1700,13 @@ let dsDivChart = null, dsPortChart = null, dsTargetChart = null, dcChart = null;
 let dsReinvest = true;
 
 function showDsTab(id, el) {
-  document.querySelectorAll('.ds-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ds-page').forEach(p => { p.classList.remove('active'); p.style.display='none'; });
   document.querySelectorAll('.ds-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('ds-' + id).classList.add('active');
+  const target = document.getElementById('ds-' + id);
+  target.style.display = 'block';
+  target.classList.add('active');
   el.classList.add('active');
+  if(id === 'selproj') updateSelProj();
 }
 
 function setDsReinvest(val) {
@@ -2364,6 +2588,85 @@ function updateIndep() {
   document.getElementById(id).addEventListener('input', updateIndep);
 });
 updateIndep();
+
+// ── PROJECTION SEL ──────────────────────────────────────────────
+let selProjChart = null;
+
+function updateSelProj() {
+  const parts0   = parseFloat(document.getElementById('selParts').value);
+  const div0     = parseFloat(document.getElementById('selDiv').value);
+  const growth   = parseFloat(document.getElementById('selGrowth').value) / 100;
+  const cours    = parseFloat(document.getElementById('selCours').value);
+
+  document.getElementById('selPartsVal').innerHTML  = new Intl.NumberFormat('fr-FR').format(parts0) + ' <span>parts</span>';
+  document.getElementById('selDivVal').innerHTML    = div0.toFixed(2).replace('.',',') + ' <span>€/part</span>';
+  document.getElementById('selGrowthVal').innerHTML = (growth*100).toFixed(1).replace('.',',') + ' <span>%/an</span>';
+  document.getElementById('selCoursVal').innerHTML  = cours.toFixed(2).replace('.',',') + ' <span>€</span>';
+
+  const labels=[], partsLine=[], divAnLine=[], divMoLine=[];
+  let parts = parts0;
+
+  for(let yr=0; yr<=15; yr++) {
+    const divParPart = div0 * (1+growth)**yr;
+    const divAnnuel  = parts * divParPart;
+    const divMensuel = divAnnuel / 12;
+    const coursCurr  = cours * (1.02)**yr; // légère appréciation
+
+    labels.push(2026+yr);
+    partsLine.push(Math.round(parts));
+    divAnLine.push(Math.round(divAnnuel));
+    divMoLine.push(Math.round(divMensuel));
+
+    // Réinvestissement des dividendes sur SEL l'année suivante
+    if(yr < 15) parts += divAnnuel / (coursCurr * (1.02));
+  }
+
+  // KPIs
+  document.getElementById('selRevActuel').textContent = fmt(Math.round(parts0 * div0));
+  document.getElementById('selRev5').textContent      = fmt(divAnLine[5]);
+  document.getElementById('selRev5parts').textContent = new Intl.NumberFormat('fr-FR').format(partsLine[5]) + ' parts';
+  document.getElementById('selRev10').textContent     = fmt(divAnLine[10]);
+  document.getElementById('selRev10parts').textContent= new Intl.NumberFormat('fr-FR').format(partsLine[10]) + ' parts';
+  document.getElementById('selRev15').textContent     = fmt(divAnLine[15]);
+  document.getElementById('selRev15parts').textContent= new Intl.NumberFormat('fr-FR').format(partsLine[15]) + ' parts (en 2041)';
+
+  // Chart
+  if(selProjChart) selProjChart.destroy();
+  selProjChart = new Chart(document.getElementById('selProjChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Dividendes annuels (€)', data: divAnLine, backgroundColor: 'rgba(245,158,11,.7)', borderColor: '#f59e0b', borderWidth: 2, borderRadius: 4, yAxisID: 'y' },
+        { label: 'Parts SEL', data: partsLine, type: 'line', borderColor: '#3b82f6', backgroundColor: 'transparent', fill: false, tension: .4, borderWidth: 2, pointRadius: 3, yAxisID: 'y2' },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 11 }, boxWidth: 10 } },
+        tooltip: { backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa', titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 10 }, callbacks: { label: ctx => ctx.datasetIndex===0 ? ` Dividendes : ${fmt(ctx.raw)}` : ` Parts : ${new Intl.NumberFormat('fr-FR').format(ctx.raw)}` } }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 10 } } },
+        y:  { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#f59e0b', font: { family: 'DM Mono', size: 10 }, callback: v => new Intl.NumberFormat('fr-FR',{notation:'compact'}).format(v)+'€' }, position: 'left' },
+        y2: { grid: { display: false }, ticks: { color: '#3b82f6', font: { family: 'DM Mono', size: 10 }, callback: v => new Intl.NumberFormat('fr-FR',{notation:'compact'}).format(v) }, position: 'right' }
+      }
+    }
+  });
+
+  // Table
+  const tb = document.getElementById('selProjTable');
+  tb.innerHTML = '';
+  [0,1,2,3,4,5,7,10,12,15].forEach(yr => {
+    const isMilestone = [5,10,15].includes(yr);
+    const tr = document.createElement('tr');
+    if(isMilestone) tr.className = 'yr-milestone';
+    tr.innerHTML = `<td>${2026+yr}</td><td>${new Intl.NumberFormat('fr-FR').format(partsLine[yr])}</td><td>${(div0*(1+growth)**yr).toFixed(2).replace('.',',')} €</td><td class="pos">${fmt(divAnLine[yr])}</td><td class="pos">${fmt(divMoLine[yr])}/mois</td>`;
+    tb.appendChild(tr);
+  });
+}
 
 // ── MONTE CARLO ──────────────────────────────────────────────────
 let mcFanChart = null, mcDistChartObj = null;
