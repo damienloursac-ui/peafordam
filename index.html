@@ -279,11 +279,10 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
     <div class="nav" style="margin-bottom:0">
       <button class="nav-tab active" onclick="showPage('portfolio',this)">📊 Portefeuille</button>
       <button class="nav-tab" onclick="showPage('tri',this)">📐 TRI</button>
-      <button class="nav-tab" onclick="showPage('historique',this)">📉 Historique</button>
-      <button class="nav-tab" onclick="showPage('timeline',this)">📈 Timeline</button>
+      <button class="nav-tab" onclick="showPage('historique',this)">📈 Historique</button>
       <button class="nav-tab" onclick="showPage('dividends',this)">💰 Dividendes</button>
-      <button class="nav-tab" onclick="showPage('reste',this)">🎯 Reste à investir</button>
       <button class="nav-tab" onclick="showPage('fiscalite',this)">🏦 Après impôts</button>
+      <button class="nav-tab" onclick="showPage('etfcompo',this)">🔍 Composition ETF</button>
     </div>
   </div>
   <div style="margin-bottom:28px">
@@ -589,6 +588,21 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
       <div class="card-title">Répartition annuelle des dividendes</div>
       <canvas id="divBarChart" style="height:200px"></canvas>
     </div>
+
+  </div>
+
+  <!-- PAGE COMPOSITION ETF -->
+  <div class="page" id="page-etfcompo">
+
+    <!-- Sélecteur ETF -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+      <button class="ic-scenario active" onclick="showETF('dcam',this)">📊 DCAM — MSCI World</button>
+      <button class="ic-scenario" onclick="showETF('sel',this)">🌍 SEL — Europe Dividendes</button>
+      <button class="ic-scenario" onclick="showETF('paeem',this)">🌏 PAEEM — Émergents</button>
+    </div>
+
+    <!-- Container ETF -->
+    <div id="etfContent"></div>
 
   </div>
 
@@ -2793,6 +2807,250 @@ if(divBarEl) {
 }
 
 // Ancienne section divGrid pour compatibilité
+
+// ── COMPOSITION ETF ──────────────────────────────────────────
+const etfData = {
+  dcam: {
+    name: 'Amundi PEA Monde MSCI World UCITS ETF',
+    ticker: 'DCAM',
+    isin: 'FR001400U5Q4',
+    frais: '0,20%/an',
+    nbLignes: '~1 283',
+    actu: 'Juin 2026',
+    dividende: 'Capitalisant (0%)',
+    replication: 'Synthétique',
+    lien: 'https://www.amundietf.fr/fr/professionnels/produits/equity/amundi-pea-monde-msci-world-ucits-etf/fr001400u5q4',
+    color: '#3b82f6',
+    top10: [
+      { name: 'NVIDIA',            pays: '🇺🇸', pct: 5.18 },
+      { name: 'Apple',             pays: '🇺🇸', pct: 4.77 },
+      { name: 'Microsoft',         pays: '🇺🇸', pct: 3.45 },
+      { name: 'Alphabet (Google)', pays: '🇺🇸', pct: 2.90 },
+      { name: 'Amazon',            pays: '🇺🇸', pct: 2.63 },
+      { name: 'Meta Platforms',    pays: '🇺🇸', pct: 2.20 },
+      { name: 'Broadcom',          pays: '🇺🇸', pct: 1.85 },
+      { name: 'Tesla',             pays: '🇺🇸', pct: 1.50 },
+      { name: 'Eli Lilly',         pays: '🇺🇸', pct: 1.10 },
+      { name: 'JPMorgan Chase',    pays: '🇺🇸', pct: 1.05 },
+    ],
+    geo: [
+      { label: 'États-Unis', pct: 70.2, color: '#3b82f6' },
+      { label: 'Japon',      pct: 5.8,  color: '#e8c547' },
+      { label: 'Royaume-Uni',pct: 4.1,  color: '#4ade80' },
+      { label: 'France',     pct: 3.2,  color: '#f87171' },
+      { label: 'Canada',     pct: 3.1,  color: '#a78bfa' },
+      { label: 'Autres',     pct: 13.6, color: '#6b7280' },
+    ],
+    secteurs: [
+      { label: 'Technologie',       pct: 30.8, color: '#3b82f6' },
+      { label: 'Finance',           pct: 15.7, color: '#e8c547' },
+      { label: 'Industrie',         pct: 11.4, color: '#4ade80' },
+      { label: 'Santé',             pct: 9.1,  color: '#f87171' },
+      { label: 'Conso. Discrétion', pct: 8.9,  color: '#a78bfa' },
+      { label: 'Communication',     pct: 8.2,  color: '#fb923c' },
+      { label: 'Autres',            pct: 15.9, color: '#6b7280' },
+    ],
+    note: '⚠️ DCAM est un ETF synthétique (utilise des swaps). Il réplique le MSCI World via des produits dérivés, pas en achetant directement les actions. Cela signifie que tu es exposé indirectement à Nvidia, Apple, etc. — sans les détenir physiquement dans le PEA.'
+  },
+  sel: {
+    name: 'Amundi Stoxx Europe Select Dividend 30 UCITS ETF',
+    ticker: 'SEL',
+    isin: 'LU1812092168',
+    frais: '0,30%/an',
+    nbLignes: '30',
+    actu: 'Mai 2026',
+    dividende: 'Distribuant (~5,6%/an)',
+    replication: 'Synthétique',
+    lien: 'https://www.amundietf.fr/fr/professionnels/produits/equity/amundi-stoxx-europe-select-dividend-30-ucits-etf-dist/lu1812092168',
+    color: '#10b981',
+    top10: [
+      { name: 'Legal & General Group', pays: '🇬🇧', pct: 5.70 },
+      { name: 'Teleperformance',        pays: '🇫🇷', pct: 5.01 },
+      { name: 'Signify NV',             pays: '🇳🇱', pct: 4.92 },
+      { name: 'Taylor Wimpey',          pays: '🇬🇧', pct: 4.60 },
+      { name: 'Aker BP ASA',            pays: '🇳🇴', pct: 4.52 },
+      { name: 'Investec',               pays: '🇬🇧', pct: 4.30 },
+      { name: 'Klépierre',              pays: '🇫🇷', pct: 4.10 },
+      { name: 'Vopak',                  pays: '🇳🇱', pct: 3.95 },
+      { name: 'Unibail-Rodamco',        pays: '🇫🇷', pct: 3.80 },
+      { name: 'Proximus',               pays: '🇧🇪', pct: 3.60 },
+    ],
+    geo: [
+      { label: 'Royaume-Uni', pct: 28.5, color: '#3b82f6' },
+      { label: 'France',      pct: 18.2, color: '#e8c547' },
+      { label: 'Pays-Bas',    pct: 14.8, color: '#4ade80' },
+      { label: 'Norvège',     pct: 9.2,  color: '#f87171' },
+      { label: 'Belgique',    pct: 8.5,  color: '#a78bfa' },
+      { label: 'Autres',      pct: 20.8, color: '#6b7280' },
+    ],
+    secteurs: [
+      { label: 'Finance',            pct: 49.1, color: '#3b82f6' },
+      { label: 'Énergie',            pct: 13.4, color: '#e8c547' },
+      { label: 'Conso. Discrétion',  pct: 12.6, color: '#4ade80' },
+      { label: 'Industrie',          pct: 10.3, color: '#f87171' },
+      { label: 'Matériaux',          pct: 5.9,  color: '#a78bfa' },
+      { label: 'Services publics',   pct: 5.5,  color: '#fb923c' },
+      { label: 'Communication',      pct: 3.2,  color: '#6b7280' },
+    ],
+    note: '💡 SEL est concentré sur seulement 30 grandes valeurs européennes à forts dividendes. C\'est ta ligne de revenus — les 30 entreprises sont sélectionnées sur la base de leur rendement du dividende élevé et stable. La Finance représente presque la moitié du fonds.'
+  },
+  paeem: {
+    name: 'Amundi PEA Émergent MSCI ESG Transition UCITS ETF',
+    ticker: 'PAEEM',
+    isin: 'FR0013412020',
+    frais: '0,30%/an',
+    nbLignes: '~700+',
+    actu: 'Juillet 2026',
+    dividende: 'Capitalisant (0%)',
+    replication: 'Synthétique',
+    lien: 'https://www.amundietf.fr/fr/professionnels/produits/equity/amundi-pea-emergent-msci-emerging-esg-transition-ucits-etf/fr0013412020',
+    color: '#a78bfa',
+    top10: [
+      { name: 'Taiwan Semiconductor (TSMC)', pays: '🇹🇼', pct: 7.80 },
+      { name: 'Samsung Electronics',         pays: '🇰🇷', pct: 3.90 },
+      { name: 'Tencent Holdings',            pays: '🇨🇳', pct: 3.60 },
+      { name: 'Alibaba Group',               pays: '🇨🇳', pct: 2.80 },
+      { name: 'Reliance Industries',         pays: '🇮🇳', pct: 2.10 },
+      { name: 'Infosys',                     pays: '🇮🇳', pct: 1.80 },
+      { name: 'HDFC Bank',                   pays: '🇮🇳', pct: 1.70 },
+      { name: 'Meituan',                     pays: '🇨🇳', pct: 1.50 },
+      { name: 'ICICI Bank',                  pays: '🇮🇳', pct: 1.40 },
+      { name: 'SK Hynix',                    pays: '🇰🇷', pct: 1.30 },
+    ],
+    geo: [
+      { label: 'Chine',        pct: 25.1, color: '#f87171' },
+      { label: 'Inde',         pct: 19.8, color: '#fb923c' },
+      { label: 'Taïwan',       pct: 17.2, color: '#e8c547' },
+      { label: 'Corée du Sud', pct: 10.5, color: '#4ade80' },
+      { label: 'Brésil',       pct: 5.8,  color: '#3b82f6' },
+      { label: 'Autres',       pct: 21.6, color: '#6b7280' },
+    ],
+    secteurs: [
+      { label: 'Finance',           pct: 21.7, color: '#3b82f6' },
+      { label: 'Technologie',       pct: 20.6, color: '#e8c547' },
+      { label: 'Conso. Discrétion', pct: 13.4, color: '#4ade80' },
+      { label: 'Communication',     pct: 10.2, color: '#f87171' },
+      { label: 'Matériaux',         pct: 8.1,  color: '#a78bfa' },
+      { label: 'Industrie',         pct: 6.6,  color: '#fb923c' },
+      { label: 'Autres',            pct: 19.4, color: '#6b7280' },
+    ],
+    note: '🌏 PAEEM applique un filtre ESG (environnement, social, gouvernance) sur le MSCI Emerging Markets. Cela exclut certaines entreprises controversées mais peut légèrement dévier de l\'indice pur. La Chine reste la première exposition avec 25%, suivie de l\'Inde en forte croissance.'
+  }
+};
+
+let currentETF = 'dcam';
+let geoChart = null, secChart = null;
+
+function showETF(key, el) {
+  currentETF = key;
+  document.querySelectorAll('#page-etfcompo .ic-scenario').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderETF(key);
+}
+
+function renderETF(key) {
+  const d = etfData[key];
+  const container = document.getElementById('etfContent');
+
+  container.innerHTML = `
+    <!-- Fiche ETF -->
+    <div class="card" style="margin-bottom:16px;border-color:${d.color}44">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:${d.color};margin-bottom:6px">${d.ticker}</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin-bottom:4px">${d.name}</div>
+          <div style="font-size:11px;color:var(--text2)">ISIN : ${d.isin} · Mis à jour : ${d.actu}</div>
+        </div>
+        <a href="${d.lien}" target="_blank" style="font-size:11px;color:${d.color};text-decoration:none;padding:6px 12px;border:1px solid ${d.color}44;border-radius:20px">Fiche Amundi ↗</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px">
+        ${[
+          ['Frais annuels', d.frais],
+          ['Nb. de lignes', d.nbLignes],
+          ['Dividendes', d.dividende],
+          ['Réplication', d.replication],
+        ].map(([l,v]) => `<div style="padding:10px;background:var(--surface2);border-radius:8px;text-align:center">
+          <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:4px">${l}</div>
+          <div style="font-size:12px;color:var(--text)">${v}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Top 10 -->
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">🏆 Top 10 positions (${d.top10.reduce((s,h)=>s+h.pct,0).toFixed(1)}% du fonds)</div>
+        <div id="top10List" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card" style="margin-bottom:0">
+          <div class="card-title">🌍 Répartition géographique</div>
+          <div id="geoList" style="display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+        <div class="card" style="margin-bottom:0">
+          <div class="card-title">🏭 Répartition sectorielle</div>
+          <div id="secList" style="display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Note -->
+    <div style="padding:14px 16px;background:var(--surface2);border-left:3px solid ${d.color};border-radius:0 8px 8px 0;font-size:12px;color:var(--text2);line-height:1.7">${d.note}</div>
+  `;
+
+  // Top 10 bars
+  const maxPct = Math.max(...d.top10.map(h => h.pct));
+  const top10List = document.getElementById('top10List');
+  d.top10.forEach((h, i) => {
+    const el2 = document.createElement('div');
+    el2.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:11px';
+    el2.innerHTML = `
+      <div style="width:18px;text-align:center;font-size:10px;color:var(--text2)">${i+1}</div>
+      <div style="font-size:14px">${h.pays}</div>
+      <div style="flex:1;color:var(--text)">${h.name}</div>
+      <div style="width:80px">
+        <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${h.pct/maxPct*100}%;background:${d.color};border-radius:3px"></div>
+        </div>
+      </div>
+      <div style="width:38px;text-align:right;color:${d.color};font-weight:500">${h.pct.toFixed(2)}%</div>
+    `;
+    top10List.appendChild(el2);
+  });
+
+  // Geo bars
+  const geoList = document.getElementById('geoList');
+  d.geo.forEach(g => {
+    const el3 = document.createElement('div');
+    el3.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:11px';
+    el3.innerHTML = `
+      <div style="width:90px;color:var(--text2)">${g.label}</div>
+      <div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${g.pct}%;background:${g.color};border-radius:4px"></div>
+      </div>
+      <div style="width:38px;text-align:right;color:${g.color}">${g.pct.toFixed(1)}%</div>
+    `;
+    geoList.appendChild(el3);
+  });
+
+  // Secteur bars
+  const secList = document.getElementById('secList');
+  d.secteurs.forEach(s => {
+    const el4 = document.createElement('div');
+    el4.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:11px';
+    el4.innerHTML = `
+      <div style="width:120px;color:var(--text2);font-size:10px">${s.label}</div>
+      <div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${s.pct}%;background:${s.color};border-radius:4px"></div>
+      </div>
+      <div style="width:38px;text-align:right;color:${s.color}">${s.pct.toFixed(1)}%</div>
+    `;
+    secList.appendChild(el4);
+  });
+}
+
+// Init
+renderETF('dcam');
 
 // ── SERVICE WORKER (PWA) ──
 if ('serviceWorker' in navigator) {
