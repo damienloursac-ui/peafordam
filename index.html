@@ -754,7 +754,8 @@ function buildDividends() {
     const el = document.createElement('div');
     el.className = 'div-cal-cell' + (hasDiv ? ' has-div' : '');
     el.style.background = hasDiv ? `rgba(232,197,71,${(intensity*0.2+0.05).toFixed(2)})` : 'var(--surface2)';
-    el.innerHTML = `<div class="div-cal-month" style="color:${hasDiv?'var(--accent)':'var(--text2)'}">${mois}</div><div class="div-cal-amount" style="color:${hasDiv?'var(--accent)':'var(--text2)';opacity:hasDiv?1:0.3}">${hasDiv ? fmtN(amt)+' €' : '—'}</div>${hasDiv?`<div class="div-cal-src">${amt>=3000?'SEL':'ASML'}</div>`:''}${amt>=3000?'<div style="position:absolute;top:5px;right:5px;font-size:8px;background:rgba(232,197,71,.2);color:var(--accent);padding:1px 4px;border-radius:8px">⭐</div>':''}`;
+    const colorStyle = hasDiv ? 'color:var(--accent)' : 'color:var(--text2);opacity:0.3';
+    el.innerHTML = `<div class="div-cal-month" style="color:${hasDiv?'var(--accent)':'var(--text2)'}">${mois}</div><div class="div-cal-amount" style="${colorStyle}">${hasDiv ? fmtN(amt)+' €' : '—'}</div>${hasDiv?`<div class="div-cal-src">${amt>=3000?'SEL':'ASML'}</div>`:''}${amt>=3000?'<div style="position:absolute;top:5px;right:5px;font-size:8px;background:rgba(232,197,71,.2);color:var(--accent);padding:1px 4px;border-radius:8px">⭐</div>':''}`;
     cal.appendChild(el);
   });
 
