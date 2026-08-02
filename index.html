@@ -743,6 +743,7 @@ function showPage(id, el) {
   if (id === 'fiscalite')   setTimeout(updateFisc, 100);
   if (id === 'indep')       setTimeout(updateIndep, 100);
   if (id === 'compound')    setTimeout(updateIC, 100);
+  if (id === 'ghost')       setTimeout(renderGhost, 100);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1436,13 +1437,6 @@ function renderGhost() {
   // Note
   document.querySelector('#page-ghost .note').textContent = d.note;
   document.getElementById('ghostChartTitle').textContent = `Ton portefeuille réel vs ${d.label}`;
-}
-
-// Init on tab click
-const origShowPage = showPage;
-function showPage(id, el) {
-  origShowPage(id, el);
-  if (id === 'ghost') setTimeout(renderGhost, 80);
 }
 
 // SERVICE WORKER (PWA)
