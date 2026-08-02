@@ -135,10 +135,18 @@ canvas{width:100%;}
   <div style="text-align:right">
     <div class="header-date">Dernière MàJ : <span id="lastUpdate">1 août 2026</span></div>
     <button onclick="openUpdateModal()" style="margin-top:6px;padding:6px 12px;background:rgba(232,197,71,.15);border:1px solid rgba(232,197,71,.4);color:var(--accent);border-radius:20px;font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:.1em">🔄 MISE À JOUR</button>
+    <button onclick="fetchLivePrices()" id="livePriceBtn" style="margin-top:6px;margin-left:6px;padding:6px 12px;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.4);color:var(--blue);border-radius:20px;font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:.1em">📡 COURS LIVE</button>
   </div>
 </div>
 
 <!-- PLAFOND PEA -->
+<!-- LIVE PRICE TICKER BAR -->
+<div id="liveBar" style="display:none;background:var(--surface);border:1px solid rgba(96,165,250,.3);border-radius:10px;padding:10px 16px;margin-bottom:12px;display:none;align-items:center;gap:16px;flex-wrap:wrap">
+  <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);flex-shrink:0">📡 Cours live</div>
+  <div id="liveTickers" style="display:flex;gap:16px;flex-wrap:wrap;flex:1"></div>
+  <div id="liveTime" style="font-size:9px;color:var(--text2);flex-shrink:0"></div>
+</div>
+
 <div class="plafond-bar">
   <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);flex-shrink:0">🏦 Plafond PEA</div>
   <div style="flex:1;min-width:100px">
@@ -1263,6 +1271,192 @@ function applyUpdate() {
   // Show success
   document.getElementById('successBanner').style.display = 'block';
   setTimeout(() => closeUpdateModal(), 1800);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COURS EN TEMPS RÉEL — Yahoo Finance
+// ═══════════════════════════════════════════════════════════════
+const liveTickerMap = {
+  'DCAM': 'DCAM.PA',
+  'SEL':  'SEL.PA',
+  'ASML': 'ASML.AS',
+  'PAEEM':'PAEEM.PA',
+};
+
+async function fetchLivePrices() {
+  const btn = document.getElementById('livePriceBtn');
+  btn.textContent = '⏳ Chargement...';
+  btn.style.opacity = '0.6';
+  btn.disabled = true;
+
+  const results = {};
+  const errors  = [];
+
+  // Fetch each ticker individually via Yahoo Finance chart endpoint
+  // This endpoint has CORS headers that allow browser requests
+  const fetches = Object.entries(liveTickerMap).map(async ([ticker, yf]) => {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${yf}?interval=1d&range=1d&includePrePost=false`;
+    try {
+      const r = await fetch(url, {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      const meta = data?.chart?.result?.[0]?.meta;
+      if (meta?.regularMarketPrice) {
+        results[ticker] = {
+          price: meta.regularMarketPrice,
+          prev:  meta.previousClose || meta.chartPreviousClose,
+          currency: meta.currency,
+          time: meta.regularMarketTime,
+        };
+      } else throw new Error('No price data');
+    } catch (e) {
+      errors.push(`${ticker}: ${e.message}`);
+    }
+  });
+
+  await Promise.allSettled(fetches);
+
+  btn.textContent = '📡 COURS LIVE';
+  btn.style.opacity = '1';
+  btn.disabled = false;
+
+  if (Object.keys(results).length === 0) {
+    // Fallback: try via corsproxy
+    await fetchLivePricesFallback();
+    return;
+  }
+
+  applyLivePrices(results, errors);
+}
+
+async function fetchLivePricesFallback() {
+  // Use a public CORS proxy as fallback
+  const btn = document.getElementById('livePriceBtn');
+  btn.textContent = '⏳ Proxy...';
+  btn.disabled = true;
+
+  const results = {};
+  const errors  = [];
+  const proxy   = 'https://api.allorigins.win/raw?url=';
+
+  const fetches = Object.entries(liveTickerMap).map(async ([ticker, yf]) => {
+    const target = encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${yf}?interval=1d&range=1d`);
+    try {
+      const r = await fetch(proxy + target);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      const meta = data?.chart?.result?.[0]?.meta;
+      if (meta?.regularMarketPrice) {
+        results[ticker] = {
+          price: meta.regularMarketPrice,
+          prev:  meta.previousClose || meta.chartPreviousClose,
+          currency: meta.currency,
+          time: meta.regularMarketTime,
+        };
+      } else throw new Error('No data');
+    } catch (e) {
+      errors.push(`${ticker}: ${e.message}`);
+    }
+  });
+
+  await Promise.allSettled(fetches);
+
+  btn.textContent = '📡 COURS LIVE';
+  btn.disabled = false;
+
+  applyLivePrices(results, errors);
+}
+
+function applyLivePrices(results, errors) {
+  const liveBar     = document.getElementById('liveBar');
+  const liveTickers = document.getElementById('liveTickers');
+  const liveTime    = document.getElementById('liveTime');
+
+  if (Object.keys(results).length === 0) {
+    alert('❌ Impossible de récupérer les cours.\nMarchés fermés ou API indisponible.\nEssaie pendant les heures de marché (9h-17h30).');
+    return;
+  }
+
+  // Show the bar
+  liveBar.style.display = 'flex';
+  liveTickers.innerHTML = '';
+
+  const now = new Date();
+  liveTime.textContent = `Mis à jour à ${now.getHours()}h${String(now.getMinutes()).padStart(2,'0')}`;
+
+  // Render tickers
+  Object.entries(results).forEach(([ticker, info]) => {
+    const delta    = info.prev ? ((info.price - info.prev) / info.prev * 100) : 0;
+    const isPos    = delta >= 0;
+    const color    = isPos ? 'var(--accent2)' : 'var(--accent3)';
+    const sign     = isPos ? '+' : '';
+    const el       = document.createElement('div');
+    el.style.cssText = 'display:flex;flex-direction:column;gap:1px';
+    el.innerHTML = `
+      <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:${COLORS[ticker]}">${ticker}</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:18px;line-height:1;color:var(--text)">${info.price.toFixed(2).replace('.',',')} <span style="font-size:9px;color:var(--text2)">${info.currency}</span></div>
+      <div style="font-size:9px;color:${color}">${sign}${delta.toFixed(2)}%</div>
+    `;
+    liveTickers.appendChild(el);
+  });
+
+  // Auto-update currentData values + rebuild portfolio
+  let hasUpdate = false;
+  currentData.forEach(d => {
+    const info = results[d.ticker];
+    if (!info) return;
+    const newVal = Math.round(info.price * d.parts);
+    if (Math.abs(newVal - d.value) > 10) {
+      d.value  = newVal;
+      hasUpdate = true;
+    }
+  });
+
+  if (hasUpdate) {
+    // Rebuild portfolio display
+    const newTotal = currentData.reduce((s,d)=>s+d.value, 0);
+    const gain     = newTotal - CAPITAL_INVESTI;
+    document.getElementById('kpiValeur').textContent = fmtN(Math.round(newTotal)) + ' €';
+    document.getElementById('kpiGain').textContent   = (gain>=0?'+':'') + fmtN(Math.round(gain)) + ' € · ' + (gain>=0?'+':'') + (gain/CAPITAL_INVESTI*100).toFixed(1) + '%';
+
+    // Rebuild lines table
+    document.getElementById('linesTable').innerHTML = '';
+    document.getElementById('pvBars').innerHTML     = '';
+    const maxPV = Math.max(...currentData.map(d => Math.abs(((d.value-d.pru*d.parts)/(d.pru*d.parts))*100)));
+    currentData.forEach(d => {
+      const pct    = (d.value/newTotal*100).toFixed(1);
+      const inv    = d.pru * d.parts;
+      const gp     = ((d.value-inv)/inv*100).toFixed(1);
+      const isPos2 = parseFloat(gp) >= 0;
+      const liveInfo = results[d.ticker];
+      const dayDelta = liveInfo ? ((liveInfo.price-liveInfo.prev)/liveInfo.prev*100) : 0;
+      let badge = '';
+      if (dayDelta <= -2) badge = `<span style="font-size:8px;background:rgba(248,113,113,.2);color:#f87171;padding:2px 6px;border-radius:10px;margin-left:4px">🔴 ${dayDelta.toFixed(1)}%</span>`;
+      else if (dayDelta >= 2) badge = `<span style="font-size:8px;background:rgba(74,222,128,.15);color:#4ade80;padding:2px 6px;border-radius:10px;margin-left:4px">🟢 +${dayDelta.toFixed(1)}%</span>`;
+      const el = document.createElement('div');
+      el.className = 'line-row';
+      el.innerHTML = `<div class="line-color" style="background:${COLORS[d.ticker]}"></div><div><div class="line-ticker">${d.ticker}</div><div style="font-size:9px;color:var(--text2)">${d.parts} parts · ${liveInfo?liveInfo.price.toFixed(2).replace('.',',')+'€':''}</div></div><div class="line-name">${d.name}${badge}</div><div class="line-right"><div class="line-val">${fmt(d.value)}</div><div class="line-meta">${pct}% · PRU ${d.pru}€</div><div class="line-pv ${isPos2?'pos':'neg'}">${isPos2?'+':''}${gp}%</div></div>`;
+      document.getElementById('linesTable').appendChild(el);
+
+      const bw2  = Math.abs(parseFloat(gp))/maxPV*100;
+      const el2  = document.createElement('div');
+      el2.className = 'bar-row';
+      el2.innerHTML = `<div class="bar-label">${d.ticker}</div><div class="bar-track"><div class="bar-fill" style="width:${bw2}%;background:${isPos2?'var(--accent2)':'var(--accent3)'}"></div></div><div class="bar-val ${isPos2?'pos':'neg'}">${isPos2?'+':''}${gp}%</div>`;
+      document.getElementById('pvBars').appendChild(el2);
+    });
+
+    // Update donut
+    Chart.getChart('mainDonut')?.destroy();
+    new Chart(document.getElementById('mainDonut'), {
+      type:'doughnut',
+      data:{labels:currentData.map(d=>d.ticker), datasets:[{data:currentData.map(d=>d.value), backgroundColor:currentData.map(d=>COLORS[d.ticker]), borderColor:'#111113', borderWidth:3, hoverOffset:10}]},
+      options:{responsive:true, cutout:'62%', plugins:{legend:{display:false}, tooltip:{backgroundColor:'#18181b',titleFont:{family:'DM Mono',size:11},bodyFont:{family:'DM Mono',size:10},callbacks:{label:ctx=>{const d=currentData[ctx.dataIndex];return[` ${fmt(d.value)}`,` ${(d.value/newTotal*100).toFixed(1)}%`];}}}}}
+    });
+  }
+
+  if (errors.length > 0) console.warn('Some tickers failed:', errors);
 }
 
 // ═══════════════════════════════════════════════════════════════
