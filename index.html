@@ -133,7 +133,8 @@ canvas{width:100%;}
     <h1>Portfolio <em>Dashboard</em></h1>
   </div>
   <div style="text-align:right">
-    <div class="header-date">Dernière MàJ : 1 août 2026</div>
+    <div class="header-date">Dernière MàJ : <span id="lastUpdate">1 août 2026</span></div>
+    <button onclick="openUpdateModal()" style="margin-top:6px;padding:6px 12px;background:rgba(232,197,71,.15);border:1px solid rgba(232,197,71,.4);color:var(--accent);border-radius:20px;font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:.1em">🔄 MISE À JOUR</button>
   </div>
 </div>
 
@@ -432,6 +433,73 @@ canvas{width:100%;}
 <div class="note" id="footerNote">Capital investi : 128 000 € · TRI : 9,56%/an · PV latentes : ~45 302 € · Données Bourse Direct 1 août 2026</div>
 
 </div><!-- /app -->
+
+<style>
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:100%;max-width:500px;position:relative;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;}
+.modal-sub{font-size:10px;color:var(--text2);margin-bottom:20px;letter-spacing:.1em;}
+.modal-section{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin:18px 0 10px;}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.modal-field{display:flex;flex-direction:column;gap:4px;}
+.modal-field label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);}
+.modal-field input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;outline:none;transition:border-color .2s;}
+.modal-field input:focus{border-color:rgba(232,197,71,.5);}
+.modal-field input.changed{border-color:rgba(74,222,128,.6);background:rgba(74,222,128,.05);}
+.modal-preview{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;margin:16px 0;font-size:11px;color:var(--text2);line-height:1.8;}
+.modal-preview strong{color:var(--text);}
+.modal-preview .delta-pos{color:var(--accent2);}
+.modal-preview .delta-neg{color:var(--accent3);}
+.modal-actions{display:flex;gap:10px;margin-top:20px;}
+.btn-apply{flex:1;padding:12px;background:var(--accent);color:#09090b;border:none;border-radius:8px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;}
+.btn-apply:hover{opacity:.9;}
+.btn-cancel{padding:12px 20px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:8px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;line-height:1;}
+.modal-close:hover{color:var(--text);}
+.success-banner{background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.4);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--accent2);margin-bottom:16px;display:none;}
+</style>
+
+<!-- MODAL MISE À JOUR -->
+<div class="modal-overlay hidden" id="updateModal" onclick="if(event.target===this)closeUpdateModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeUpdateModal()">×</button>
+    <div class="modal-title">Mise à jour <em style="font-style:italic;color:var(--accent)">mensuelle</em></div>
+    <div class="modal-sub">🍩 DONUT — Saisis les nouvelles valeurs</div>
+
+    <div class="success-banner" id="successBanner">✅ Dashboard mis à jour avec succès !</div>
+
+    <div class="modal-section">📅 Date de mise à jour</div>
+    <div class="modal-field" style="margin-bottom:10px">
+      <label>Date (ex: 1 septembre 2026)</label>
+      <input type="text" id="upDate" value="" placeholder="1 septembre 2026">
+    </div>
+
+    <div class="modal-section">📊 Valeurs des lignes (€)</div>
+    <div class="modal-row">
+      <div class="modal-field"><label>DCAM</label><input type="number" id="upDCAM" value="82236" oninput="updatePreview()"></div>
+      <div class="modal-field"><label>SEL</label><input type="number" id="upSEL" value="70907" oninput="updatePreview()"></div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field"><label>ASML</label><input type="number" id="upASML" value="38723" oninput="updatePreview()"></div>
+      <div class="modal-field"><label>PAEEM</label><input type="number" id="upPAEEM" value="6636" oninput="updatePreview()"></div>
+    </div>
+
+    <div class="modal-section">💰 Capital & TRI</div>
+    <div class="modal-row">
+      <div class="modal-field"><label>Capital investi (€)</label><input type="number" id="upCapital" value="128000" oninput="updatePreview()"></div>
+      <div class="modal-field"><label>TRI annualisé (%)</label><input type="number" id="upTRI" value="9.56" step="0.01" oninput="updatePreview()"></div>
+    </div>
+
+    <div class="modal-section">📈 Aperçu</div>
+    <div class="modal-preview" id="updatePreview">—</div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeUpdateModal()">Annuler</button>
+      <button class="btn-apply" onclick="applyUpdate()">🍩 Appliquer le donut</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
@@ -1040,6 +1108,162 @@ function updateIndep() {
   });
 }
 updateIndep();
+
+// ═══════════════════════════════════════════════════════════════
+// MODAL MISE À JOUR MENSUELLE
+// ═══════════════════════════════════════════════════════════════
+function openUpdateModal() {
+  // Pre-fill with current values
+  document.getElementById('upDCAM').value  = currentData.find(d=>d.ticker==='DCAM').value;
+  document.getElementById('upSEL').value   = currentData.find(d=>d.ticker==='SEL').value;
+  document.getElementById('upASML').value  = currentData.find(d=>d.ticker==='ASML').value;
+  document.getElementById('upPAEEM').value = currentData.find(d=>d.ticker==='PAEEM').value;
+  document.getElementById('upCapital').value = CAPITAL_INVESTI;
+  document.getElementById('upTRI').value   = '9.56';
+  document.getElementById('upDate').value  = '';
+  document.getElementById('successBanner').style.display = 'none';
+  // Mark all inputs as unchanged
+  document.querySelectorAll('.modal-field input').forEach(i => i.classList.remove('changed'));
+  updatePreview();
+  document.getElementById('updateModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeUpdateModal() {
+  document.getElementById('updateModal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function updatePreview() {
+  const dcam  = parseFloat(document.getElementById('upDCAM').value)  || 0;
+  const sel   = parseFloat(document.getElementById('upSEL').value)   || 0;
+  const asml  = parseFloat(document.getElementById('upASML').value)  || 0;
+  const paeem = parseFloat(document.getElementById('upPAEEM').value) || 0;
+  const cap   = parseFloat(document.getElementById('upCapital').value) || CAPITAL_INVESTI;
+  const tri   = parseFloat(document.getElementById('upTRI').value)  || 9.56;
+
+  const newTotal = dcam + sel + asml + paeem;
+  const oldTotal = currentData.reduce((s,d)=>s+d.value, 0);
+  const delta    = newTotal - oldTotal;
+  const gain     = newTotal - cap;
+  const pvNette  = gain - gain * 0.186;
+  const netApres = cap + pvNette;
+
+  // Highlight changed fields
+  const oldVals = {DCAM:currentData.find(d=>d.ticker==='DCAM').value, SEL:currentData.find(d=>d.ticker==='SEL').value, ASML:currentData.find(d=>d.ticker==='ASML').value, PAEEM:currentData.find(d=>d.ticker==='PAEEM').value};
+  [{id:'upDCAM',t:'DCAM'},{id:'upSEL',t:'SEL'},{id:'upASML',t:'ASML'},{id:'upPAEEM',t:'PAEEM'}].forEach(({id,t}) => {
+    const inp = document.getElementById(id);
+    inp.classList.toggle('changed', parseFloat(inp.value) !== oldVals[t]);
+  });
+
+  const sign   = delta >= 0 ? '+' : '';
+  const cls    = delta >= 0 ? 'delta-pos' : 'delta-neg';
+
+  document.getElementById('updatePreview').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+      <div>DCAM &nbsp; <strong>${fmtN(dcam)} €</strong></div>
+      <div>SEL &nbsp;&nbsp; <strong>${fmtN(sel)} €</strong></div>
+      <div>ASML &nbsp; <strong>${fmtN(asml)} €</strong></div>
+      <div>PAEEM <strong>${fmtN(paeem)} €</strong></div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:4px">
+      <div>Total PEA &nbsp;&nbsp;&nbsp; <strong>${fmtN(Math.round(newTotal))} €</strong> &nbsp; <span class="${cls}">${sign}${fmtN(Math.round(delta))} €</span></div>
+      <div>Gain brut &nbsp;&nbsp;&nbsp; <strong class="${gain>=0?'delta-pos':'delta-neg'}">${gain>=0?'+':''}${fmtN(Math.round(gain))} €</strong></div>
+      <div>Valeur nette &nbsp; <strong>${fmtN(Math.round(netApres))} €</strong> <span style="color:var(--text2)">(après PS 18,6%)</span></div>
+      <div>TRI &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--accent)">${tri.toFixed(2).replace('.',',')}%/an</strong></div>
+    </div>
+  `;
+}
+
+function applyUpdate() {
+  const dcam  = parseFloat(document.getElementById('upDCAM').value);
+  const sel   = parseFloat(document.getElementById('upSEL').value);
+  const asml  = parseFloat(document.getElementById('upASML').value);
+  const paeem = parseFloat(document.getElementById('upPAEEM').value);
+  const cap   = parseFloat(document.getElementById('upCapital').value);
+  const tri   = parseFloat(document.getElementById('upTRI').value);
+  const date  = document.getElementById('upDate').value.trim() || new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+
+  // Update currentData
+  currentData.find(d=>d.ticker==='DCAM').value  = dcam;
+  currentData.find(d=>d.ticker==='SEL').value   = sel;
+  currentData.find(d=>d.ticker==='ASML').value  = asml;
+  currentData.find(d=>d.ticker==='PAEEM').value = paeem;
+
+  const newTotal = dcam + sel + asml + paeem;
+
+  // Update KPIs
+  const gain = newTotal - cap;
+  const perf = (gain / cap * 100).toFixed(1);
+  document.getElementById('kpiValeur').textContent = fmtN(Math.round(newTotal)) + ' €';
+  document.getElementById('kpiGain').textContent   = '+' + fmtN(Math.round(gain)) + ' € · +' + perf + '%';
+  document.getElementById('lastUpdate').textContent = date;
+
+  // Update plafond bar
+  const pct = Math.min(100, cap / 150000 * 100);
+  const reste = Math.max(0, 150000 - cap);
+  const mois  = Math.round(reste / 1000);
+  document.querySelector('.plafond-bar .prog-fill').style.width = pct.toFixed(1) + '%';
+  document.querySelector('.plafond-bar').querySelector('[style*="font-size:20px"]').textContent = fmtN(reste) + ' €';
+
+  // Rebuild portfolio lines
+  document.getElementById('linesTable').innerHTML = '';
+  document.getElementById('pvBars').innerHTML = '';
+
+  const newTotal2 = currentData.reduce((s,d)=>s+d.value, 0);
+  const prevSnap2 = snapshots[snapshots.length - 1];
+
+  currentData.forEach(d => {
+    const pct2 = (d.value/newTotal2*100).toFixed(1);
+    const inv  = d.pru * d.parts;
+    const gp   = ((d.value-inv)/inv*100).toFixed(1);
+    const isPos = parseFloat(gp) >= 0;
+    let badge = '';
+    if (prevSnap2) {
+      const prev = prevSnap2.lines.find(l => l.ticker === d.ticker);
+      if (prev) {
+        const delta2 = (d.value - prev.value) / prev.value * 100;
+        if (delta2 <= -10) badge = `<span style="font-size:8px;background:rgba(248,113,113,.2);color:#f87171;padding:2px 6px;border-radius:10px;margin-left:4px">🔴 ${delta2.toFixed(1)}%</span>`;
+        else if (delta2 >= 10) badge = `<span style="font-size:8px;background:rgba(74,222,128,.15);color:#4ade80;padding:2px 6px;border-radius:10px;margin-left:4px">🟢 +${delta2.toFixed(1)}%</span>`;
+        else if (delta2 <= -5) badge = `<span style="font-size:8px;background:rgba(251,146,60,.15);color:#fb923c;padding:2px 6px;border-radius:10px;margin-left:4px">🟡 ${delta2.toFixed(1)}%</span>`;
+      }
+    }
+    const el = document.createElement('div');
+    el.className = 'line-row';
+    el.innerHTML = `<div class="line-color" style="background:${COLORS[d.ticker]}"></div><div><div class="line-ticker">${d.ticker}</div><div style="font-size:9px;color:var(--text2)">${d.parts} parts</div></div><div class="line-name">${d.name}${badge}</div><div class="line-right"><div class="line-val">${fmt(d.value)}</div><div class="line-meta">${pct2}% · PRU ${d.pru}€</div><div class="line-pv ${isPos?'pos':'neg'}">${isPos?'+':''}${gp}%</div></div>`;
+    document.getElementById('linesTable').appendChild(el);
+  });
+
+  // PV bars
+  const maxP2 = Math.max(...currentData.map(d => Math.abs(((d.value-d.pru*d.parts)/(d.pru*d.parts))*100)));
+  currentData.forEach(d => {
+    const gp2   = ((d.value-d.pru*d.parts)/(d.pru*d.parts)*100).toFixed(1);
+    const isPos2 = parseFloat(gp2) >= 0;
+    const bw   = Math.abs(parseFloat(gp2))/maxP2*100;
+    const el   = document.createElement('div');
+    el.className = 'bar-row';
+    el.innerHTML = `<div class="bar-label">${d.ticker}</div><div class="bar-track"><div class="bar-fill" style="width:${bw}%;background:${isPos2?'var(--accent2)':'var(--accent3)'}"></div></div><div class="bar-val ${isPos2?'pos':'neg'}">${isPos2?'+':''}${gp2}%</div>`;
+    document.getElementById('pvBars').appendChild(el);
+  });
+
+  // Update donut
+  Chart.getChart('mainDonut')?.destroy();
+  new Chart(document.getElementById('mainDonut'), {
+    type:'doughnut',
+    data:{labels:currentData.map(d=>d.ticker), datasets:[{data:currentData.map(d=>d.value), backgroundColor:currentData.map(d=>COLORS[d.ticker]), borderColor:'#111113', borderWidth:3, hoverOffset:10}]},
+    options:{responsive:true, cutout:'62%', plugins:{legend:{display:false}, tooltip:{backgroundColor:'#18181b',titleFont:{family:'DM Mono',size:11},bodyFont:{family:'DM Mono',size:10},callbacks:{label:ctx=>{const d=currentData[ctx.dataIndex];return[` ${fmt(d.value)}`,` ${(d.value/newTotal2*100).toFixed(1)}%`];}}}}}
+  });
+
+  // Update footer
+  document.getElementById('footerNote').textContent = `Capital investi : ${fmtN(cap)} € · TRI : ${tri.toFixed(2).replace('.',',')}%/an · Données Bourse Direct ${date}`;
+
+  // Reset historique so it rebuilds next time
+  histBuilt = false;
+
+  // Show success
+  document.getElementById('successBanner').style.display = 'block';
+  setTimeout(() => closeUpdateModal(), 1800);
+}
 
 // ═══════════════════════════════════════════════════════════════
 // SERVICE WORKER (PWA)
