@@ -196,7 +196,6 @@ canvas{width:100%;}
   <div class="nav sim">
     <button class="nav-tab" onclick="showPage('compound',this)">🔄 Intérêts composés</button>
     <button class="nav-tab" onclick="showPage('indep',this)">🏝️ Indépendance</button>
-    <button class="nav-tab" onclick="showPage('ghost',this)">👻 Portefeuille fantôme</button>
   </div>
 </div>
 
@@ -502,67 +501,6 @@ canvas{width:100%;}
   <div class="card"><div class="card-title">Comparaison des 3 méthodes</div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Méthode</th><th>Capital cible</th><th>Revenu/mois</th><th>Années</th></tr></thead><tbody id="indepCompTable"></tbody></table></div></div>
 </div>
 
-<!-- PAGE PORTEFEUILLE FANTÔME -->
-<div class="page" id="page-ghost">
-
-  <div style="padding:14px 16px;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.3);border-radius:10px;margin-bottom:16px;font-size:11px;color:var(--text2);line-height:1.7">
-    👻 <strong style="color:var(--purple)">Portefeuille fantôme</strong> — Compare ton allocation réelle vs deux alternatives : <strong>100% DCAM</strong> (pure croissance) et <strong>100% SEL</strong> (pure dividendes). Même capital investi, même dates de versement. Qui a fait mieux ?
-  </div>
-
-  <!-- Sélecteur -->
-  <div class="ic-scenarios" style="margin-bottom:16px">
-    <button class="ic-scenario active" onclick="setGhost('dcam100',this)">📊 100% DCAM</button>
-    <button class="ic-scenario" onclick="setGhost('sel100',this)">🌍 100% SEL</button>
-    <button class="ic-scenario" onclick="setGhost('mix5050',this)">⚖️ 50% DCAM / 50% SEL</button>
-  </div>
-
-  <!-- KPIs comparaison -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:#e8c547"></div>
-      <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Ton portefeuille réel</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent);line-height:1">198 502 €</div>
-      <div style="font-size:10px;color:var(--accent2);margin-top:4px">+70 502 € · TRI 9,56%</div>
-    </div>
-    <div style="background:var(--surface);border:1px solid rgba(167,139,250,.4);border-radius:10px;padding:16px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--purple)"></div>
-      <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Portefeuille fantôme</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--purple);line-height:1" id="ghostVal">—</div>
-      <div style="font-size:10px;color:var(--accent2);margin-top:4px" id="ghostGain">—</div>
-    </div>
-  </div>
-
-  <!-- Verdict -->
-  <div id="ghostVerdict" style="text-align:center;padding:14px;background:var(--surface2);border-radius:10px;margin-bottom:16px;font-size:13px"></div>
-
-  <!-- Graphique comparaison -->
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-title" id="ghostChartTitle">Évolution comparée — mois par mois</div>
-    <canvas id="ghostChart" style="height:260px"></canvas>
-  </div>
-
-  <!-- Tableau comparaison -->
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-title">Détail mensuel</div>
-    <div style="overflow-x:auto">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Mois</th>
-            <th>Ton PEA</th>
-            <th>Fantôme</th>
-            <th>Différence</th>
-          </tr>
-        </thead>
-        <tbody id="ghostTable"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Note méthodologie -->
-  <div class="note">Simulation basée sur les performances réelles de DCAM et SEL reconstituées sur la même période. Les versements mensuels sont identiques à ceux de ton PEA réel. Dividendes SEL réinvestis dans la simulation 100% SEL.</div>
-
-</div>
 
 <div class="note" id="footerNote">Capital investi : 128 000 € · TRI : 9,56%/an · PV latentes : ~45 302 € · Données Bourse Direct 1 août 2026</div>
 
@@ -684,7 +622,7 @@ let currentETF = 'dcam';
 let indepMethod = '4pct';
 
 // ── SWIPE NAVIGATION ──────────────────────────────────────────
-const PAGE_ORDER = ['quick','historique','tri','dividends','fiscalite','etfcompo','compound','indep','ghost'];
+const PAGE_ORDER = ['quick','historique','tri','dividends','fiscalite','etfcompo','compound','indep'];
 let swipeStartX = 0, swipeStartY = 0, swipeActive = false;
 
 document.addEventListener('touchstart', e => {
@@ -743,7 +681,6 @@ function showPage(id, el) {
   if (id === 'fiscalite')   setTimeout(updateFisc, 100);
   if (id === 'indep')       setTimeout(updateIndep, 100);
   if (id === 'compound')    setTimeout(updateIC, 100);
-  if (id === 'ghost')       setTimeout(renderGhost, 100);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1281,163 +1218,6 @@ updateIndep();
   });
 })();
 
-// ── PORTEFEUILLE FANTÔME ──────────────────────────────────────
-// Performances reconstituées DCAM et SEL depuis avril 2017
-// Basées sur les TRI annuels estimés : DCAM ~10.5%/an, SEL ~7.8%/an (dividendes réinvestis)
-const ghostData = {
-  dcam100: {
-    label: '100% DCAM (MSCI World)',
-    color: '#3b82f6',
-    triAnnuel: 10.5,
-    // Valeurs mensuelles reconstituées sur les mêmes snapshots
-    snapVals: {
-      'Mai 2026':  191430,
-      'Juin 2026': 209800,
-      'Juil 2026': 208100,
-      'Août 2026': 204900,
-    },
-    finalVal: 204900,
-    note: 'DCAM (MSCI World) aurait légèrement surperformé ton portefeuille grâce à sa forte exposition tech US (NVIDIA, Apple, Microsoft). Mais sans dividendes distribués — tu aurais dû vendre des parts pour générer des revenus.'
-  },
-  sel100: {
-    label: '100% SEL (Europe Dividendes)',
-    color: '#10b981',
-    triAnnuel: 7.8,
-    snapVals: {
-      'Mai 2026':  172100,
-      'Juin 2026': 185300,
-      'Juil 2026': 189200,
-      'Août 2026': 193500,
-    },
-    finalVal: 193500,
-    note: 'SEL 100% aurait généré ~6 750 €/an de dividendes (vs ~3 960 € dans ton allocation actuelle), mais avec une croissance plus faible. La valeur finale serait inférieure de ~5 000 €.'
-  },
-  mix5050: {
-    label: '50% DCAM / 50% SEL',
-    color: '#a78bfa',
-    triAnnuel: 9.2,
-    snapVals: {
-      'Mai 2026':  181200,
-      'Juin 2026': 196800,
-      'Juil 2026': 198400,
-      'Août 2026': 199200,
-    },
-    finalVal: 199200,
-    note: 'Un mix 50/50 DCAM/SEL aurait donné des résultats très proches du tien — à 700 € près. Bonne nouvelle : ton allocation actuelle (ASML + PAEEM en plus) est pertinente et ajoute de la diversification.'
-  },
-};
-
-let ghostMode = 'dcam100';
-let ghostChartObj = null;
-
-function setGhost(mode, el) {
-  ghostMode = mode;
-  document.querySelectorAll('#page-ghost .ic-scenario').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  renderGhost();
-}
-
-function renderGhost() {
-  const d = ghostData[ghostMode];
-  const realVal = 198502;
-  const realGain = 70502;
-  const cap = 128000;
-  const ghostGain = d.finalVal - cap;
-  const diff = d.finalVal - realVal;
-  const diffSign = diff >= 0 ? '+' : '';
-  const winner = diff > 0 ? '👻' : '🏆';
-
-  // KPIs
-  document.getElementById('ghostVal').textContent  = new Intl.NumberFormat('fr-FR').format(d.finalVal) + ' €';
-  document.getElementById('ghostGain').textContent = '+' + new Intl.NumberFormat('fr-FR').format(Math.round(ghostGain)) + ' € · TRI ' + d.triAnnuel + '%';
-
-  // Verdict
-  const verdictColor = diff > 0 ? 'var(--accent3)' : 'var(--accent2)';
-  document.getElementById('ghostVerdict').innerHTML = diff > 0
-    ? `👻 Le fantôme gagne · <strong style="color:${verdictColor}">${diffSign}${new Intl.NumberFormat('fr-FR').format(Math.round(diff))} €</strong> de plus que ton portefeuille réel`
-    : `🏆 Ton portefeuille gagne · <strong style="color:${verdictColor}">${new Intl.NumberFormat('fr-FR').format(Math.round(Math.abs(diff)))} €</strong> de plus que le fantôme`;
-
-  // Chart
-  const labels = Object.keys(ghostData.dcam100.snapVals);
-  const realLine  = [185672, 202617, 202178, 198502];
-  const ghostLine = labels.map(l => d.snapVals[l]);
-
-  if (ghostChartObj) ghostChartObj.destroy();
-  ghostChartObj = new Chart(document.getElementById('ghostChart'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'Ton portefeuille réel',
-          data: realLine,
-          borderColor: '#e8c547',
-          backgroundColor: 'rgba(232,197,71,.08)',
-          fill: true, tension: .3, borderWidth: 2.5,
-          pointRadius: 6, pointBackgroundColor: '#e8c547', pointBorderColor: '#09090b', pointBorderWidth: 2,
-        },
-        {
-          label: d.label,
-          data: ghostLine,
-          borderColor: d.color,
-          backgroundColor: d.color + '15',
-          fill: true, tension: .3, borderWidth: 2.5,
-          borderDash: [6, 3],
-          pointRadius: 6, pointBackgroundColor: d.color, pointBorderColor: '#09090b', pointBorderWidth: 2,
-        },
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { labels: { color: '#a1a1aa', font: { family: 'DM Mono', size: 10 }, boxWidth: 10 } },
-        tooltip: {
-          backgroundColor: '#18181b', titleColor: '#fafafa', bodyColor: '#a1a1aa',
-          titleFont: { family: 'DM Mono', size: 11 }, bodyFont: { family: 'DM Mono', size: 10 },
-          callbacks: {
-            label: ctx => ` ${ctx.dataset.label} : ${new Intl.NumberFormat('fr-FR').format(ctx.raw)} €`,
-            afterBody: items => {
-              if (items.length < 2) return [];
-              const diff2 = items[1].raw - items[0].raw;
-              return [`  Écart : ${diff2 >= 0 ? '+' : ''}${new Intl.NumberFormat('fr-FR').format(Math.round(diff2))} €`];
-            }
-          }
-        }
-      },
-      scales: {
-        x: { grid: { color: 'rgba(39,39,42,.4)' }, ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 10 } } },
-        y: {
-          grid: { color: 'rgba(39,39,42,.4)' }, beginAtZero: false,
-          min: Math.min(...realLine, ...ghostLine) * 0.97 | 0,
-          ticks: { color: '#d4d4d8', font: { family: 'DM Mono', size: 10 }, callback: v => new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(v) + '€' }
-        }
-      }
-    }
-  });
-
-  // Table
-  const tb = document.getElementById('ghostTable');
-  tb.innerHTML = '';
-  labels.forEach((l, i) => {
-    const real  = realLine[i];
-    const ghost = ghostLine[i];
-    const diff2  = ghost - real;
-    const tr = document.createElement('tr');
-    if (i === labels.length - 1) tr.className = 'milestone';
-    tr.innerHTML = `
-      <td>${l}</td>
-      <td>${new Intl.NumberFormat('fr-FR').format(real)} €</td>
-      <td style="color:${d.color}">${new Intl.NumberFormat('fr-FR').format(ghost)} €</td>
-      <td class="${diff2 >= 0 ? 'neg' : 'pos'}">${diff2 >= 0 ? '+' : ''}${new Intl.NumberFormat('fr-FR').format(Math.round(diff2))} €</td>
-    `;
-    tb.appendChild(tr);
-  });
-
-  // Note
-  document.querySelector('#page-ghost .note').textContent = d.note;
-  document.getElementById('ghostChartTitle').textContent = `Ton portefeuille réel vs ${d.label}`;
-}
 
 // SERVICE WORKER (PWA)
 // ═══════════════════════════════════════════════════════════════
