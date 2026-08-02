@@ -617,7 +617,7 @@ function showPage(id, el) {
   el.classList.add('active');
   // Forcer le redimensionnement de tous les graphiques après affichage
   setTimeout(() => {
-    Chart.instances.forEach(c => c.resize());
+    Object.values(Chart.instances).forEach(c => c.resize());
   }, 50);
   if (id === 'historique' && !histBuilt) { histBuilt = true; setTimeout(buildHistorique, 100); }
   if (id === 'dividends')   setTimeout(buildDividends, 100);
