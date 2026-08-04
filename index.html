@@ -1,160 +1,1193 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PEA for Dam - Dashboard</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f8;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        .dashboard-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .summary-section {
-            background-color: #0b224c; /* Couleur inspirée de ton interface */
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-        .summary-value {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .summary-details {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-        .positive { color: #2ecc71; }
-        .negative { color: #e74c3c; }
-        
-        .positions-title {
-            font-size: 20px;
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-        .position-card {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .pos-info h3 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-        }
-        .pos-ticker {
-            font-size: 12px;
-            color: #7f8c8d;
-            text-transform: uppercase;
-        }
-        .pos-data {
-            text-align: right;
-        }
-        .pos-val {
-            font-size: 16px;
-            font-weight: bold;
-            margin: 0 0 5px 0;
-        }
-        .pos-perf {
-            font-size: 13px;
-        }
-        .pos-pru {
-            font-size: 12px;
-            color: #7f8c8d;
-            margin-top: 4px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>PEA Dashboard — Loursac Damien</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#09090b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PEA for DAM">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--surface:#111113;--surface2:#18181b;--surface3:#222226;--accent:#e8c547;--accent2:#4ade80;--accent3:#f87171;--blue:#60a5fa;--purple:#a78bfa;--text:#fafafa;--text2:#a1a1aa;--border:#27272a;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(232,197,71,.03) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 80% 80%,rgba(59,130,246,.03) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.app{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:16px 16px 64px;}
+/* HEADER */
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,6vw,48px);font-weight:300;line-height:1;}
+h1 em{font-style:italic;color:var(--accent);}
+.header-date{font-size:11px;color:var(--text2);}
+/* PLAFOND BAR */
+.plafond-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+/* KPI */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+@media(max-width:600px){.kpi-strip{grid-template-columns:repeat(2,1fr);}}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,var(--accent));}
+.kpi-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:6px;}
+.kpi-val{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,4vw,28px);font-weight:300;line-height:1;}
+.kpi-sub{font-size:10px;color:var(--accent2);margin-top:4px;}
+.kpi-sub.highlight{color:var(--accent);}
+/* NAV */
+.nav-section{margin-bottom:6px;}
+.nav-section-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:4px;padding-left:2px;}
+.nav{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;flex-wrap:wrap;margin-bottom:6px;}
+.nav-tab{flex:1;min-width:70px;padding:9px 6px;text-align:center;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);cursor:pointer;border-radius:7px;transition:all .2s;border:none;background:transparent;font-family:'DM Mono',monospace;}
+.nav-tab.active{background:var(--surface3);color:var(--accent);border:1px solid rgba(232,197,71,.3);}
+.nav-tab:hover:not(.active){color:var(--text);}
+.nav.sim .nav-tab.active{color:var(--purple);border-color:rgba(167,139,250,.3);}
+/* PAGES */
+.page{display:none;}.page.active{display:block;}
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px;}
+.card-title{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+@media(max-width:700px){.g2{grid-template-columns:1fr;}}
+/* PORTFOLIO LINES */
+.line-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--surface2);margin-bottom:6px;transition:background .15s;}
+.line-row:hover{background:var(--surface3);}
+.line-color{width:3px;height:36px;border-radius:2px;flex-shrink:0;}
+.line-ticker{font-size:11px;font-weight:500;width:48px;}
+.line-name{font-size:9px;color:var(--text2);flex:1;line-height:1.4;}
+.line-right{text-align:right;}
+.line-val{font-family:'Cormorant Garamond',serif;font-size:18px;}
+.line-meta{font-size:9px;color:var(--text2);}
+.line-pv{font-size:11px;font-weight:500;}
+.pos{color:var(--accent2);}.neg{color:var(--accent3);}
+/* BARS */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.bar-label{font-size:10px;color:var(--text2);width:130px;flex-shrink:0;}
+.bar-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;}
+.bar-val{font-size:11px;min-width:55px;text-align:right;}
+/* TRI */
+.tri-hero{text-align:center;padding:28px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:14px;position:relative;overflow:hidden;}
+.tri-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(232,197,71,.05) 0%,transparent 70%);}
+.tri-big{font-family:'Cormorant Garamond',serif;font-size:clamp(56px,12vw,96px);font-weight:300;line-height:1;color:var(--accent);}
+/* IC */
+.ic-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.ic-control{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.ic-control label{display:block;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px;}
+.ic-control input[type=range]{width:100%;accent-color:var(--accent);margin-bottom:6px;}
+.ic-val{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--accent);}
+.ic-val span{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;}
+.ic-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+@media(min-width:600px){.ic-kpis{grid-template-columns:repeat(4,1fr);}}
+.ic-kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;position:relative;overflow:hidden;}
+.ic-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,var(--accent));}
+.ic-kpi-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin-bottom:4px;}
+.ic-kpi-val{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,3vw,22px);line-height:1;}
+.ic-kpi-sub{font-size:9px;color:var(--accent2);margin-top:3px;}
+.ic-scenario{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;transition:all .2s;}
+.ic-scenario.active{background:var(--surface3);color:var(--accent);border-color:rgba(232,197,71,.4);}
+.ic-scenarios{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.ic-doubling{background:var(--surface2);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.6;}
+.ic-doubling strong{color:var(--accent);}
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;font-size:11px;}
+.data-table th{padding:8px 10px;text-align:left;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border);background:var(--surface2);}
+.data-table td{padding:8px 10px;border-bottom:1px solid rgba(39,39,42,.4);}
+.data-table tr:hover td{background:var(--surface2);}
+.data-table .milestone td{color:var(--accent);}
+/* DIVIDENDES CALENDAR */
+.div-cal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.div-cal-cell{padding:12px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;text-align:center;position:relative;}
+.div-cal-cell.has-div{border-color:rgba(232,197,71,.5);}
+.div-cal-month{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:6px;}
+.div-cal-amount{font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1;}
+.div-cal-src{font-size:9px;color:var(--text2);margin-top:3px;}
+/* PROGRESS */
+.prog-bar{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin:8px 0;}
+.prog-fill{height:100%;border-radius:5px;transition:width .6s ease;}
+/* ETF */
+.etf-btn{padding:9px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;transition:all .2s;}
+.etf-btn.active{background:var(--surface3);color:var(--blue);border-color:rgba(96,165,250,.4);}
+.etf-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+/* FISCALITE */
+.fisc-hero{text-align:center;padding:28px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:14px;position:relative;overflow:hidden;}
+.fisc-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(74,222,128,.05) 0%,transparent 70%);}
+.fisc-decomp{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px;flex-wrap:wrap;}
+.fisc-box{padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;text-align:center;}
+.fisc-box-label{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:5px;}
+.fisc-box-val{font-family:'Cormorant Garamond',serif;font-size:24px;}
+.fisc-op{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--text2);}
+/* NOTE */
+.note{font-size:11px;color:var(--text2);line-height:1.7;padding-left:12px;border-left:2px solid var(--border);margin-top:20px;}
+canvas{width:100%;}
+</style>
 </head>
 <body>
+<div class="app">
 
-<div class="dashboard-container">
-    
-    <!-- Résumé du portefeuille -->
-    <div class="summary-section">
-        <div>Valeur totale du portefeuille</div>
-        <div class="summary-value">199 831,23 €</div>
-        <div class="summary-details">
-            <div>
-                <span>Titres : 199 731,57 €</span><br>
-                <span class="positive">+/- value : +42 483,77 €</span>
-            </div>
-            <div>
-                <span>Espèces : 99,66 €</span>
-            </div>
-        </div>
+<!-- HEADER -->
+<div class="header">
+  <img src="icon-192.png" alt="PEA for DAM" style="width:48px;height:48px;border-radius:12px">
+    <div style="text-align:right">
+    <div class="header-date">Dernière MàJ</div>
+    <div class="header-date">1 août 2026</div>
+  </div>
+</div>
+
+<!-- PLAFOND PEA -->
+<div class="plafond-bar">
+  <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);flex-shrink:0">🏦 Plafond PEA</div>
+  <div style="flex:1;min-width:100px">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text2);margin-bottom:4px">
+      <span style="color:var(--accent)">128 000 € versés</span>
+      <span>Plafond : 150 000 €</span>
     </div>
+    <div class="prog-bar" style="margin:0"><div class="prog-fill" style="width:85.3%;background:linear-gradient(90deg,#3b82f6,#e8c547)"></div></div>
+  </div>
+  <div style="text-align:right;flex-shrink:0">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--accent)">22 000 €</div>
+    <div style="font-size:9px;color:var(--text2)">restants · ~22 mois</div>
+  </div>
+</div>
 
-    <!-- Liste des positions -->
-    <h2 class="positions-title">Mes Positions</h2>
+<!-- KPI STRIP -->
+<div class="kpi-strip">
+  <div class="kpi-card" style="--kc:#3b82f6">
+    <div class="kpi-label">Capital investi</div>
+    <div class="kpi-val">128 000 €</div>
+    <div class="kpi-sub">versements · 9 ans</div>
+  </div>
+  <div class="kpi-card" style="--kc:#4ade80">
+    <div class="kpi-label">Valeur PEA</div>
+    <div class="kpi-val" id="kpiValeur">198 602 €</div>
+    <div class="kpi-sub" id="kpiGain">+70 602 € · +55,2%</div>
+  </div>
+  <div class="kpi-card" style="--kc:#e8c547">
+    <div class="kpi-label">TRI annualisé</div>
+    <div class="kpi-val">9,56 %</div>
+    <div class="kpi-sub highlight">Base : 128 000 € investis</div>
+  </div>
+  <div class="kpi-card" style="--kc:#f59e0b">
+    <div class="kpi-label">Dividendes 2026</div>
+    <div class="kpi-val">~3 960 €</div>
+    <div class="kpi-sub">dont 3 801 € en déc.</div>
+  </div>
+</div>
 
-    <!-- Ligne DCAM -->
-    <div class="position-card">
-        <div class="pos-info">
-            <h3>AMUNDI PEA MONDE MSCI World UC</h3>
-            <span class="pos-ticker">DCAM • 13 640 parts</span>
-        </div>
-        <div class="pos-data">
-            <p class="pos-val">83 490,44 €</p>
-            <span class="pos-perf positive">+8,04 %</span>
-            <div class="pos-pru">PRU: 5,67 €</div>
-        </div>
+<!-- NAV ANALYSE -->
+<div class="nav-section">
+  <div class="nav-section-label">Analyse</div>
+  <div class="nav">
+    <button class="nav-tab active" onclick="showPage('quick',this)">⚡ Résumé</button>
+    <button class="nav-tab" onclick="showPage('historique',this)">📈 Historique</button>
+    <button class="nav-tab" onclick="showPage('tri',this)">📐 TRI</button>
+    <button class="nav-tab" onclick="showPage('dividends',this)">💰 Dividendes</button>
+    <button class="nav-tab" onclick="showPage('fiscalite',this)">🏦 Après impôts</button>
+    <button class="nav-tab" onclick="showPage('etfcompo',this)">🔍 Composition ETF</button>
+  </div>
+</div>
+
+<!-- NAV SIMULATEURS -->
+<div class="nav-section" style="margin-bottom:20px">
+  <div class="nav-section-label">Simulateurs</div>
+  <div class="nav sim">
+    <button class="nav-tab" onclick="showPage('compound',this)">🔄 Intérêts composés</button>
+    <button class="nav-tab" onclick="showPage('indep',this)">🏝️ Indépendance</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- PAGE RÉSUMÉ RAPIDE -->
+<div class="page active" id="page-quick">
+
+  <div style="text-align:center;padding:28px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:14px;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(232,197,71,.05) 0%,transparent 70%);pointer-events:none"></div>
+    <div style="font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Valeur PEA · 1 août 2026</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(56px,14vw,96px);font-weight:300;line-height:1;color:var(--accent)" id="qValeur">198 502 €</div>
+    <div style="font-size:13px;color:var(--accent2);margin-top:8px" id="qGain">+70 502 € · +55,1% depuis 2017</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:#e8c547"></div>
+      <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">TRI annualisé</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--accent);line-height:1">9,56%</div>
+      <div style="font-size:10px;color:var(--text2);margin-top:4px">sur 9 ans</div>
     </div>
-
-    <!-- Ligne SEL -->
-    <div class="position-card">
-        <div class="pos-info">
-            <h3>Amundi Stoxx Europe Select Div</h3>
-            <span class="pos-ticker">SEL • 2 858 parts</span>
-        </div>
-        <div class="pos-data">
-            <p class="pos-val">71 278,52 €</p>
-            <span class="pos-perf positive">+22,71 %</span>
-            <div class="pos-pru">PRU: 20,33 €</div>
-        </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:#4ade80"></div>
+      <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Valeur nette</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--accent2);line-height:1" id="qNet">185 470 €</div>
+      <div style="font-size:10px;color:var(--text2);margin-top:4px">après PS 18,6%</div>
     </div>
-
-    <!-- Ligne ASML -->
-    <div class="position-card">
-        <div class="pos-info">
-            <h3>ASML Holding N.V.</h3>
-            <span class="pos-ticker">ASML • 27 parts</span>
-        </div>
-        <div class="pos-data">
-            <p class="pos-val">38 329,20 €</p>
-            <span class="pos-perf positive">+113,54 %</span>
-            <div class="pos-pru">PRU: 664,78 €</div>
-        </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:#f59e0b"></div>
+      <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Dividendes 2026</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:#f59e0b;line-height:1">~3 960 €</div>
+      <div style="font-size:10px;color:var(--text2);margin-top:4px">dont 3 801 € en décembre</div>
     </div>
-
-    <!-- Ligne PAEEM -->
-    <div class="position-card">
-        <div class="pos-info">
-            <h3>Amundi PEA Emergent (MSCI Emer)</h3>
-            <span class="pos-ticker">PAEEM • 193 parts</span>
-        </div>
-        <div class="pos-data">
-            <p class="pos-val">6 633,41 €</p>
-            <span class="pos-perf positive">+68,69 %</span>
-            <div class="pos-pru">PRU: 20,37 €</div>
-        </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:#3b82f6"></div>
+      <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Capital investi</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--blue);line-height:1">128 000 €</div>
+      <div style="font-size:10px;color:var(--text2);margin-top:4px">reste 22 000 € au plafond</div>
     </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Répartition</div>
+    <div id="qLines" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📅 Agenda · Août 2026</div>
+    <div id="qEvents" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏝️ Indépendance financière · Objectif 2 000 €/mois</div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:6px">
+      <span style="color:var(--accent2)">~1 032 €/mois actuels</span>
+      <span style="color:var(--accent)">51,6%</span>
+      <span>2 000 €/mois</span>
+    </div>
+    <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:8px">
+      <div style="height:100%;width:51.6%;background:linear-gradient(90deg,#3b82f6,#e8c547);border-radius:3px"></div>
+    </div>
+    <div style="font-size:10px;color:var(--text2)">Objectif atteint en <strong style="color:var(--accent)">2033</strong> · Patrimoine estimé 2039 : <strong style="color:var(--accent2)">~965 000 €</strong></div>
+  </div>
 
 </div>
 
+<!-- PAGE PORTEFEUILLE -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-portfolio">
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">Répartition</div>
+      <canvas id="mainDonut" style="max-width:180px;max-height:180px;margin:0 auto;display:block"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Détail des lignes</div>
+      <div id="linesTable"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Plus-values latentes</div>
+    <div id="pvBars"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- PAGE HISTORIQUE -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-historique">
+  <div class="ic-kpis" style="margin-bottom:14px">
+    <div class="ic-kpi" style="--kc:#e8c547"><div class="ic-kpi-label">TRI actuel</div><div class="ic-kpi-val" id="histTRIActuel">9,56%</div><div class="ic-kpi-sub" id="histTRISub">—</div></div>
+    <div class="ic-kpi" style="--kc:#4ade80"><div class="ic-kpi-label">Meilleur mois</div><div class="ic-kpi-val" id="histBest">—</div><div class="ic-kpi-sub" id="histBestSub">—</div></div>
+    <div class="ic-kpi" style="--kc:#f87171"><div class="ic-kpi-label">Pire mois</div><div class="ic-kpi-val" id="histWorst">—</div><div class="ic-kpi-sub" id="histWorstSub">—</div></div>
+    <div class="ic-kpi" style="--kc:#60a5fa"><div class="ic-kpi-label">Gain depuis mai</div><div class="ic-kpi-val" id="histGainTotal">—</div><div class="ic-kpi-sub" id="histGainSub">—</div></div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Évolution valeur du PEA — mois par mois</div>
+    <canvas id="histValueChart" style="height:220px;max-height:220px"></canvas>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">TRI annualisé — mois par mois</div>
+    <canvas id="histTRIChart" style="height:180px;max-height:180px"></canvas>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Composition du portefeuille dans le temps</div>
+    <canvas id="histCompoChart" style="height:180px;max-height:180px"></canvas>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Tableau mensuel</div>
+    <div style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>Mois</th><th>Valeur PEA</th><th>Variation</th><th>Gain cumulé</th><th>TRI</th></tr></thead>
+        <tbody id="histTable"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📸 Snapshots — Détail des lignes</div>
+    <div style="margin-bottom:10px">
+      <input type="range" id="tlSlider" min="0" max="3" step="1" value="3" style="width:100%;accent-color:var(--accent)" oninput="renderTL(parseInt(this.value))">
+      <div id="tlDate" style="text-align:center;font-size:10px;color:var(--text2);margin-top:4px"></div>
+    </div>
+    <div id="tlLines" style="display:flex;flex-direction:column;gap:6px"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- PAGE TRI -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-tri">
+  <div class="tri-hero">
+    <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">TRI · Depuis avril 2017</div>
+    <div class="tri-big">9,56%</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:6px">par an · sur <strong>9 ans</strong> · ~1 174 €/mois versés</div>
+  </div>
+  <div class="g2">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">Tableau TRI année par année</div>
+      <div style="overflow-x:auto">
+        <table class="data-table" id="triTable">
+          <thead><tr><th>Année</th><th>Capital</th><th>Valeur</th><th>Gain</th></tr></thead>
+          <tbody id="triTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">Comparaison vs indices</div>
+      <div id="compBars" style="margin-bottom:16px"></div>
+      <div class="card-title" style="margin-top:14px">Évolution TRI vs MSCI World & CAC 40</div>
+      <canvas id="triVsIndicesChart" style="height:180px;max-height:180px"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- PAGE DIVIDENDES -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-dividends">
+  <div class="ic-kpis" style="margin-bottom:14px">
+    <div class="ic-kpi" style="--kc:#e8c547"><div class="ic-kpi-label">Total annuel</div><div class="ic-kpi-val">~3 960 €</div><div class="ic-kpi-sub">dividendes bruts 2026</div></div>
+    <div class="ic-kpi" style="--kc:#4ade80"><div class="ic-kpi-label">Par mois (lissé)</div><div class="ic-kpi-val">~330 €</div><div class="ic-kpi-sub">moyenne mensuelle</div></div>
+    <div class="ic-kpi" style="--kc:#60a5fa"><div class="ic-kpi-label">Prochain versement</div><div class="ic-kpi-val">+51 €</div><div class="ic-kpi-sub">ASML — 5 août 2026</div></div>
+    <div class="ic-kpi" style="--kc:#a78bfa"><div class="ic-kpi-label">Gros versement</div><div class="ic-kpi-val">3 801 €</div><div class="ic-kpi-sub">SEL — décembre 2026</div></div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Calendrier des dividendes — mois par mois</div>
+    <div class="div-cal" id="divCalGrid"></div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Prochains versements confirmés</div>
+    <div id="divNextList" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Répartition annuelle des dividendes</div>
+    <canvas id="divBarChart" style="height:180px;max-height:180px"></canvas>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- PAGE APRÈS IMPÔTS -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-fiscalite">
+  <div class="fisc-hero">
+    <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Valeur nette · PEA après prélèvements sociaux</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,12vw,88px);font-weight:300;line-height:1;color:var(--accent2)" id="fiscHero">—</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:6px">si tu retirais tout aujourd'hui</div>
+    <div class="fisc-decomp">
+      <div class="fisc-box"><div class="fisc-box-label">Capital investi</div><div class="fisc-box-val" style="color:var(--blue)">128 000 €</div></div>
+      <div class="fisc-op">+</div>
+      <div class="fisc-box" style="border-color:rgba(74,222,128,.3)"><div class="fisc-box-label">PV nette après impôts</div><div class="fisc-box-val" style="color:var(--accent2)" id="fiscPvNette">—</div></div>
+      <div class="fisc-op">=</div>
+      <div class="fisc-box" style="border-color:rgba(74,222,128,.5)"><div class="fisc-box-label">Tu touches réellement</div><div class="fisc-box-val" style="color:var(--accent2)" id="fiscHero2">—</div></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Règle fiscale PEA (ouvert depuis > 5 ans)</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
+      <div style="padding:12px;background:var(--surface2);border-radius:8px;text-align:center"><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Impôt revenu</div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent2)">0%</div><div style="font-size:9px;color:var(--text2);margin-top:3px">Exonération totale</div></div>
+      <div style="padding:12px;background:var(--surface2);border-radius:8px;text-align:center"><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Prélèvements sociaux</div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent3)">18,6%</div><div style="font-size:9px;color:var(--text2);margin-top:3px">Sur PV uniquement</div></div>
+      <div style="padding:12px;background:var(--surface2);border-radius:8px;text-align:center"><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">vs flat tax CTO</div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent)">30%</div><div style="font-size:9px;color:var(--text2);margin-top:3px">Économie réalisée</div></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Paramètres</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="ic-control"><label>Taux PS (%)</label><input type="range" id="fiscTaux" min="15" max="20" step="0.1" value="18.6" oninput="updateFisc()"><div class="ic-val" id="fiscTauxVal">18,6 <span>%</span></div></div>
+      <div class="ic-control"><label>Retrait simulé (€)</label><input type="range" id="fiscRetrait" min="1000" max="202617" step="1000" value="202617" oninput="updateFisc()"><div class="ic-val" id="fiscRetraitVal">202 617 <span>€</span></div></div>
+    </div>
+  </div>
+  <div class="ic-kpis" style="margin-bottom:14px">
+    <div class="ic-kpi" style="--kc:#4ade80"><div class="ic-kpi-label">Valeur brute</div><div class="ic-kpi-val" id="fiscBrut">—</div><div class="ic-kpi-sub">valeur actuelle</div></div>
+    <div class="ic-kpi" style="--kc:#f87171"><div class="ic-kpi-label">Impôts dus</div><div class="ic-kpi-val" id="fiscImpots">—</div><div class="ic-kpi-sub" id="fiscImpotsDetail">—</div></div>
+    <div class="ic-kpi" style="--kc:#e8c547"><div class="ic-kpi-label">Économie vs flat tax</div><div class="ic-kpi-val" id="fiscEconomieKpi">—</div><div class="ic-kpi-sub">vs CTO 30%</div></div>
+    <div class="ic-kpi" style="--kc:#4ade80"><div class="ic-kpi-label">Valeur nette</div><div class="ic-kpi-val" id="fiscNet">—</div><div class="ic-kpi-sub" id="fiscNetDetail">—</div></div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">PEA vs Compte-titres (flat tax 30%)</div>
+    <canvas id="fiscChart" style="height:200px;max-height:200px"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Simulation de retraits progressifs</div>
+    <div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Retrait</th><th>PS dus</th><th>Économie</th><th>Net</th></tr></thead><tbody id="fiscTable"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- PAGE COMPOSITION ETF -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-etfcompo">
+  <div class="etf-btns">
+    <button class="etf-btn active" onclick="showETF('dcam',this)">📊 DCAM — MSCI World</button>
+    <button class="etf-btn" onclick="showETF('sel',this)">🌍 SEL — Europe Div.</button>
+    <button class="etf-btn" onclick="showETF('paeem',this)">🌏 PAEEM — Émergents</button>
+  </div>
+  <div id="etfContent"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- PAGE INTÉRÊTS COMPOSÉS -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-compound">
+  <div class="ic-scenarios">
+    <button class="ic-scenario" onclick="setICScenario(4,this)">📉 Pessimiste 4%</button>
+    <button class="ic-scenario" onclick="setICScenario(7,this)">📊 Réaliste 7%</button>
+    <button class="ic-scenario active" onclick="setICScenario(9.56,this)">🎯 Mon TRI 9,56%</button>
+    <button class="ic-scenario" onclick="setICScenario(12,this)">🚀 Optimiste 12%</button>
+  </div>
+  <div class="ic-controls">
+    <div class="ic-control"><label>Capital de départ (€)</label><input type="range" id="icCapital" min="0" max="400000" step="1000" value="198602" oninput="updateIC()"><div class="ic-val" id="icCapitalVal">198 602 <span>€</span></div></div>
+    <div class="ic-control"><label>Rendement annuel (%)</label><input type="range" id="icRate" min="1" max="20" step="0.1" value="9.56" oninput="updateIC()"><div class="ic-val" id="icRateVal">9,56 <span>%</span></div></div>
+    <div class="ic-control"><label>Versement mensuel (€)</label><input type="range" id="icMonthly" min="0" max="5000" step="100" value="1000" oninput="updateIC()"><div class="ic-val" id="icMonthlyVal">1 000 <span>€/mois</span></div></div>
+    <div class="ic-control"><label>Horizon (années)</label><input type="range" id="icYears" min="1" max="30" step="1" value="10" oninput="updateIC()"><div class="ic-val" id="icYearsVal">10 <span>ans</span></div></div>
+  </div>
+  <div class="ic-kpis">
+    <div class="ic-kpi" style="--kc:#e8c547"><div class="ic-kpi-label">Valeur finale</div><div class="ic-kpi-val" id="icFinal">—</div><div class="ic-kpi-sub" id="icFinalSub">—</div></div>
+    <div class="ic-kpi" style="--kc:#4ade80"><div class="ic-kpi-label">Gain total</div><div class="ic-kpi-val" id="icGain">—</div><div class="ic-kpi-sub" id="icGainSub">—</div></div>
+    <div class="ic-kpi" style="--kc:#60a5fa"><div class="ic-kpi-label">Capital investi total</div><div class="ic-kpi-val" id="icTotalInvested">—</div><div class="ic-kpi-sub">départ + versements</div></div>
+    <div class="ic-kpi" style="--kc:#a78bfa"><div class="ic-kpi-label">Part intérêts purs</div><div class="ic-kpi-val" id="icInterest">—</div><div class="ic-kpi-sub" id="icInterestSub">—</div></div>
+  </div>
+  <div class="ic-doubling" id="icDoubling"></div>
+  <div class="card" style="margin-bottom:14px"><div class="card-title">Projection</div><canvas id="icChart" style="height:220px;max-height:220px"></canvas></div>
+  <div class="card"><div class="card-title">Détail année par année</div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Année</th><th>Capital investi</th><th>Valeur</th><th>Intérêts cumulés</th><th>Performance</th></tr></thead><tbody id="icTableBody"></tbody></table></div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- PAGE INDÉPENDANCE FINANCIÈRE -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-indep">
+  <div class="ic-scenarios">
+    <button class="ic-scenario active" onclick="setIndepMethod('4pct',this)">📐 Règle des 4%</button>
+    <button class="ic-scenario" onclick="setIndepMethod('dividendes',this)">💰 Dividendes purs</button>
+    <button class="ic-scenario" onclick="setIndepMethod('mix',this)">⚖️ Approche mixte</button>
+  </div>
+  <div class="ic-controls">
+    <div class="ic-control"><label>Revenu mensuel cible (€)</label><input type="range" id="indepRevenu" min="500" max="10000" step="100" value="2000" oninput="updateIndep()"><div class="ic-val" id="indepRevenuVal">2 000 <span>€/mois</span></div></div>
+    <div class="ic-control"><label>Rendement annuel (%)</label><input type="range" id="indepRate" min="3" max="15" step="0.5" value="9.56" oninput="updateIndep()"><div class="ic-val" id="indepRateVal">9,56 <span>%</span></div></div>
+    <div class="ic-control"><label>Versement mensuel (€)</label><input type="range" id="indepMonthly" min="0" max="3000" step="100" value="2000" oninput="updateIndep()"><div class="ic-val" id="indepMonthlyVal">2 000 <span>€/mois</span></div></div>
+    <div class="ic-control"><label>Taux de retrait (%)</label><input type="range" id="indepWithdraw" min="2" max="6" step="0.5" value="4" oninput="updateIndep()"><div class="ic-val" id="indepWithdrawVal">4,0 <span>%</span></div></div>
+  </div>
+  <div class="ic-kpis" style="margin-bottom:14px">
+    <div class="ic-kpi" style="--kc:#e8c547"><div class="ic-kpi-label">Capital cible (IF)</div><div class="ic-kpi-val" id="indepCapCible">—</div><div class="ic-kpi-sub" id="indepCapCibleSub">—</div></div>
+    <div class="ic-kpi" style="--kc:#4ade80"><div class="ic-kpi-label">PEA actuel</div><div class="ic-kpi-val">198 602 €</div><div class="ic-kpi-sub" id="indepPEAPct">—% de l'objectif</div></div>
+    <div class="ic-kpi" style="--kc:#60a5fa"><div class="ic-kpi-label">Années restantes</div><div class="ic-kpi-val" id="indepYears">—</div><div class="ic-kpi-sub" id="indepYearsSub">—</div></div>
+    <div class="ic-kpi" style="--kc:#a78bfa"><div class="ic-kpi-label">Revenus actuels</div><div class="ic-kpi-val" id="indepRevActuel">—</div><div class="ic-kpi-sub">si retrait dès maintenant</div></div>
+  </div>
+  <div class="ic-doubling" id="indepMethodExpl"></div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Progression vers l'indépendance</div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:6px"><span>0 €</span><span id="indepProgLabel">—</span><span id="indepCibleLabel">—</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="indepBar" style="width:0%;background:linear-gradient(90deg,#3b82f6,#e8c547)"></div></div>
+  </div>
+  <div class="card" style="margin-bottom:14px"><div class="card-title">Trajectoire vers l'IF</div><canvas id="indepChart" style="height:220px;max-height:220px"></canvas></div>
+  <div class="card"><div class="card-title">Comparaison des 3 méthodes</div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Méthode</th><th>Capital cible</th><th>Revenu/mois</th><th>Années</th></tr></thead><tbody id="indepCompTable"></tbody></table></div></div>
+</div>
+
+<div class="note" id="footerNote">Capital investi : 128 000 € · TRI : 9,56%/an · PV latentes : ~45 302 € · Données Bourse Direct 1 août 2026</div>
+
+</div><!-- /app -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════════
+// DONNÉES
+// ═══════════════════════════════════════════════════════════════
+
+const COLORS = {SEL:'#10b981',DCAM:'#3b82f6',ASML:'#f59e0b',PAEEM:'#a78bfa',GUARD:'#f87171'};
+
+const currentData = [
+  {ticker:'SEL', name:'Stoxx Europe Select Div',isin:'FR0010378604',parts:2858,pru:20.33,value:70907},
+  {ticker:'DCAM',name:'MSCI World Amundi',      isin:'FR001400U5Q4',parts:13640,pru:5.67, value:82236},
+  {ticker:'ASML',name:'ASML Holding N.V.',      isin:'NL0010273215',parts:27,  pru:664.78,value:38723},
+  {ticker:'PAEEM',name:'MSCI Émergents Amundi', isin:'FR0011440478',parts:193, pru:20.37,value:6636},
+];
+
+const histData = [
+  { date:'Mai 2026',  total:185672, capital:120000, tri:8.50 },
+  { date:'Juin 2026', total:202617, capital:124000, tri:9.99 },
+  { date:'Juil 2026', total:202178, capital:128000, tri:9.94 },
+  { date:'Août 2026', total:198502, capital:128000, tri:9.56 },
+];
+
+const snapshots = [
+  {date:'Mai 2026', total:185672, lines:[
+    {ticker:'DCAM',value:61869,pru:5.58,parts:10308},{ticker:'SEL',value:66871,pru:20.33,parts:2858},
+    {ticker:'ASML',value:37568,pru:664.78,parts:27},{ticker:'PAEEM',value:7005,pru:20.37,parts:193},
+  ]},
+  {date:'Juin 2026', total:202617, lines:[
+    {ticker:'DCAM',value:82890,pru:5.67,parts:13640},{ticker:'SEL',value:66020,pru:20.33,parts:2858},
+    {ticker:'ASML',value:46078,pru:664.78,parts:27},{ticker:'PAEEM',value:7115,pru:20.37,parts:193},
+  ]},
+  {date:'Juil 2026', total:202178, lines:[
+    {ticker:'DCAM',value:82890,pru:5.67,parts:13640},{ticker:'SEL',value:66020,pru:20.33,parts:2858},
+    {ticker:'ASML',value:46078,pru:664.78,parts:27},{ticker:'PAEEM',value:7115,pru:20.37,parts:193},
+  ]},
+  {date:'Août 2026', total:198502, lines:[
+    {ticker:'DCAM',value:82236,pru:5.67,parts:13640},{ticker:'SEL',value:70907,pru:20.33,parts:2858},
+    {ticker:'ASML',value:38723,pru:664.78,parts:27},{ticker:'PAEEM',value:6636,pru:20.37,parts:193},
+  ]},
+];
+
+const dividends = [
+  {date:'15 août 2026', source:'ASML — Acompte T3 2026 (27 parts × 1,88 €)',amount:51,confirmed:true},
+  {date:'15 nov 2026',  source:'ASML — Acompte T4 2026',amount:43,confirmed:true},
+  {date:'11 déc 2026',  source:'SEL — Versement annuel 2026 (2858 parts × 1,33 €)',amount:3801,confirmed:true},
+  {date:'~fév 2027',    source:'ASML — Dividende final 2025',amount:73,confirmed:false},
+];
+
+const divData2026 = {Jan:0,Fév:0,Mar:0,Avr:0,Mai:0,Juin:0,Juil:0,Août:51,Sep:0,Oct:0,Nov:43,Déc:3801};
+
+const triData = [
+  {yr:1,date:'Avr 2018',invested:14092,value:14658,gain:566},
+  {yr:2,date:'Avr 2019',invested:28183,value:30622,gain:2439},
+  {yr:3,date:'Avr 2020',invested:42275,value:48009,gain:5734},
+  {yr:4,date:'Avr 2021',invested:56367,value:66944,gain:10577},
+  {yr:5,date:'Avr 2022',invested:70459,value:87566,gain:17107},
+  {yr:6,date:'Avr 2023',invested:84550,value:110026,gain:25476},
+  {yr:7,date:'Avr 2024',invested:98642,value:134486,gain:35844},
+  {yr:8,date:'Avr 2025',invested:112734,value:161125,gain:48391},
+  {yr:9,date:'Août 2026',invested:128000,value:198602,gain:70602},
+];
+
+const compData = [
+  {label:'Ton PEA (TRI réel)',    pct:9.56, color:'#e8c547'},
+  {label:'MSCI World (2017-26)', pct:10.5, color:'#3b82f6'},
+  {label:'CAC 40 + dividendes',  pct:7.8,  color:'#f59e0b'},
+  {label:'Livret A (moy.)',       pct:1.6,  color:'#6b7280'},
+];
+
+const VALEUR_PEA = 198602;
+const CAPITAL_INVESTI = 128000;
+
+// ETF data
+const etfData = {
+  dcam:{name:'Amundi PEA Monde MSCI World UCITS ETF',ticker:'DCAM',isin:'FR001400U5Q4',frais:'0,20%',nbLignes:'~1 283',dividende:'Capitalisant',replication:'Synthétique',actu:'Juin 2026',lien:'https://www.amundietf.fr',color:'#3b82f6',
+    top10:[{name:'NVIDIA',pays:'🇺🇸',pct:5.18},{name:'Apple',pays:'🇺🇸',pct:4.77},{name:'Microsoft',pays:'🇺🇸',pct:3.45},{name:'Alphabet',pays:'🇺🇸',pct:2.90},{name:'Amazon',pays:'🇺🇸',pct:2.63},{name:'Meta',pays:'🇺🇸',pct:2.20},{name:'Broadcom',pays:'🇺🇸',pct:1.85},{name:'Tesla',pays:'🇺🇸',pct:1.50},{name:'Eli Lilly',pays:'🇺🇸',pct:1.10},{name:'JPMorgan',pays:'🇺🇸',pct:1.05}],
+    geo:[{label:'États-Unis',pct:70.2,color:'#3b82f6'},{label:'Japon',pct:5.8,color:'#e8c547'},{label:'Royaume-Uni',pct:4.1,color:'#4ade80'},{label:'France',pct:3.2,color:'#f87171'},{label:'Canada',pct:3.1,color:'#a78bfa'},{label:'Autres',pct:13.6,color:'#6b7280'}],
+    secteurs:[{label:'Technologie',pct:30.8,color:'#3b82f6'},{label:'Finance',pct:15.7,color:'#e8c547'},{label:'Industrie',pct:11.4,color:'#4ade80'},{label:'Santé',pct:9.1,color:'#f87171'},{label:'Conso. Discr.',pct:8.9,color:'#a78bfa'},{label:'Communication',pct:8.2,color:'#fb923c'},{label:'Autres',pct:15.9,color:'#6b7280'}],
+    note:'⚠️ DCAM est un ETF synthétique (swaps). Tu es exposé indirectement à Nvidia, Apple etc. sans les détenir physiquement dans le PEA.'},
+  sel:{name:'Amundi Stoxx Europe Select Dividend 30 UCITS ETF',ticker:'SEL',isin:'LU1812092168',frais:'0,30%',nbLignes:'30',dividende:'Distribuant (~5,6%/an)',replication:'Synthétique',actu:'Mai 2026',lien:'https://www.amundietf.fr',color:'#10b981',
+    top10:[{name:'Legal & General',pays:'🇬🇧',pct:5.70},{name:'Teleperformance',pays:'🇫🇷',pct:5.01},{name:'Signify NV',pays:'🇳🇱',pct:4.92},{name:'Taylor Wimpey',pays:'🇬🇧',pct:4.60},{name:'Aker BP ASA',pays:'🇳🇴',pct:4.52},{name:'Investec',pays:'🇬🇧',pct:4.30},{name:'Klépierre',pays:'🇫🇷',pct:4.10},{name:'Vopak',pays:'🇳🇱',pct:3.95},{name:'Unibail-Rodamco',pays:'🇫🇷',pct:3.80},{name:'Proximus',pays:'🇧🇪',pct:3.60}],
+    geo:[{label:'Royaume-Uni',pct:28.5,color:'#3b82f6'},{label:'France',pct:18.2,color:'#e8c547'},{label:'Pays-Bas',pct:14.8,color:'#4ade80'},{label:'Norvège',pct:9.2,color:'#f87171'},{label:'Belgique',pct:8.5,color:'#a78bfa'},{label:'Autres',pct:20.8,color:'#6b7280'}],
+    secteurs:[{label:'Finance',pct:49.1,color:'#3b82f6'},{label:'Énergie',pct:13.4,color:'#e8c547'},{label:'Conso. Discr.',pct:12.6,color:'#4ade80'},{label:'Industrie',pct:10.3,color:'#f87171'},{label:'Matériaux',pct:5.9,color:'#a78bfa'},{label:'Services pub.',pct:5.5,color:'#fb923c'},{label:'Comm.',pct:3.2,color:'#6b7280'}],
+    note:'💡 SEL = 30 grandes valeurs européennes à forts dividendes. La Finance représente presque 50% du fonds. C\'est ta ligne de revenus — versement annuel en décembre.'},
+  paeem:{name:'Amundi PEA Émergent MSCI ESG Transition UCITS ETF',ticker:'PAEEM',isin:'FR0013412020',frais:'0,30%',nbLignes:'~700+',dividende:'Capitalisant',replication:'Synthétique',actu:'Juil 2026',lien:'https://www.amundietf.fr',color:'#a78bfa',
+    top10:[{name:'TSMC',pays:'🇹🇼',pct:7.80},{name:'Samsung',pays:'🇰🇷',pct:3.90},{name:'Tencent',pays:'🇨🇳',pct:3.60},{name:'Alibaba',pays:'🇨🇳',pct:2.80},{name:'Reliance',pays:'🇮🇳',pct:2.10},{name:'Infosys',pays:'🇮🇳',pct:1.80},{name:'HDFC Bank',pays:'🇮🇳',pct:1.70},{name:'Meituan',pays:'🇨🇳',pct:1.50},{name:'ICICI Bank',pays:'🇮🇳',pct:1.40},{name:'SK Hynix',pays:'🇰🇷',pct:1.30}],
+    geo:[{label:'Chine',pct:25.1,color:'#f87171'},{label:'Inde',pct:19.8,color:'#fb923c'},{label:'Taïwan',pct:17.2,color:'#e8c547'},{label:'Corée du Sud',pct:10.5,color:'#4ade80'},{label:'Brésil',pct:5.8,color:'#3b82f6'},{label:'Autres',pct:21.6,color:'#6b7280'}],
+    secteurs:[{label:'Finance',pct:21.7,color:'#3b82f6'},{label:'Technologie',pct:20.6,color:'#e8c547'},{label:'Conso. Discr.',pct:13.4,color:'#4ade80'},{label:'Communication',pct:10.2,color:'#f87171'},{label:'Matériaux',pct:8.1,color:'#a78bfa'},{label:'Industrie',pct:6.6,color:'#fb923c'},{label:'Autres',pct:19.4,color:'#6b7280'}],
+    note:'🌏 Filtre ESG appliqué sur le MSCI Emerging Markets. Chine 25% + Inde 20% + Taïwan 17%. TSMC reste la 1ère position.'},
+};
+
+// ═══════════════════════════════════════════════════════════════
+// UTILITAIRES
+// ═══════════════════════════════════════════════════════════════
+const fmt = n => new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(n) + ' €';
+const fmtN = n => new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(n);
+const chartDefaults = {
+  backgroundColor:'#18181b', titleColor:'#fafafa', bodyColor:'#a1a1aa',
+  titleFont:{family:'DM Mono',size:11}, bodyFont:{family:'DM Mono',size:10}, padding:10,
+};
+const axisDefaults = {
+  grid:{color:'rgba(39,39,42,.4)'},
+  ticks:{color:'#d4d4d8',font:{family:'DM Mono',size:10}},
+  beginAtZero: false,
+};
+
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+let histBuilt = false;
+let currentETF = 'dcam';
+let indepMethod = '4pct';
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  el.classList.add('active');
+  // Forcer le redimensionnement de tous les graphiques après affichage
+  setTimeout(() => {
+    Object.values(Chart.instances).forEach(c => c.resize());
+  }, 50);
+  if (id === 'historique' && !histBuilt) { histBuilt = true; setTimeout(buildHistorique, 100); }
+  if (id === 'dividends')   setTimeout(buildDividends, 100);
+  if (id === 'etfcompo')    setTimeout(() => renderETF(currentETF), 100);
+  if (id === 'fiscalite')   setTimeout(updateFisc, 100);
+  if (id === 'indep')       setTimeout(updateIndep, 100);
+  if (id === 'compound')    setTimeout(updateIC, 100);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PORTFOLIO
+// ═══════════════════════════════════════════════════════════════
+const total = currentData.reduce((s,d) => s + d.value, 0);
+
+// Donut
+new Chart(document.getElementById('mainDonut'), {
+  type: 'doughnut',
+  data: {
+    labels: currentData.map(d => d.ticker),
+    datasets: [{data:currentData.map(d=>d.value), backgroundColor:currentData.map(d=>COLORS[d.ticker]), borderColor:'#111113', borderWidth:3, hoverOffset:10}]
+  },
+  options: {responsive:true, cutout:'62%', plugins:{legend:{display:false}, tooltip:{backgroundColor:chartDefaults.backgroundColor,titleFont:chartDefaults.titleFont,bodyFont:chartDefaults.bodyFont,callbacks:{label:ctx=>{const d=currentData[ctx.dataIndex];const pct=(d.value/total*100).toFixed(1);return[` ${fmt(d.value)}`,` ${pct}% du PEA`];}}}}}
+});
+
+// Lines
+const prevSnap = snapshots[snapshots.length - 2];
+const lt = document.getElementById('linesTable');
+currentData.forEach(d => {
+  const pct = (d.value/total*100).toFixed(1);
+  const inv = d.pru * d.parts;
+  const gp  = ((d.value-inv)/inv*100).toFixed(1);
+  const isPos = parseFloat(gp) >= 0;
+  let badge = '';
+  if (prevSnap) {
+    const prev = prevSnap.lines.find(l => l.ticker === d.ticker);
+    if (prev) {
+      const delta = (d.value - prev.value) / prev.value * 100;
+      if (delta <= -10) badge = `<span style="font-size:8px;background:rgba(248,113,113,.2);color:#f87171;padding:2px 6px;border-radius:10px;margin-left:4px">🔴 ${delta.toFixed(1)}%</span>`;
+      else if (delta >= 10) badge = `<span style="font-size:8px;background:rgba(74,222,128,.15);color:#4ade80;padding:2px 6px;border-radius:10px;margin-left:4px">🟢 +${delta.toFixed(1)}%</span>`;
+      else if (delta <= -5) badge = `<span style="font-size:8px;background:rgba(251,146,60,.15);color:#fb923c;padding:2px 6px;border-radius:10px;margin-left:4px">🟡 ${delta.toFixed(1)}%</span>`;
+    }
+  }
+  const el = document.createElement('div');
+  el.className = 'line-row';
+  el.innerHTML = `<div class="line-color" style="background:${COLORS[d.ticker]}"></div><div><div class="line-ticker">${d.ticker}</div><div style="font-size:9px;color:var(--text2)">${d.parts} parts</div></div><div class="line-name">${d.name}${badge}</div><div class="line-right"><div class="line-val">${fmt(d.value)}</div><div class="line-meta">${pct}% · PRU ${d.pru}€</div><div class="line-pv ${isPos?'pos':'neg'}">${isPos?'+':''}${gp}%</div></div>`;
+  lt.appendChild(el);
+});
+
+// PV bars
+const pvB = document.getElementById('pvBars');
+const maxP = Math.max(...currentData.map(d => Math.abs(((d.value-d.pru*d.parts)/(d.pru*d.parts))*100)));
+currentData.forEach(d => {
+  const gp = ((d.value-d.pru*d.parts)/(d.pru*d.parts)*100).toFixed(1);
+  const isPos = parseFloat(gp) >= 0;
+  const bw = Math.abs(parseFloat(gp))/maxP*100;
+  const el = document.createElement('div');
+  el.className = 'bar-row';
+  el.innerHTML = `<div class="bar-label">${d.ticker}</div><div class="bar-track"><div class="bar-fill" style="width:${bw}%;background:${isPos?'var(--accent2)':'var(--accent3)'}"></div></div><div class="bar-val ${isPos?'pos':'neg'}">${isPos?'+':''}${gp}%</div>`;
+  pvB.appendChild(el);
+});
+
+// ═══════════════════════════════════════════════════════════════
+// HISTORIQUE
+// ═══════════════════════════════════════════════════════════════
+function buildHistorique() {
+  const labels   = histData.map(d => d.date);
+  const values   = histData.map(d => d.total);
+  const tris     = histData.map(d => d.tri);
+  const capitals = histData.map(d => d.capital);
+  const deltas   = histData.map((d,i) => i === 0 ? 0 : d.total - histData[i-1].total);
+  const bestIdx  = deltas.slice(1).indexOf(Math.max(...deltas.slice(1))) + 1;
+  const worstIdx = deltas.slice(1).indexOf(Math.min(...deltas.slice(1))) + 1;
+  const gainTotal = histData[histData.length-1].total - histData[0].total;
+
+  document.getElementById('histTRIActuel').textContent = tris[tris.length-1].toFixed(2).replace('.',',') + '%';
+  document.getElementById('histTRISub').textContent    = 'annualisé · ' + histData[histData.length-1].date;
+  document.getElementById('histBest').textContent      = '+' + fmtN(Math.round(deltas[bestIdx])) + ' €';
+  document.getElementById('histBestSub').textContent   = histData[bestIdx].date;
+  document.getElementById('histWorst').textContent     = fmtN(Math.round(deltas[worstIdx])) + ' €';
+  document.getElementById('histWorstSub').textContent  = histData[worstIdx].date;
+  document.getElementById('histGainTotal').textContent = '+' + fmtN(Math.round(gainTotal)) + ' €';
+  document.getElementById('histGainSub').textContent   = '+' + (gainTotal/histData[0].total*100).toFixed(1) + '% depuis mai 2026';
+
+  // Value chart
+  new Chart(document.getElementById('histValueChart'), {
+    type:'line', data:{labels, datasets:[
+      {label:'Valeur PEA', data:values, borderColor:'#e8c547', backgroundColor:'rgba(232,197,71,.1)', fill:true, tension:.3, borderWidth:2.5, pointRadius:5, pointBackgroundColor:'#e8c547', pointBorderColor:'#09090b', pointBorderWidth:2},
+      {label:'Capital investi', data:capitals, borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,.05)', fill:true, tension:.3, borderWidth:2, borderDash:[5,4], pointRadius:3},
+    ]},
+    options:{responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{legend:{labels:{color:'#a1a1aa',font:{family:'DM Mono',size:10},boxWidth:10}}, tooltip:{backgroundColor:chartDefaults.backgroundColor,titleFont:chartDefaults.titleFont,bodyFont:chartDefaults.bodyFont,callbacks:{label:ctx=>` ${ctx.dataset.label} : ${fmt(ctx.raw)}`}}}, scales:{x:{...axisDefaults},y:{...axisDefaults, min: Math.min(...values, ...capitals) * 0.95 |0, ticks:{...axisDefaults.ticks, callback:v=>new Intl.NumberFormat('fr-FR',{notation:'compact'}).format(v)+'€'}}}}
+  });
+
+  // TRI chart
+  new Chart(document.getElementById('histTRIChart'), {
+    type:'bar', data:{labels, datasets:[{label:'TRI annualisé (%)', data:tris, backgroundColor:tris.map(t=>t>=9?'rgba(74,222,128,.7)':t>=7?'rgba(232,197,71,.7)':'rgba(248,113,113,.7)'), borderColor:tris.map(t=>t>=9?'#4ade80':t>=7?'#e8c547':'#f87171'), borderWidth:2, borderRadius:5}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{backgroundColor:chartDefaults.backgroundColor,titleFont:chartDefaults.titleFont,bodyFont:chartDefaults.bodyFont,callbacks:{label:ctx=>` TRI : ${ctx.raw.toFixed(2)}%`}}}, scales:{x:{...axisDefaults}, y:{...axisDefaults, min:7, max:12, ticks:{...axisDefaults.ticks,callback:v=>v+'%'}}}}
+  });
+
+  // Compo chart
+  const tickers2 = ['DCAM','SEL','ASML','PAEEM'];
+  const compoLines = [
+    [{ticker:'DCAM',value:61869},{ticker:'SEL',value:66871},{ticker:'ASML',value:37568},{ticker:'PAEEM',value:7005}],
+    [{ticker:'DCAM',value:82890},{ticker:'SEL',value:66020},{ticker:'ASML',value:46078},{ticker:'PAEEM',value:7115}],
+    [{ticker:'DCAM',value:82890},{ticker:'SEL',value:66020},{ticker:'ASML',value:46078},{ticker:'PAEEM',value:7115}],
+    [{ticker:'DCAM',value:82236},{ticker:'SEL',value:70907},{ticker:'ASML',value:38723},{ticker:'PAEEM',value:6636}],
+  ];
+  const compoDatasets = tickers2.map(t => ({
+    label:t, data:compoLines.map((snap,i)=>{const l=snap.find(x=>x.ticker===t);return l?Math.round(l.value/histData[i].total*100):0;}),
+    backgroundColor:COLORS[t]+'bb', borderColor:COLORS[t], borderWidth:1,
+  }));
+  new Chart(document.getElementById('histCompoChart'), {
+    type:'bar', data:{labels, datasets:compoDatasets},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#a1a1aa',font:{family:'DM Mono',size:10},boxWidth:10}}, tooltip:{backgroundColor:chartDefaults.backgroundColor,titleFont:chartDefaults.titleFont,bodyFont:chartDefaults.bodyFont,callbacks:{label:ctx=>` ${ctx.dataset.label} : ${ctx.raw}%`}}}, scales:{x:{stacked:true,...axisDefaults},y:{stacked:true,...axisDefaults,max:100,ticks:{...axisDefaults.ticks,callback:v=>v+'%'}}}}
+  });
+
+  // Table
+  const tb = document.getElementById('histTable');
+  histData.forEach((d,i) => {
+    const delta    = i === 0 ? 0 : d.total - histData[i-1].total;
+    const deltaStr = (delta>=0?'+':'') + fmtN(Math.round(delta)) + ' €';
+    const gain     = d.total - d.capital;
+    const tr = document.createElement('tr');
+    if (i === histData.length-1) tr.className = 'milestone';
+    tr.innerHTML = `<td>${d.date}</td><td>${fmt(d.total)}</td><td style="color:${delta>=0?'var(--accent2)':'var(--accent3)'}">${i===0?'—':deltaStr}</td><td class="${gain>=0?'pos':'neg'}">${gain>=0?'+':''}${fmt(gain)}</td><td style="color:${d.tri>=9?'var(--accent2)':d.tri>=7?'var(--accent)':'var(--accent3)'}">${d.tri.toFixed(2).replace('.',',')}%</td>`;
+    tb.appendChild(tr);
+  });
+
+  // Snapshots
+  renderTL(snapshots.length - 1);
+}
+
+function renderTL(idx) {
+  const snap = snapshots[idx];
+  if (!snap) return;
+  document.getElementById('tlDate').textContent = snap.date + ' · Total : ' + fmt(snap.total);
+  const tl = document.getElementById('tlLines');
+  tl.innerHTML = '';
+  const snapTotal = snap.lines.reduce((s,l)=>s+l.value,0);
+  snap.lines.forEach(l => {
+    const pct = (l.value/snapTotal*100).toFixed(1);
+    const gp  = ((l.value-l.pru*l.parts)/(l.pru*l.parts)*100).toFixed(1);
+    const el  = document.createElement('div');
+    el.className = 'line-row';
+    el.innerHTML = `<div class="line-color" style="background:${COLORS[l.ticker]||'#6b7280'}"></div><div><div class="line-ticker">${l.ticker}</div><div style="font-size:9px;color:var(--text2)">${l.parts} parts</div></div><div class="line-name" style="flex:1"></div><div class="line-right"><div class="line-val">${fmt(l.value)}</div><div class="line-meta">${pct}% · PRU ${l.pru}€</div><div class="line-pv ${parseFloat(gp)>=0?'pos':'neg'}">${parseFloat(gp)>=0?'+':''}${gp}%</div></div>`;
+    tl.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TRI PAGE
+// ═══════════════════════════════════════════════════════════════
+(function buildTRI() {
+  // Table
+  const tb = document.getElementById('triTableBody');
+  triData.forEach(d => {
+    const tr = document.createElement('tr');
+    if ([5,9].includes(d.yr)) tr.className = 'milestone';
+    tr.innerHTML = `<td>${d.date}</td><td>${fmt(d.invested)}</td><td class="pos">${fmt(d.value)}</td><td class="pos">+${fmt(d.gain)}</td>`;
+    tb.appendChild(tr);
+  });
+
+  // Comparaison bars
+  const cb = document.getElementById('compBars');
+  const maxComp = Math.max(...compData.map(d => d.pct));
+  compData.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'bar-row';
+    el.innerHTML = `<div class="bar-label">${d.label}</div><div class="bar-track"><div class="bar-fill" style="width:${d.pct/maxComp*100}%;background:${d.color}"></div></div><div class="bar-val" style="color:${d.color}">${d.pct}%/an</div>`;
+    cb.appendChild(el);
+  });
+
+  // TRI vs Indices chart
+  const triLabels = histData.map(d => d.date);
+  const triLine   = histData.map(d => d.tri);
+  const msciLine  = [9.2, 9.5, 9.1, 9.3];
+  const cacLine   = [7.1, 7.8, 7.4, 7.6];
+  new Chart(document.getElementById('triVsIndicesChart'), {
+    type:'line', data:{labels:triLabels, datasets:[
+      {label:'Ton PEA', data:triLine, borderColor:'#e8c547', backgroundColor:'rgba(232,197,71,.1)', fill:true, tension:.3, borderWidth:2.5, pointRadius:5, pointBackgroundColor:'#e8c547'},
+      {label:'MSCI World', data:msciLine, borderColor:'#3b82f6', backgroundColor:'transparent', borderDash:[5,4], borderWidth:2, pointRadius:3},
+      {label:'CAC 40 (div.)', data:cacLine, borderColor:'#f59e0b', backgroundColor:'transparent', borderDash:[3,4], borderWidth:2, pointRadius:3},
+    ]},
+    options:{responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{legend:{labels:{color:'#a1a1aa',font:{family:'DM Mono',size:10},boxWidth:8}}, tooltip:{backgroundColor:chartDefaults.backgroundColor,titleFont:chartDefaults.titleFont,bodyFont:chartDefaults.bodyFont,callbacks:{label:ctx=>` ${ctx.dataset.label} : ${ctx.raw.toFixed(2)}%`}}}, scales:{x:{...axisDefaults},y:{...axisDefaults,min:5,max:12,ticks:{...axisDefaults.ticks,callback:v=>v+'%'}}}}
+  });
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// DIVIDENDES
+// ═══════════════════════════════════════════════════════════════
+let divBuilt = false;
+function buildDividends() {
+  if (divBuilt) return;
+  divBuilt = true;
+
+  // Calendar
+  const cal = document.getElementById('divCalGrid');
+  const maxAmt = Math.max(...Object.values(divData2026));
+  Object.entries(divData2026).forEach(([mois, amt]) => {
+    const hasDiv = amt > 0;
+    const intensity = hasDiv ? Math.max(0.15, amt/maxAmt) : 0;
+    const el = document.createElement('div');
+    el.className = 'div-cal-cell' + (hasDiv ? ' has-div' : '');
+    el.style.background = hasDiv ? `rgba(232,197,71,${(intensity*0.2+0.05).toFixed(2)})` : 'var(--surface2)';
+    const colorStyle = hasDiv ? 'color:var(--accent)' : 'color:var(--text2);opacity:0.3';
+    el.innerHTML = `<div class="div-cal-month" style="color:${hasDiv?'var(--accent)':'var(--text2)'}">${mois}</div><div class="div-cal-amount" style="${colorStyle}">${hasDiv ? fmtN(amt)+' €' : '—'}</div>${hasDiv?`<div class="div-cal-src">${amt>=3000?'SEL':'ASML'}</div>`:''}${amt>=3000?'<div style="position:absolute;top:5px;right:5px;font-size:8px;background:rgba(232,197,71,.2);color:var(--accent);padding:1px 4px;border-radius:8px">⭐</div>':''}`;
+    cal.appendChild(el);
+  });
+
+  // Next list
+  const nl = document.getElementById('divNextList');
+  dividends.forEach(d => {
+    const el = document.createElement('div');
+    el.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--accent)';
+    el.innerHTML = `<div style="font-size:18px">${d.confirmed?'✅':'📅'}</div><div style="flex:1"><div style="font-size:12px;color:var(--text)">${d.source}</div><div style="font-size:9px;color:var(--text2);margin-top:2px">${d.date}</div></div><div style="text-align:right"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--accent)">+${fmtN(d.amount)} €</div><div style="font-size:9px;color:var(--text2)">${d.confirmed?'Confirmé':'Estimé'}</div></div>`;
+    nl.appendChild(el);
+  });
+
+  // Bar chart
+  new Chart(document.getElementById('divBarChart'), {
+    type:'bar', data:{labels:Object.keys(divData2026), datasets:[{label:'Dividendes (€)', data:Object.values(divData2026), backgroundColor:Object.values(divData2026).map(v=>v>0?'rgba(232,197,71,.7)':'rgba(39,39,42,.4)'), borderColor:Object.values(divData2026).map(v=>v>0?'#e8c547':'transparent'), borderWidth:2, borderRadius:4}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{backgroundColor:chartDefaults.backgroundColor,titleFont:chartDefaults.titleFont,bodyFont:chartDefaults.bodyFont,callbacks:{label:ctx=>ctx.raw>0?` ${fmtN(ctx.raw)} €`:' Aucun dividende'}}}, scales:{x:{...axisDefaults},y:{...axisDefaults,ticks:{...axisDefaults.ticks,callback:v=>v>0?fmtN(v)+'€':''}}}}
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FISCALITE
+// ═══════════════════════════════════════════════════════════════
+let fiscChart = null;
+function updateFisc() {
+  const taux    = parseFloat(document.getElementById('fiscTaux').value);
+  const retrait = parseFloat(document.getElementById('fiscRetrait').value);
+  document.getElementById('fiscTauxVal').innerHTML    = taux.toFixed(1).replace('.',',') + ' <span>%</span>';
+  document.getElementById('fiscRetraitVal').innerHTML = fmtN(retrait) + ' <span>€</span>';
+
+  const pvTotale  = VALEUR_PEA - CAPITAL_INVESTI;
+  const ratio     = retrait / VALEUR_PEA;
+  const pvRetiree = pvTotale * ratio;
+  const impotsPEA = pvRetiree * taux / 100;
+  const netPEA    = retrait - impotsPEA;
+  const impotsFlat = pvRetiree * 0.30;
+  const economie  = impotsFlat - impotsPEA;
+  const pvNette   = netPEA - CAPITAL_INVESTI;
+
+  document.getElementById('fiscHero').textContent    = fmtN(Math.round(netPEA)) + ' €';
+  document.getElementById('fiscHero2').textContent   = fmtN(Math.round(netPEA)) + ' €';
+  document.getElementById('fiscPvNette').textContent = '+' + fmtN(Math.round(pvNette)) + ' €';
+  document.getElementById('fiscBrut').textContent    = fmt(Math.round(retrait));
+  document.getElementById('fiscImpots').textContent  = '-' + fmt(Math.round(impotsPEA));
+  document.getElementById('fiscImpotsDetail').textContent = taux + '% × ' + fmt(Math.round(pvRetiree));
+  document.getElementById('fiscEconomieKpi').textContent  = '+' + fmt(Math.round(economie));
+  document.getElementById('fiscNet').textContent     = fmt(Math.round(netPEA));
+  document.getElementById('fiscNetDetail').textContent = (netPEA/retrait*100).toFixed(1) + '% du retrait';
+
+  if (fiscChart) fiscChart.destroy();
+  fiscChart = new Chart(document.getElementById('fiscChart'), {
+    type:'bar', data:{labels:['PEA (18,6% PS)','Compte-titres (30%)'], datasets:[
+      {label:'Net récupéré',  data:[Math.round(netPEA), Math.round(retrait-impotsFlat)], backgroundColor:['rgba(74,222,128,.7)','rgba(248,113,113,.4)'], borderColor:['#4ade80','#f87171'], borderWidth:2, borderRadius:5},
+      {label:'Impôts payés', data:[Math.round(impotsPEA), Math.round(impotsFlat)], backgroundColor:['rgba(248,113,113,.4)','rgba(248,113,113,.7)'], borderColor:['#f87171','#f87171'], borderWidth:2, borderRadius:5},
+    ]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#a1a1aa',font:{family:'DM Mono',size:10},boxWidth:8}}, tooltip:{backgroundColor:chartDefaults.backgroundColor,titleFont:chartDefaults.titleFont,bodyFont:chartDefaults.bodyFont,callbacks:{label:ctx=>` ${ctx.dataset.label} : ${fmt(ctx.raw)}`}}}, scales:{x:{stacked:true,...axisDefaults},y:{stacked:true,...axisDefaults,ticks:{...axisDefaults.ticks,callback:v=>new Intl.NumberFormat('fr-FR',{notation:'compact'}).format(v)+'€'}}}}
+  });
+
+  const tb = document.getElementById('fiscTable');
+  tb.innerHTML = '';
+  [10000,25000,50000,75000,100000,150000,Math.round(VALEUR_PEA)].forEach(r => {
+    const ratio2 = r / VALEUR_PEA;
+    const pv2    = pvTotale * ratio2;
+    const ps2    = pv2 * taux / 100;
+    const flat2  = pv2 * 0.30;
+    const net2   = r - ps2;
+    const tr = document.createElement('tr');
+    if (r >= VALEUR_PEA) tr.className = 'milestone';
+    tr.innerHTML = `<td>${r>=VALEUR_PEA?'🔴 Tout retirer':fmt(r)}</td><td class="neg">-${fmt(Math.round(ps2))}</td><td class="pos">+${fmt(Math.round(flat2-ps2))}</td><td class="pos">${fmt(Math.round(net2))}</td>`;
+    tb.appendChild(tr);
+  });
+}
+// Init fiscalite au chargement
+updateFisc();
+
+// ═══════════════════════════════════════════════════════════════
+// COMPOSITION ETF
+// ═══════════════════════════════════════════════════════════════
+function showETF(key, el) {
+  currentETF = key;
+  document.querySelectorAll('.etf-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderETF(key);
+}
+
+function renderETF(key) {
+  const d = etfData[key];
+  const container = document.getElementById('etfContent');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="card" style="margin-bottom:14px;border-color:${d.color}55">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <div><div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:${d.color};margin-bottom:4px">${d.ticker}</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--text)">${d.name}</div><div style="font-size:10px;color:var(--text2);margin-top:2px">ISIN : ${d.isin} · ${d.actu}</div></div>
+        <a href="${d.lien}" target="_blank" style="font-size:10px;color:${d.color};text-decoration:none;padding:5px 10px;border:1px solid ${d.color}44;border-radius:16px">Fiche Amundi ↗</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        ${[['Frais',d.frais],['Lignes',d.nbLignes],['Dividendes',d.dividende],['Réplication',d.replication]].map(([l,v])=>`<div style="padding:8px;background:var(--surface2);border-radius:8px;text-align:center"><div style="font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:3px">${l}</div><div style="font-size:11px;color:var(--text)">${v}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="card" style="margin-bottom:0"><div class="card-title">🏆 Top 10 (${d.top10.reduce((s,h)=>s+h.pct,0).toFixed(1)}% du fonds)</div><div id="etfTop10"></div></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card" style="margin-bottom:0"><div class="card-title">🌍 Géographie</div><div id="etfGeo"></div></div>
+        <div class="card" style="margin-bottom:0"><div class="card-title">🏭 Secteurs</div><div id="etfSec"></div></div>
+      </div>
+    </div>
+    <div style="padding:12px 14px;background:var(--surface2);border-left:3px solid ${d.color};border-radius:0 8px 8px 0;font-size:11px;color:var(--text2);line-height:1.7">${d.note}</div>
+  `;
+
+  const maxPct = Math.max(...d.top10.map(h => h.pct));
+  const top10  = document.getElementById('etfTop10');
+  d.top10.forEach((h,i) => {
+    const el2 = document.createElement('div');
+    el2.className = 'bar-row';
+    el2.style.marginBottom = '5px';
+    el2.innerHTML = `<div style="width:16px;font-size:9px;color:var(--text2);text-align:center">${i+1}</div><div style="font-size:13px;margin:0 4px">${h.pays}</div><div style="flex:1;font-size:10px;color:var(--text)">${h.name}</div><div style="width:60px"><div class="bar-track"><div class="bar-fill" style="width:${h.pct/maxPct*100}%;background:${d.color}"></div></div></div><div style="width:36px;text-align:right;font-size:10px;color:${d.color}">${h.pct.toFixed(2)}%</div>`;
+    top10.appendChild(el2);
+  });
+
+  const geoEl = document.getElementById('etfGeo');
+  d.geo.forEach(g => {
+    const el3 = document.createElement('div');
+    el3.className = 'bar-row'; el3.style.marginBottom = '5px';
+    el3.innerHTML = `<div class="bar-label" style="width:90px;font-size:9px">${g.label}</div><div class="bar-track"><div class="bar-fill" style="width:${g.pct}%;background:${g.color}"></div></div><div class="bar-val" style="color:${g.color};font-size:10px">${g.pct.toFixed(1)}%</div>`;
+    geoEl.appendChild(el3);
+  });
+
+  const secEl = document.getElementById('etfSec');
+  d.secteurs.forEach(s => {
+    const el4 = document.createElement('div');
+    el4.className = 'bar-row'; el4.style.marginBottom = '5px';
+    el4.innerHTML = `<div class="bar-label" style="width:110px;font-size:9px">${s.label}</div><div class="bar-track"><div class="bar-fill" style="width:${s.pct}%;background:${s.color}"></div></div><div class="bar-val" style="color:${s.color};font-size:10px">${s.pct.toFixed(1)}%</div>`;
+    secEl.appendChild(el4);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INTÉRÊTS COMPOSÉS
+// ═══════════════════════════════════════════════════════════════
+let icChart = null;
+function setICScenario(rate, el) {
+  document.getElementById('icRate').value = rate;
+  document.getElementById('icRateVal').innerHTML = rate.toString().replace('.',',') + ' <span>%</span>';
+  document.querySelectorAll('.ic-scenario').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  updateIC();
+}
+function updateIC() {
+  const capital  = parseFloat(document.getElementById('icCapital').value);
+  const rate     = parseFloat(document.getElementById('icRate').value);
+  const monthly  = parseFloat(document.getElementById('icMonthly').value);
+  const years    = parseInt(document.getElementById('icYears').value);
+  document.getElementById('icCapitalVal').innerHTML  = fmtN(capital) + ' <span>€</span>';
+  document.getElementById('icRateVal').innerHTML     = rate.toString().replace('.',',') + ' <span>%</span>';
+  document.getElementById('icMonthlyVal').innerHTML  = fmtN(monthly) + ' <span>€/mois</span>';
+  document.getElementById('icYearsVal').innerHTML    = years + ' <span>ans</span>';
+
+  const mr = rate/100/12;
+  let portfolio = capital, totalInv = capital, prev = capital;
+  const yearlyData = [], labels = [], portVals = [], invVals = [], intVals = [];
+  for (let y = 1; y <= years; y++) {
+    let yearInt = 0;
+    for (let m = 0; m < 12; m++) { const i = portfolio*mr; yearInt+=i; portfolio+=i+monthly; totalInv+=monthly; }
+    const gain = portfolio - totalInv;
+    yearlyData.push({year:y, invested:totalInv, portfolio, interest:gain, yearGain:portfolio-prev-monthly*12, perf:gain/totalInv*100});
+    labels.push((2026+y).toString()); portVals.push(Math.round(portfolio)); invVals.push(Math.round(totalInv)); intVals.push(Math.round(gain));
+    prev = portfolio;
+  }
+  const last = yearlyData[yearlyData.length-1];
+  const gain  = last.portfolio - last.invested;
+  document.getElementById('icFinal').textContent         = fmt(Math.round(last.portfolio));
+  document.getElementById('icFinalSub').textContent      = 'dans ' + years + ' ans';
+  document.getElementById('icGain').textContent          = '+' + fmt(Math.round(gain));
+  document.getElementById('icGainSub').textContent       = '+' + last.perf.toFixed(1) + '%';
+  document.getElementById('icTotalInvested').textContent = fmt(Math.round(last.invested));
+  document.getElementById('icInterest').textContent      = fmt(Math.round(gain));
+  document.getElementById('icInterestSub').textContent   = (gain/last.portfolio*100).toFixed(1) + '% de la valeur';
+  document.getElementById('icDoubling').innerHTML        = `📐 <strong>Règle des 72</strong> : à <strong>${rate}%/an</strong>, ton capital double tous les <strong>${(72/rate).toFixed(1)} ans</strong>.`;
+
+  if (icChart) icChart.destroy();
+  icChart = new Chart(document.getElementById('icChart'), {
+    type:'line', data:{labels, datasets:[
+      {label:'Valeur totale',    data:portVals, borderColor:'#e8c547', backgroundColor:'rgba(232,197,71,.1)', fill:true, tension:.4, borderWidth:2.5, pointRadius:3},
+      {label:'Capital investi',  data:invVals,  borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,.05)', fill:true, tension:.4, borderWidth:2, borderDash:[5,4], pointRadius:2},
+      {label:'Intérêts composés',data:intVals,  borderColor:'#4ade80', backgroundColor:'rgba(74,222,128,.05)', fill:true, tension:.4, borderWidth:2, pointRadius:2},
+    ]},
+    options:{responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{legend:{labels:{color:'#a1a1aa',font:{family:'DM Mono',size:10},boxWidth:8}}, tooltip:{backgroundColor:chartDefaults.backgroundColor,titleFont:chartDefaults.titleFont,bodyFont:chartDefaults.bodyFont,callbacks:{label:ctx=>` ${ctx.dataset.label} : ${fmt(ctx.raw)}`}}}, scales:{x:{...axisDefaults},y:{...axisDefaults,ticks:{...axisDefaults.ticks,callback:v=>new Intl.NumberFormat('fr-FR',{notation:'compact'}).format(v)+'€'}}}}
+  });
+
+  const tb = document.getElementById('icTableBody'); tb.innerHTML = '';
+  yearlyData.forEach((d,i) => {
+    const tr = document.createElement('tr');
+    if ([5,10,15,20].includes(d.year)) tr.className = 'milestone';
+    tr.innerHTML = `<td>${2026+d.year}</td><td>${fmt(Math.round(d.invested))}</td><td class="pos">${fmt(Math.round(d.portfolio))}</td><td class="pos">+${fmt(Math.round(d.interest))}</td><td class="pos">+${d.perf.toFixed(1)}%</td>`;
+    tb.appendChild(tr);
+  });
+}
+updateIC();
+
+// ═══════════════════════════════════════════════════════════════
+// INDÉPENDANCE FINANCIÈRE
+// ═══════════════════════════════════════════════════════════════
+let indepChart = null;
+function setIndepMethod(method, el) {
+  indepMethod = method;
+  document.querySelectorAll('#page-indep .ic-scenario').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const withdrawMap = {'4pct':4,'mix':3,'dividendes':2.5};
+  document.getElementById('indepWithdraw').value = withdrawMap[method];
+  document.getElementById('indepWithdrawVal').innerHTML = withdrawMap[method].toFixed(1).replace('.',',') + ' <span>%</span>';
+  updateIndep();
+}
+function updateIndep() {
+  const revenu   = parseFloat(document.getElementById('indepRevenu').value);
+  const rate     = parseFloat(document.getElementById('indepRate').value);
+  const monthly  = parseFloat(document.getElementById('indepMonthly').value);
+  const withdraw = parseFloat(document.getElementById('indepWithdraw').value);
+  document.getElementById('indepRevenuVal').innerHTML  = fmtN(revenu) + ' <span>€/mois</span>';
+  document.getElementById('indepRateVal').innerHTML    = rate.toFixed(2).replace('.',',') + ' <span>%</span>';
+  document.getElementById('indepMonthlyVal').innerHTML = fmtN(monthly) + ' <span>€/mois</span>';
+  document.getElementById('indepWithdrawVal').innerHTML= withdraw.toFixed(1).replace('.',',') + ' <span>%</span>';
+
+  const annualRevenu  = revenu * 12;
+  const capitalCible  = annualRevenu / (withdraw / 100);
+  const mr            = rate / 100 / 12;
+  const gap           = Math.max(0, capitalCible - VALEUR_PEA);
+  const pct           = Math.min(100, VALEUR_PEA / capitalCible * 100);
+  const revActuel     = VALEUR_PEA * withdraw / 100 / 12;
+
+  let portfolio = VALEUR_PEA, yearsNeeded = 0, targetYear = 0;
+  for (let m = 1; m <= 600; m++) {
+    portfolio = portfolio * (1 + mr) + monthly;
+    if (portfolio >= capitalCible && yearsNeeded === 0) { yearsNeeded = Math.ceil(m/12); targetYear = 2026 + yearsNeeded; }
+  }
+
+  document.getElementById('indepCapCible').textContent    = fmt(Math.round(capitalCible));
+  document.getElementById('indepCapCibleSub').textContent = annualRevenu.toLocaleString('fr-FR') + ' €/an à ' + withdraw + '%';
+  document.getElementById('indepPEAPct').textContent      = pct.toFixed(1) + "% de l'objectif";
+  document.getElementById('indepYears').textContent       = yearsNeeded > 0 ? yearsNeeded + ' ans' : '✅ Maintenant';
+  document.getElementById('indepYearsSub').textContent    = yearsNeeded > 0 ? 'Atteint en ' + targetYear : 'Capital suffisant !';
+  document.getElementById('indepRevActuel').textContent   = fmt(Math.round(revActuel)) + '/mois';
+  document.getElementById('indepProgLabel').textContent   = fmt(VALEUR_PEA) + ' / ' + fmt(Math.round(capitalCible));
+  document.getElementById('indepCibleLabel').textContent  = fmt(Math.round(capitalCible));
+  document.getElementById('indepBar').style.width         = pct + '%';
+  document.getElementById('indepMethodExpl').innerHTML    = {
+    '4pct':'📐 <strong>Règle des 4%</strong> : tu retires 4% de ton capital chaque année. Étude Trinity (1998) — taux de succès >95% sur 30 ans. Tu peux vendre des parts chaque année sans épuiser ton capital.',
+    'dividendes':'💰 <strong>Dividendes purs (2,5%)</strong> : tu ne touches que les dividendes distribués, sans jamais vendre de parts. Capital 100% intact.',
+    'mix':'⚖️ <strong>Approche mixte (3%)</strong> : dividendes + ventes partielles limitées. Bon compromis entre capital préservé et liberté de retrait.',
+  }[indepMethod];
+
+  // Chart
+  const maxY = Math.min(Math.max(yearsNeeded + 5, 15), 40);
+  const labels2 = [], portLine2 = [], cibleLine2 = [];
+  let p2 = VALEUR_PEA;
+  for (let y = 0; y <= maxY; y++) {
+    labels2.push((2026+y).toString()); portLine2.push(Math.round(p2)); cibleLine2.push(Math.round(capitalCible));
+    for (let m = 0; m < 12; m++) p2 = p2*(1+mr) + monthly;
+  }
+  if (indepChart) indepChart.destroy();
+  indepChart = new Chart(document.getElementById('indepChart'), {
+    type:'line', data:{labels:labels2, datasets:[
+      {label:'Valeur PEA projetée', data:portLine2, borderColor:'#e8c547', backgroundColor:'rgba(232,197,71,.08)', fill:true, tension:.4, borderWidth:2.5, pointRadius:2},
+      {label:'Capital cible (IF)',  data:cibleLine2, borderColor:'#4ade80', backgroundColor:'transparent', fill:false, borderDash:[6,4], borderWidth:2, pointRadius:0},
+    ]},
+    options:{responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{legend:{labels:{color:'#a1a1aa',font:{family:'DM Mono',size:10},boxWidth:8}}, tooltip:{backgroundColor:chartDefaults.backgroundColor,titleFont:chartDefaults.titleFont,bodyFont:chartDefaults.bodyFont,callbacks:{label:ctx=>` ${ctx.dataset.label} : ${fmt(ctx.raw)}`}}}, scales:{x:{...axisDefaults},y:{...axisDefaults,ticks:{...axisDefaults.ticks,callback:v=>new Intl.NumberFormat('fr-FR',{notation:'compact'}).format(v)+'€'}}}}
+  });
+
+  // Comparison table
+  const tb2 = document.getElementById('indepCompTable'); tb2.innerHTML = '';
+  [{method:'📐 Règle des 4%',w:4},{method:'⚖️ Approche mixte',w:3},{method:'💰 Dividendes purs',w:2.5}].forEach(m => {
+    const cap = annualRevenu/(m.w/100); let p3=VALEUR_PEA, yrs=0;
+    for (let mo=1;mo<=600;mo++){p3=p3*(1+mr)+monthly;if(p3>=cap&&yrs===0)yrs=Math.ceil(mo/12);}
+    const tr=document.createElement('tr');
+    if((indepMethod==='4pct'&&m.w===4)||(indepMethod==='mix'&&m.w===3)||(indepMethod==='dividendes'&&m.w===2.5))tr.className='milestone';
+    tr.innerHTML=`<td>${m.method}</td><td>${fmt(Math.round(cap))}</td><td class="pos">${fmt(Math.round(revenu))}/mois</td><td>${yrs>0?yrs+' ans':'✅ Maintenant'}</td>`;
+    tb2.appendChild(tr);
+  });
+}
+updateIndep();
+
+// ═══════════════════════════════════════════════════════════════
+// ── RÉSUMÉ RAPIDE ──────────────────────────────────────────────
+(function buildQuickView() {
+  const total   = currentData.reduce((s,d) => s+d.value, 0);
+  const gain    = total - CAPITAL_INVESTI;
+  const pvNette = gain - gain*0.186;
+  const netVal  = CAPITAL_INVESTI + pvNette;
+  const fmtN    = n => new Intl.NumberFormat('fr-FR').format(n);
+
+  document.getElementById('qValeur').textContent = fmtN(total) + ' €';
+  document.getElementById('qGain').textContent   = '+' + fmtN(Math.round(gain)) + ' € · +' + (gain/CAPITAL_INVESTI*100).toFixed(1) + '% depuis 2017';
+  document.getElementById('qNet').textContent    = fmtN(Math.round(netVal)) + ' €';
+
+  // Lines
+  const ql = document.getElementById('qLines');
+  const maxVal = Math.max(...currentData.map(d => d.value));
+  currentData.forEach(d => {
+    const gp    = ((d.value - d.pru*d.parts) / (d.pru*d.parts) * 100).toFixed(1);
+    const isPos = parseFloat(gp) >= 0;
+    const color = isPos ? 'var(--accent2)' : 'var(--accent3)';
+    const sign  = isPos ? '+' : '';
+    const pct   = (d.value / maxVal * 100).toFixed(1);
+    const el    = document.createElement('div');
+    el.style.cssText = 'display:flex;align-items:center;gap:10px';
+    el.innerHTML =
+      '<div style="width:8px;height:8px;border-radius:50%;background:' + COLORS[d.ticker] + ';flex-shrink:0"></div>' +
+      '<div style="font-size:11px;font-weight:500;width:55px;color:var(--text)">' + d.ticker + '</div>' +
+      '<div style="flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden">' +
+        '<div style="height:100%;width:' + pct + '%;background:' + COLORS[d.ticker] + ';border-radius:2px"></div>' +
+      '</div>' +
+      '<div style="font-size:11px;width:85px;text-align:right;font-family:DM Mono,monospace">' + fmtN(d.value) + ' €</div>' +
+      '<div style="font-size:10px;width:48px;text-align:right;color:' + color + '">' + sign + gp + '%</div>';
+    ql.appendChild(el);
+  });
+
+  // Events
+  const qe = document.getElementById('qEvents');
+  const today     = new Date();
+  const nextDonut = new Date(today.getFullYear(), today.getMonth()+1, 1);
+  const daysToDonut = Math.ceil((nextDonut - today) / (1000*60*60*24));
+  const nextDiv   = dividends[0];
+  var events = [
+    {icon:'💰', label:'ASML · Dividende T3 +51 €', sub:'5 août 2026 · Impact positif sur ta ligne', color:'var(--accent)'},
+    {icon:'🏦', label:'Fed · Décision taux directeurs', sub:'13 août 2026 · Taux actuels : 3,75%', color:'var(--blue)'},
+    {icon:'📊', label:'Inflation USA · CPI juillet', sub:'14 août 2026 · Dernière : 3,5% en juil.', color:'var(--gold)'},
+    {icon:'🇪🇺', label:'PIB Zone Euro · T2 2026 révisé', sub:'15 août 2026 · Croissance attendue 0,9%', color:'var(--accent2)'},
+    {icon:'📸', label:'Prochain donut mensuel', sub:'1er sept. 2026 · dans ' + daysToDonut + ' jour' + (daysToDonut>1?'s':''), color:'var(--purple)'},
+  ];
+  events.forEach(function(ev) {
+    const el = document.createElement('div');
+    el.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--surface2);border-radius:8px';
+    el.innerHTML =
+      '<div style="font-size:18px">' + ev.icon + '</div>' +
+      '<div style="flex:1">' +
+        '<div style="font-size:11px;color:' + ev.color + '">' + ev.label + '</div>' +
+        '<div style="font-size:10px;color:var(--text2);margin-top:2px">' + ev.sub + '</div>' +
+      '</div>';
+    qe.appendChild(el);
+  });
+})();
+
+// ── SWIPE NAVIGATION ──────────────────────────────────────────
+const PAGE_ORDER = ['quick','historique','tri','dividends','fiscalite','etfcompo','compound','indep'];
+let swipeStartX = 0, swipeStartY = 0;
+document.addEventListener('touchstart', e => { swipeStartX = e.touches[0].clientX; swipeStartY = e.touches[0].clientY; }, {passive:true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - swipeStartX;
+  const dy = e.changedTouches[0].clientY - swipeStartY;
+  if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy)*1.5) return;
+  const currentId = (document.querySelector('.page.active')?.id||'').replace('page-','');
+  const idx = PAGE_ORDER.indexOf(currentId);
+  if (idx === -1) return;
+  const nextIdx = dx < 0 ? Math.min(idx+1, PAGE_ORDER.length-1) : Math.max(idx-1, 0);
+  if (nextIdx === idx) return;
+  const nextTab = Array.from(document.querySelectorAll('.nav-tab')).find(t=>t.getAttribute('onclick')?.includes("'"+PAGE_ORDER[nextIdx]+"'"));
+  if (nextTab) { showPage(PAGE_ORDER[nextIdx], nextTab); nextTab.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
+}, {passive:true});
+
+// SERVICE WORKER (PWA)
+// ═══════════════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('✅ PEA for DAM PWA — SW enregistré'))
+      .catch(err => console.log('SW error:', err));
+  });
+}
+</script>
 </body>
 </html>
