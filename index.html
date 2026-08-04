@@ -129,8 +129,9 @@ canvas{width:100%;}
 <!-- HEADER -->
 <div class="header">
   <img src="icon-192.png" alt="PEA for DAM" style="width:48px;height:48px;border-radius:12px">
-  <div style="text-align:right">
-    <div class="header-date">Dernière MàJ : 1 août 2026</div>
+    <div style="text-align:right">
+    <div class="header-date">Dernière MàJ</div>
+    <div class="header-date">1 août 2026</div>
   </div>
 </div>
 
@@ -240,7 +241,7 @@ canvas{width:100%;}
   </div>
 
   <div class="card">
-    <div class="card-title">📅 Prochains événements</div>
+    <div class="card-title">📅 Agenda · Août 2026</div>
     <div id="qEvents" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
 
@@ -1142,9 +1143,11 @@ updateIndep();
   const daysToDonut = Math.ceil((nextDonut - today) / (1000*60*60*24));
   const nextDiv   = dividends[0];
   var events = [
-    {icon:'💰', label: nextDiv.source.split('—')[0].trim() + ' · +' + nextDiv.amount + ' €', sub: nextDiv.date, color:'var(--accent)'},
-    {icon:'📸', label:'Prochain donut mensuel', sub: 'dans ' + daysToDonut + ' jour' + (daysToDonut>1?'s':''), color:'var(--blue)'},
-    {icon:'🏦', label:'Plafond PEA · reste 22 000 €', sub:'~22 mois à 1 000 €/mois', color:'var(--purple)'},
+    {icon:'💰', label:'ASML · Dividende T3 +51 €', sub:'5 août 2026 · Impact positif sur ta ligne', color:'var(--accent)'},
+    {icon:'🏦', label:'Fed · Décision taux directeurs', sub:'13 août 2026 · Taux actuels : 3,75%', color:'var(--blue)'},
+    {icon:'📊', label:'Inflation USA · CPI juillet', sub:'14 août 2026 · Dernière : 3,5% en juil.', color:'var(--gold)'},
+    {icon:'🇪🇺', label:'PIB Zone Euro · T2 2026 révisé', sub:'15 août 2026 · Croissance attendue 0,9%', color:'var(--accent2)'},
+    {icon:'📸', label:'Prochain donut mensuel', sub:'1er sept. 2026 · dans ' + daysToDonut + ' jour' + (daysToDonut>1?'s':''), color:'var(--purple)'},
   ];
   events.forEach(function(ev) {
     const el = document.createElement('div');
